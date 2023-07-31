@@ -55,7 +55,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
               if (pageToken != null) {
                 this.getResourceTablePage(this.resourceTable, pageToken)
-                  .then(() => this.scrollIntoView(resourceId))
+                  .then(() => this.scrollTableRowIntoView(resourceId))
                   .then(() => (this.defer = false));
               } else {
                 this.defer = false;
@@ -65,16 +65,16 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
       );
   }
 
-  private scrollIntoView(resourceId?: string): Promise<void> {
+  private scrollTableRowIntoView(resourceId?: string): Promise<void> {
     return resourceId != null
       ? new Promise((resolve) =>
           new MutationObserver((mutations, observer) => {
-            const row = this.host.nativeElement.querySelector(
+            const tableRow = this.host.nativeElement.querySelector(
               `tr[resource-id=${JSON.stringify(resourceId)}]`
             );
 
-            if (row != null) {
-              row.scrollIntoView({ block: 'start' });
+            if (tableRow != null) {
+              tableRow.scrollIntoView({ block: 'start' });
               observer.disconnect();
               resolve();
             }
@@ -114,11 +114,11 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
   protected patchResourceItem(
     resourceTable: Resource.Table<T>,
-    resourceField: Resource.Field<T>
+    resourceTableField: Resource.TableField<T>
   ): void {
-    this.setQueryParams({ resourceId: resourceField.id }).then(() =>
+    this.setQueryParams({ resourceId: resourceTableField.id }).then(() =>
       this.apiService
-        .patchResourceItem(pick(resourceTable, 'resource'), resourceField)
+        .patchResourceItem(pick(resourceTable, 'resource'), resourceTableField)
         .pipe(tap(() => this.updateResourceTable()))
         .subscribe()
     );
