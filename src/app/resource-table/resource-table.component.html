@@ -1,0 +1,73 @@
+<div class="content" *ngIf="resourceTable">
+  <form class="table-columns" (change)="updateResourceTableColumns()">
+    <table>
+      <tr
+        *ngFor="let column of resourceTable.columns | keyvalue : preserveOrder"
+      >
+        <td>{{ column.key }}</td>
+        <td>
+          <input
+            [(ngModel)]="column.value.include"
+            name="include-{{ column.key }}"
+            type="checkbox"
+          />
+        </td>
+      </tr>
+    </table>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th
+          *ngFor="
+            let column of resourceTable.columns
+              | keyvalue
+              | filter : 'value.include'
+          "
+        >
+          {{ column.key }}
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder"
+      (visible)="getResourceTablePage(resourceTable, page.key)"
+      [defer]="defer"
+      observeVisibility
+    >
+      <tr *ngIf="!page.value.items">
+        ⋯
+      </tr>
+      <tr
+        *ngFor="let row of page.value.items"
+        [attr.resource-id]="row.resource.id"
+        [class.selected]="row.resource.id === resourceTable.resourceId"
+      >
+        <td
+          *ngFor="let field of row.fields"
+          [class.nullish]="field.value == null"
+          [ngSwitch]="field.type"
+        >
+          <input
+            *ngSwitchCase="'boolean'"
+            (change)="patchResourceItem(resourceTable, field)"
+            [(ngModel)]="field.value"
+            type="checkbox"
+          />
+          <input
+            *ngSwitchCase="'number'"
+            (change)="patchResourceItem(resourceTable, field)"
+            [(ngModel)]="field.value"
+            type="number"
+          />
+          <input
+            *ngSwitchCase="'string'"
+            (change)="patchResourceItem(resourceTable, field)"
+            [(ngModel)]="field.value"
+            type="text"
+          />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
