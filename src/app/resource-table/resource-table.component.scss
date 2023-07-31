@@ -35,7 +35,7 @@
         scroll-margin-top: 1.8em;
 
         &.selected {
-            background-color: yellow;
+            box-shadow: 0 0 0 3px inset blue;
         }
 
         th {
@@ -57,7 +57,7 @@
             --background-opacity: 0;
 
             &.nullish {
-                --background-opacity: 70%;
+                --background-opacity: 30%;
             }
 
             input {
