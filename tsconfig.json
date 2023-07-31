@@ -21,7 +21,7 @@
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@shared/*": ["../api/src/*"]
+      "@shared/*": ["../niax-api/src/*"]
     }
   },
   "angularCompilerOptions": {
