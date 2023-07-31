@@ -55,7 +55,11 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
               if (pageToken != null) {
                 this.getResourceTablePage(this.resourceTable, pageToken)
-                  .then(() => this.scrollTableRowIntoView(resourceId))
+                  .then(() => {
+                    if (resourceId != null) {
+                      this.scrollTableRowIntoView(resourceId);
+                    }
+                  })
                   .then(() => (this.defer = false));
               } else {
                 this.defer = false;
@@ -65,25 +69,24 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
       );
   }
 
-  private scrollTableRowIntoView(resourceId?: string): Promise<void> {
-    return resourceId != null
-      ? new Promise((resolve) =>
-          new MutationObserver((mutations, observer) => {
-            const tableRow = this.host.nativeElement.querySelector(
-              `tr[resource-id=${JSON.stringify(resourceId)}]`
-            );
+  private scrollTableRowIntoView(resourceId: string): Promise<void> {
+    return new Promise((resolve) =>
+      new MutationObserver((mutations, observer) => {
+        const tableRow = this.host.nativeElement.querySelector(
+          `tr[resource-id=${JSON.stringify(resourceId)}]`
+        );
 
-            if (tableRow != null) {
-              tableRow.scrollIntoView({ block: 'start' });
-              observer.disconnect();
-              resolve();
-            }
-          }).observe(this.host.nativeElement, {
-            childList: true,
-            subtree: true,
-          })
-        )
-      : Promise.resolve();
+        if (tableRow != null) {
+          tableRow.scrollIntoView({ block: 'start' });
+          observer.disconnect();
+
+          resolve();
+        }
+      }).observe(this.host.nativeElement, {
+        childList: true,
+        subtree: true,
+      })
+    );
   }
 
   private setQueryParams(queryParams: Params): Promise<boolean> {
@@ -96,7 +99,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
   protected getResourceTablePage(
     resourceTable: Resource.Table<T>,
     pageToken: string
-  ): Promise<void> {
+  ): Promise<Resource.Table<T>> {
     return new Promise((resolve) =>
       this.apiService
         .getResourceTablePage(pick(resourceTable, 'resource'), {
@@ -106,7 +109,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
           next: (page) => {
             resourceTable.rows[pageToken].items = page.items;
 
-            resolve();
+            resolve(resourceTable);
           },
         })
     );

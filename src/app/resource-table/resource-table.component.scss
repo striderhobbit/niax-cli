@@ -32,18 +32,15 @@
     }
 
     tr {
-        $thFontSize: 1.8em;
-        $thPaddingTopBottom: 0.5;
-
-        scroll-margin-top: $thFontSize * (1 + 2 * $thPaddingTopBottom);
+        scroll-margin-top: 1.8em;
 
         &.selected {
             background-color: yellow;
         }
 
         th {
-            font-size: $thFontSize;
-            padding: $thPaddingTopBottom * 1em 1em;
+            font-size: 0.8em;
+            padding: 0.5em 1em;
             text-align: left;
             text-transform: uppercase;
         }
