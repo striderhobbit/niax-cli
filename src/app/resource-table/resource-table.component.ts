@@ -40,19 +40,17 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     resourceTable: Resource.Table<T>,
     pageToken: string
   ): Promise<void> {
-    if (resourceTable.rows[pageToken].items == null) {
-      return firstValueFrom(
-        this.apiService
-          .getResourceTablePage(pick(resourceTable, 'resource'), {
-            pageToken,
+    return firstValueFrom(
+      this.apiService
+        .getResourceTablePage(pick(resourceTable, 'resource'), {
+          pageToken,
+        })
+        .pipe(
+          map((page) => {
+            resourceTable.rows[pageToken].items = page.items;
           })
-          .pipe(
-            map((page) => {
-              resourceTable.rows[pageToken].items = page.items;
-            })
-          )
-      );
-    }
+        )
+    );
   }
 
   protected patchResourceItem(

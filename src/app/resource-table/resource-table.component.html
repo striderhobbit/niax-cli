@@ -32,7 +32,7 @@
     <tbody
       *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder"
       (intersection)="fetchResourceTablePageItems(resourceTable, page.key)"
-      [ignoreIntersection]="defer"
+      [ignoreIntersection]="defer || page.value.items != null"
       observeIntersection
     >
       <tr *ngIf="!page.value.items">
