@@ -15,6 +15,8 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
   protected defer?: boolean;
   protected resourceTable?: Resource.Table<T>;
 
+  protected readonly preserveOrder = () => 0;
+
   constructor(
     private readonly apiService: ApiService<T>,
     private readonly host: ElementRef,
@@ -22,18 +24,65 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     private readonly router: Router
   ) {}
 
-  protected readonly preserveOrder = () => 0;
-
   ngOnInit(): void {
     this.updateResourceTable();
   }
 
-  protected updateResourceTableColumns(): Promise<void> {
-    return this.setQueryParams({
-      paths: Object.keys(pickBy(this.resourceTable?.columns, 'include')).join(
-        ','
-      ),
-    }).then(() => this.updateResourceTable());
+  protected async getResourceTablePageItems(
+    resourceTable: Resource.Table<T>,
+    pageToken: string
+  ): Promise<Resource.TableRow<T>[]> {
+    return (
+      resourceTable.rows[pageToken].items ??
+      firstValueFrom(
+        this.apiService.getResourceTablePage(pick(resourceTable, 'resource'), {
+          pageToken,
+        })
+      ).then((page) => (resourceTable.rows[pageToken].items = page.items))
+    );
+  }
+
+  protected patchResourceItem(
+    resourceTable: Resource.Table<T>,
+    resourceTableField: Resource.TableField<T>
+  ): Promise<void> {
+    return this.setQueryParams({ resourceId: resourceTableField.id })
+      .then(() =>
+        firstValueFrom(
+          this.apiService.patchResourceItem(
+            pick(resourceTable, 'resource'),
+            resourceTableField
+          )
+        )
+      )
+      .then(() => this.updateResourceTable());
+  }
+
+  private scrollTableRowIntoView(resourceId: string): Promise<void> {
+    return new Promise((resolve) =>
+      new MutationObserver((mutations, observer) => {
+        const tableRow = this.host.nativeElement.querySelector(
+          `tr[resource-id=${JSON.stringify(resourceId)}]`
+        );
+
+        if (tableRow != null) {
+          tableRow.scrollIntoView({ block: 'start' });
+          observer.disconnect();
+
+          resolve();
+        }
+      }).observe(this.host.nativeElement, {
+        childList: true,
+        subtree: true,
+      })
+    );
+  }
+
+  private setQueryParams(queryParams: Params): Promise<boolean> {
+    return this.router.navigate([], {
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 
   private updateResourceTable(): Promise<void> {
@@ -68,60 +117,11 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
       });
   }
 
-  private scrollTableRowIntoView(resourceId: string): Promise<void> {
-    return new Promise((resolve) =>
-      new MutationObserver((mutations, observer) => {
-        const tableRow = this.host.nativeElement.querySelector(
-          `tr[resource-id=${JSON.stringify(resourceId)}]`
-        );
-
-        if (tableRow != null) {
-          tableRow.scrollIntoView({ block: 'start' });
-          observer.disconnect();
-
-          resolve();
-        }
-      }).observe(this.host.nativeElement, {
-        childList: true,
-        subtree: true,
-      })
-    );
-  }
-
-  private setQueryParams(queryParams: Params): Promise<boolean> {
-    return this.router.navigate([], {
-      queryParams,
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  protected async getResourceTablePageItems(
-    resourceTable: Resource.Table<T>,
-    pageToken: string
-  ): Promise<Resource.TableRow<T>[]> {
-    return (
-      resourceTable.rows[pageToken].items ??
-      firstValueFrom(
-        this.apiService.getResourceTablePage(pick(resourceTable, 'resource'), {
-          pageToken,
-        })
-      ).then((page) => (resourceTable.rows[pageToken].items = page.items))
-    );
-  }
-
-  protected patchResourceItem(
-    resourceTable: Resource.Table<T>,
-    resourceTableField: Resource.TableField<T>
-  ): Promise<void> {
-    return this.setQueryParams({ resourceId: resourceTableField.id })
-      .then(() =>
-        firstValueFrom(
-          this.apiService.patchResourceItem(
-            pick(resourceTable, 'resource'),
-            resourceTableField
-          )
-        )
-      )
-      .then(() => this.updateResourceTable());
+  protected updateResourceTableColumns(): Promise<void> {
+    return this.setQueryParams({
+      paths: Object.keys(pickBy(this.resourceTable?.columns, 'include')).join(
+        ','
+      ),
+    }).then(() => this.updateResourceTable());
   }
 }
