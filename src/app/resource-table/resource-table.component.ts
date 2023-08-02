@@ -36,23 +36,23 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     this.updateResourceTable();
   }
 
-  protected fetchResourceTablePageItems(
+  protected async fetchResourceTablePageItems(
     resourceTable: Resource.Table<T>,
     pageToken: string
   ): Promise<void> {
-    return resourceTable.rows[pageToken].items == null
-      ? firstValueFrom(
-          this.apiService
-            .getResourceTablePage(pick(resourceTable, 'resource'), {
-              pageToken,
+    if (resourceTable.rows[pageToken].items == null) {
+      return firstValueFrom(
+        this.apiService
+          .getResourceTablePage(pick(resourceTable, 'resource'), {
+            pageToken,
+          })
+          .pipe(
+            map((page) => {
+              resourceTable.rows[pageToken].items = page.items;
             })
-            .pipe(
-              map((page) => {
-                resourceTable.rows[pageToken].items = page.items;
-              })
-            )
-        )
-      : Promise.resolve();
+          )
+      );
+    }
   }
 
   protected patchResourceItem(
@@ -116,16 +116,17 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
         mergeMap((resourceTable) => {
           const { hash, pageToken, resourceId } = resourceTable;
 
-          return this.setQueryParams({ hash }).then(() =>
-            pageToken != null
-              ? this.fetchResourceTablePageItems(resourceTable, pageToken).then(
-                  () =>
-                    resourceId != null
-                      ? this.scrollTableRowIntoView(resourceId)
-                      : Promise.resolve()
-                )
-              : Promise.resolve()
-          );
+          return this.setQueryParams({ hash }).then(async () => {
+            if (pageToken != null) {
+              this.fetchResourceTablePageItems(resourceTable, pageToken).then(
+                async () => {
+                  if (resourceId != null) {
+                    return this.scrollTableRowIntoView(resourceId);
+                  }
+                }
+              );
+            }
+          });
         }),
         tap(() => (this.defer = false))
       )
