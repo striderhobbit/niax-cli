@@ -8,7 +8,6 @@ import {
   filter,
   firstValueFrom,
   forkJoin,
-  from,
   map,
   mergeMap,
   tap,
@@ -37,18 +36,23 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     this.updateResourceTable();
   }
 
-  protected async getResourceTablePageItems(
+  protected fetchResourceTablePageItems(
     resourceTable: Resource.Table<T>,
     pageToken: string
-  ): Promise<Resource.TableRow<T>[]> {
-    return (
-      resourceTable.rows[pageToken].items ??
-      firstValueFrom(
-        this.apiService.getResourceTablePage(pick(resourceTable, 'resource'), {
-          pageToken,
-        })
-      ).then((page) => (resourceTable.rows[pageToken].items = page.items))
-    );
+  ): Promise<void> {
+    return resourceTable.rows[pageToken].items == null
+      ? firstValueFrom(
+          this.apiService
+            .getResourceTablePage(pick(resourceTable, 'resource'), {
+              pageToken,
+            })
+            .pipe(
+              map((page) => {
+                resourceTable.rows[pageToken].items = page.items;
+              })
+            )
+        )
+      : Promise.resolve();
   }
 
   protected patchResourceItem(
@@ -62,7 +66,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
             pick(resourceTable, 'resource'),
             resourceTableField
           ),
-          defer(() => from(this.updateResourceTable())),
+          defer(() => this.updateResourceTable()),
         ]).pipe(map(([resourceItem]) => resourceItem))
       )
     );
@@ -105,26 +109,27 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
             pick(params, 'hash', 'limit', 'paths', 'resourceId')
           )
         ),
-        tap(() => (this.defer = true))
+        tap(() => (this.defer = true)),
+        map(
+          (resourceTableHeader) => (this.resourceTable = resourceTableHeader)
+        ),
+        mergeMap((resourceTable) => {
+          const { hash, pageToken, resourceId } = resourceTable;
+
+          return this.setQueryParams({ hash }).then(() =>
+            pageToken != null
+              ? this.fetchResourceTablePageItems(resourceTable, pageToken).then(
+                  () =>
+                    resourceId != null
+                      ? this.scrollTableRowIntoView(resourceId)
+                      : Promise.resolve()
+                )
+              : Promise.resolve()
+          );
+        }),
+        tap(() => (this.defer = false))
       )
-    )
-      .then((resourceTableHeader) => (this.resourceTable = resourceTableHeader))
-      .then(async (resourceTable) => {
-        const { hash, pageToken, resourceId } = resourceTable;
-
-        this.setQueryParams({ hash });
-
-        return (
-          pageToken != null &&
-          this.getResourceTablePageItems(resourceTable, pageToken).then(
-            async () =>
-              resourceId != null && this.scrollTableRowIntoView(resourceId)
-          )
-        );
-      })
-      .then(() => {
-        this.defer = false;
-      });
+    );
   }
 
   protected updateResourceTableColumns(): Promise<void> {

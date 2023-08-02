@@ -31,7 +31,7 @@
     </thead>
     <tbody
       *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder"
-      (visible)="getResourceTablePageItems(resourceTable, page.key)"
+      (visible)="fetchResourceTablePageItems(resourceTable, page.key)"
       [defer]="defer"
       observeVisibility
     >
