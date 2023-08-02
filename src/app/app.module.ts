@@ -5,15 +5,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FilterPipe } from './filter.pipe';
-import { IntersectionDirective } from './intersection.directive';
+import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
+import { ViewInitObserverDirective } from './view-init-observer.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     FilterPipe,
-    IntersectionDirective,
+    IntersectionObserverDirective,
     ResourceTableComponent,
+    ViewInitObserverDirective,
   ],
   imports: [AppRoutingModule, BrowserModule, FormsModule, HttpClientModule],
   providers: [],

@@ -72,26 +72,6 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     );
   }
 
-  private scrollTableRowIntoView(resourceId: string): Promise<void> {
-    return new Promise((resolve) =>
-      new MutationObserver((mutations, observer) => {
-        const tableRow = this.host.nativeElement.querySelector(
-          `tr[resource-id=${JSON.stringify(resourceId)}]`
-        );
-
-        if (tableRow != null) {
-          tableRow.scrollIntoView({ block: 'start' });
-          observer.disconnect();
-
-          resolve();
-        }
-      }).observe(this.host.nativeElement, {
-        childList: true,
-        subtree: true,
-      })
-    );
-  }
-
   private setQueryParams(queryParams: Params): Promise<boolean> {
     return this.router.navigate([], {
       queryParams,
@@ -114,17 +94,11 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
           (resourceTableHeader) => (this.resourceTable = resourceTableHeader)
         ),
         mergeMap((resourceTable) => {
-          const { hash, pageToken, resourceId } = resourceTable;
+          const { hash, pageToken } = resourceTable;
 
           return this.setQueryParams({ hash }).then(async () => {
             if (pageToken != null) {
-              this.fetchResourceTablePageItems(resourceTable, pageToken).then(
-                async () => {
-                  if (resourceId != null) {
-                    return this.scrollTableRowIntoView(resourceId);
-                  }
-                }
-              );
+              return this.fetchResourceTablePageItems(resourceTable, pageToken);
             }
           });
         }),

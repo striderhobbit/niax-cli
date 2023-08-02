@@ -11,14 +11,16 @@ import {
 import { Subject, delay } from 'rxjs';
 
 @Directive({
-  selector: '[observeVisibility]',
+  selector: '[observeIntersection]',
 })
-export class IntersectionDirective implements OnDestroy, OnInit, AfterViewInit {
+export class IntersectionObserverDirective
+  implements OnDestroy, OnInit, AfterViewInit
+{
   @Input() debounceTime = 300;
-  @Input() defer?: boolean;
+  @Input() ignoreIntersection?: boolean;
   @Input() threshold = 0;
 
-  @Output() visible = new EventEmitter<HTMLElement>();
+  @Output() intersection = new EventEmitter<HTMLElement>();
 
   private observer?: IntersectionObserver;
   private readonly subject = new Subject<{
@@ -80,8 +82,8 @@ export class IntersectionDirective implements OnDestroy, OnInit, AfterViewInit {
       this.subject
         .pipe(delay(this.debounceTime))
         .subscribe(async ({ target, observer }) => {
-          if (!this.defer && (await this.isVisible(target))) {
-            this.visible.emit(target);
+          if (!this.ignoreIntersection && (await this.isVisible(target))) {
+            this.intersection.emit(target);
 
             observer.unobserve(target);
           }

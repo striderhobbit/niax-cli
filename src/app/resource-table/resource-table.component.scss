@@ -39,7 +39,7 @@
     tr {
         scroll-margin-top: 1.8em;
 
-        &.selected {
+        &[ng-reflect-ignore-view-init="false"] {
             box-shadow: 0 0 0 3px inset blue;
         }
 

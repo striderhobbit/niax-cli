@@ -31,17 +31,18 @@
     </thead>
     <tbody
       *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder"
-      (visible)="fetchResourceTablePageItems(resourceTable, page.key)"
-      [defer]="defer"
-      observeVisibility
+      (intersection)="fetchResourceTablePageItems(resourceTable, page.key)"
+      [ignoreIntersection]="defer"
+      observeIntersection
     >
       <tr *ngIf="!page.value.items">
         ⋯
       </tr>
       <tr
         *ngFor="let row of page.value.items"
-        [attr.resource-id]="row.resource.id"
-        [class.selected]="row.resource.id === resourceTable.resourceId"
+        (viewInit)="$event.scrollIntoView({ block: 'start' })"
+        [ignoreViewInit]="row.resource.id !== resourceTable.resourceId"
+        observeViewInit
       >
         <td
           *ngFor="let field of row.fields"
