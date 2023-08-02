@@ -99,18 +99,18 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
       )
     )
       .then((resourceTableHeader) => (this.resourceTable = resourceTableHeader))
-      .then((resourceTable) => {
+      .then(async (resourceTable) => {
         const { hash, pageToken, resourceId } = resourceTable;
 
         this.setQueryParams({ hash });
 
-        return pageToken != null
-          ? this.getResourceTablePageItems(resourceTable, pageToken).then(() =>
-              resourceId != null
-                ? this.scrollTableRowIntoView(resourceId)
-                : Promise.resolve()
-            )
-          : Promise.resolve();
+        return (
+          pageToken != null &&
+          this.getResourceTablePageItems(resourceTable, pageToken).then(
+            async () =>
+              resourceId != null && this.scrollTableRowIntoView(resourceId)
+          )
+        );
       })
       .then(() => {
         this.defer = false;
@@ -119,7 +119,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
   protected updateResourceTableColumns(): Promise<void> {
     return this.setQueryParams({
-      paths: Object.keys(pickBy(this.resourceTable?.columns, 'include')).join(
+      paths: Object.keys(pickBy(this.resourceTable!.columns, 'include')).join(
         ','
       ),
     }).then(() => this.updateResourceTable());
