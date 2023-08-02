@@ -43,7 +43,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
         this.apiService
           .getResourceTable(
             pick(params, 'resource'),
-            pick(params, 'paths', 'limit', 'hash', 'resourceId')
+            pick(params, 'hash', 'limit', 'paths', 'resourceId')
           )
           .pipe(tap(() => (this.defer = true)))
           .subscribe({
@@ -54,11 +54,13 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
               this.setQueryParams({ hash });
 
               if (pageToken != null) {
-                this.getResourceTablePage(this.resourceTable, pageToken)
+                this.getResourceTablePageItems(this.resourceTable, pageToken)
                   .then(() => {
                     if (resourceId != null) {
-                      this.scrollTableRowIntoView(resourceId);
+                      return this.scrollTableRowIntoView(resourceId);
                     }
+
+                    return;
                   })
                   .then(() => (this.defer = false));
               } else {
@@ -96,21 +98,18 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     });
   }
 
-  protected getResourceTablePage(
+  protected getResourceTablePageItems(
     resourceTable: Resource.Table<T>,
     pageToken: string
-  ): Promise<Resource.Table<T>> {
+  ): Promise<Resource.TableRow<T>[]> {
     return new Promise((resolve) =>
       this.apiService
         .getResourceTablePage(pick(resourceTable, 'resource'), {
           pageToken,
         })
         .subscribe({
-          next: (page) => {
-            resourceTable.rows[pageToken].items = page.items;
-
-            resolve(resourceTable);
-          },
+          next: (page) =>
+            resolve((resourceTable.rows[pageToken].items = page.items)),
         })
     );
   }
@@ -118,12 +117,19 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
   protected patchResourceItem(
     resourceTable: Resource.Table<T>,
     resourceTableField: Resource.TableField<T>
-  ): void {
-    this.setQueryParams({ resourceId: resourceTableField.id }).then(() =>
-      this.apiService
-        .patchResourceItem(pick(resourceTable, 'resource'), resourceTableField)
-        .pipe(tap(() => this.updateResourceTable()))
-        .subscribe()
+  ): Promise<T> {
+    return new Promise((resolve) =>
+      this.setQueryParams({ resourceId: resourceTableField.id }).then(() =>
+        this.apiService
+          .patchResourceItem(
+            pick(resourceTable, 'resource'),
+            resourceTableField
+          )
+          .pipe(tap(() => this.updateResourceTable()))
+          .subscribe({
+            next: resolve,
+          })
+      )
     );
   }
 }

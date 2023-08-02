@@ -1,6 +1,7 @@
 .content {
     height: 100%;
     overflow: auto;
+    position: relative;
     width: 100%;
 }
 
@@ -9,7 +10,7 @@
     bottom: 0;
     box-shadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
     padding: 1em;
-    position: absolute;
+    position: fixed;
     z-index: 2;
 
     td {
@@ -21,9 +22,13 @@
     border-collapse: separate;
     border-spacing: 0;
     display: block;
-    max-width: 100%;
-    min-height: 200%;
-    scrollbar-width: thin;
+
+    &::after {
+        content: "";
+        height: 100%;
+        position: absolute;
+        width: 100%;
+    }
 
     thead {
         position: sticky;
