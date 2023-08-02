@@ -3,7 +3,16 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UniqItem } from '@shared/schema';
 import { Resource } from '@shared/schema/resource';
 import { pick, pickBy } from 'lodash';
-import { filter, firstValueFrom, mergeMap, tap } from 'rxjs';
+import {
+  defer,
+  filter,
+  firstValueFrom,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -45,17 +54,18 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
   protected patchResourceItem(
     resourceTable: Resource.Table<T>,
     resourceTableField: Resource.TableField<T>
-  ): Promise<void> {
-    return this.setQueryParams({ resourceId: resourceTableField.id })
-      .then(() =>
-        firstValueFrom(
+  ): Promise<T> {
+    return this.setQueryParams({ resourceId: resourceTableField.id }).then(() =>
+      firstValueFrom(
+        forkJoin([
           this.apiService.patchResourceItem(
             pick(resourceTable, 'resource'),
             resourceTableField
-          )
-        )
+          ),
+          defer(() => from(this.updateResourceTable())),
+        ]).pipe(map(([resourceItem]) => resourceItem))
       )
-      .then(() => this.updateResourceTable());
+    );
   }
 
   private scrollTableRowIntoView(resourceId: string): Promise<void> {
