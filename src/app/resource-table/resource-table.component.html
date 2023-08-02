@@ -21,7 +21,7 @@
         <th
           *ngFor="
             let column of resourceTable.columns
-              | keyvalue
+              | keyvalue : preserveOrder
               | filter : 'value.include'
           "
         >
