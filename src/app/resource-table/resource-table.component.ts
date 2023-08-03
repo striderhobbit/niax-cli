@@ -26,13 +26,13 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     this.updateResourceTable();
   }
 
-  protected async fetchResourceTablePageItems(
+  protected async fetchResourceTableRows(
     resourceTable: Resource.Table<T>,
     pageToken: string
   ): Promise<void> {
     return firstValueFrom(
       this.apiService
-        .getResourceTablePage(pick(resourceTable, 'resource'), {
+        .getResourceTableRowsPage(pick(resourceTable, 'resource'), {
           pageToken,
         })
         .pipe(
@@ -102,7 +102,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
           return this.setQueryParams({ hash }).then(async () => {
             if (pageToken != null) {
-              return this.fetchResourceTablePageItems(resourceTable, pageToken);
+              return this.fetchResourceTableRows(resourceTable, pageToken);
             }
           });
         })
