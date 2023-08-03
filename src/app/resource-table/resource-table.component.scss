@@ -42,36 +42,36 @@
         &[ng-reflect-ignore-view-init="false"] {
             box-shadow: 0 0 0 3px inset blue;
         }
+    }
 
-        th {
-            font-size: 0.8em;
-            padding: 0.5em 1em;
-            text-align: left;
-            text-transform: uppercase;
+    th {
+        font-size: 0.8em;
+        padding: 0.5em 1em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    th,
+    td {
+        background-color: rgba(242, 240, 230, var(--background-opacity, 1));
+        border: 1px solid #d9d7ce;
+    }
+
+    td {
+        text-align: center;
+
+        --background-opacity: 0;
+
+        &.nullish {
+            --background-opacity: 30%;
         }
 
-        th,
-        td {
-            background-color: rgba(242, 240, 230, var(--background-opacity, 1));
-            border: 1px solid #d9d7ce;
-        }
-
-        td {
-            text-align: center;
-
-            --background-opacity: 0;
-
-            &.nullish {
-                --background-opacity: 30%;
-            }
-
-            input {
-                background: inherit;
-                border: none;
-                color: inherit;
-                font: inherit;
-                padding: 0.4em 0.8em;
-            }
+        input {
+            background: inherit;
+            border: none;
+            color: inherit;
+            font: inherit;
+            padding: 0.4em 0.8em;
         }
     }
 }
