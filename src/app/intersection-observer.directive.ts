@@ -16,7 +16,7 @@ import { Subject, delay } from 'rxjs';
 export class IntersectionObserverDirective
   implements OnInit, AfterViewInit, OnDestroy
 {
-  @Input() debounceTime = 300;
+  @Input() delay = 100;
   @Input() threshold = 0;
 
   @Output() intersection = new EventEmitter<HTMLElement>();
@@ -80,7 +80,7 @@ export class IntersectionObserverDirective
       this.observer.observe(this.host.nativeElement);
 
       this.subject
-        .pipe(delay(this.debounceTime))
+        .pipe(delay(this.delay))
         .subscribe(async ({ target, observer }) => {
           if (await this.isVisible(target)) {
             this.intersection.emit(target);
