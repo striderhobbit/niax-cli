@@ -39,9 +39,7 @@
           rowsPage.value.items == null &&
           isConnected(resourceTable, rowsPage.value)
         "
-        (intersection)="
-          fetchResourceTableRows(resourceTable, rowsPage.key)
-        "
+        (intersection)="fetchResourceTableRows(resourceTable, rowsPage.key)"
         observeIntersection
       >
         ⋯
