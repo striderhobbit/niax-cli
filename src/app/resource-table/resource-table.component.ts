@@ -46,7 +46,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
   protected isConnected(
     resourceTable: Resource.Table<T>,
-    resourceTableRowsPage: Resource.TableRowsPage<T>
+    resourceTableRowsPage: Resource.TableRowsPageHeader<T>
   ): boolean {
     return (
       (resourceTableRowsPage.nextPageToken == null &&
@@ -94,9 +94,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
             pick(params, 'hash', 'limit', 'paths', 'resourceId')
           )
         ),
-        map(
-          (resourceTableHeader) => (this.resourceTable = resourceTableHeader)
-        ),
+        map((resourceTable) => (this.resourceTable = resourceTable)),
         mergeMap((resourceTable) => {
           const { hash, pageToken } = resourceTable;
 
