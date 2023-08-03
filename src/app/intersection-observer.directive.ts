@@ -14,7 +14,7 @@ import { Subject, delay } from 'rxjs';
   selector: '[observeIntersection]',
 })
 export class IntersectionObserverDirective
-  implements OnDestroy, OnInit, AfterViewInit
+  implements OnInit, AfterViewInit, OnDestroy
 {
   @Input() debounceTime = 300;
   @Input() threshold = 0;
