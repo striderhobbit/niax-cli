@@ -1,17 +1,9 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UniqItem } from '@shared/schema';
 import { Resource } from '@shared/schema/resource';
 import { pick, pickBy } from 'lodash';
-import {
-  defer,
-  filter,
-  firstValueFrom,
-  forkJoin,
-  map,
-  mergeMap,
-  tap,
-} from 'rxjs';
+import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -26,7 +18,6 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
 
   constructor(
     private readonly apiService: ApiService<T>,
-    private readonly host: ElementRef,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
@@ -45,8 +36,9 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
           pageToken,
         })
         .pipe(
-          map((page) => {
-            resourceTable.rows[pageToken].items = page.items;
+          map((resourceTableRowsPage) => {
+            resourceTable.rowsPages[pageToken].items =
+              resourceTableRowsPage.items;
           })
         )
     );
@@ -60,11 +52,11 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
       (resourceTableRowsPage.nextPageToken == null &&
         resourceTableRowsPage.previousPageToken == null) ||
       (resourceTableRowsPage.nextPageToken != null &&
-        resourceTable.rows[resourceTableRowsPage.nextPageToken].items !=
+        resourceTable.rowsPages[resourceTableRowsPage.nextPageToken].items !=
           null) ||
       (resourceTableRowsPage.previousPageToken != null &&
-        resourceTable.rows[resourceTableRowsPage.previousPageToken].items !=
-          null)
+        resourceTable.rowsPages[resourceTableRowsPage.previousPageToken]
+          .items != null)
     );
   }
 

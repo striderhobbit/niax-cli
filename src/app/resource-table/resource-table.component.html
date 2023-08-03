@@ -29,18 +29,25 @@
         </th>
       </tr>
     </thead>
-    <tbody *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder">
+    <tbody
+      *ngFor="
+        let rowsPage of resourceTable.rowsPages | keyvalue : preserveOrder
+      "
+    >
       <tr
         *ngIf="
-          page.value.items == null && isConnected(resourceTable, page.value)
+          rowsPage.value.items == null &&
+          isConnected(resourceTable, rowsPage.value)
         "
-        (intersection)="fetchResourceTablePageItems(resourceTable, page.key)"
+        (intersection)="
+          fetchResourceTablePageItems(resourceTable, rowsPage.key)
+        "
         observeIntersection
       >
         ⋯
       </tr>
       <tr
-        *ngFor="let row of page.value.items"
+        *ngFor="let row of rowsPage.value.items"
         (viewInit)="$event.scrollIntoView({ block: 'start' })"
         [ignoreViewInit]="row.resource.id !== resourceTable.resourceId"
         observeViewInit
