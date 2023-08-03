@@ -17,7 +17,6 @@ export class IntersectionObserverDirective
   implements OnDestroy, OnInit, AfterViewInit
 {
   @Input() debounceTime = 300;
-  @Input() ignoreIntersection?: boolean;
   @Input() threshold = 0;
 
   @Output() intersection = new EventEmitter<HTMLElement>();
@@ -83,7 +82,7 @@ export class IntersectionObserverDirective
       this.subject
         .pipe(delay(this.debounceTime))
         .subscribe(async ({ target, observer }) => {
-          if (!this.ignoreIntersection && (await this.isVisible(target))) {
+          if (await this.isVisible(target)) {
             this.intersection.emit(target);
 
             observer.unobserve(target);

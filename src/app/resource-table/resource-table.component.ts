@@ -20,7 +20,6 @@ import { ApiService } from '../api.service';
   styleUrls: ['./resource-table.component.scss'],
 })
 export class ResourceTableComponent<T extends UniqItem> implements OnInit {
-  protected defer?: boolean;
   protected resourceTable?: Resource.Table<T>;
 
   protected readonly preserveOrder = () => 0;
@@ -103,7 +102,6 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
             pick(params, 'hash', 'limit', 'paths', 'resourceId')
           )
         ),
-        tap(() => (this.defer = true)),
         map(
           (resourceTableHeader) => (this.resourceTable = resourceTableHeader)
         ),
@@ -115,8 +113,7 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
               return this.fetchResourceTablePageItems(resourceTable, pageToken);
             }
           });
-        }),
-        tap(() => (this.defer = false))
+        })
       )
     );
   }

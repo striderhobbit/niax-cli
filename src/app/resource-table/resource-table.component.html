@@ -29,16 +29,13 @@
         </th>
       </tr>
     </thead>
-    <tbody
-      *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder"
-      (intersection)="fetchResourceTablePageItems(resourceTable, page.key)"
-      [ignoreIntersection]="defer || page.value.items != null"
-      observeIntersection
-    >
+    <tbody *ngFor="let page of resourceTable.rows | keyvalue : preserveOrder">
       <tr
         *ngIf="
           page.value.items == null && isConnected(resourceTable, page.value)
         "
+        (intersection)="fetchResourceTablePageItems(resourceTable, page.key)"
+        observeIntersection
       >
         ⋯
       </tr>
