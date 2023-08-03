@@ -1,18 +1,36 @@
 <div class="content" *ngIf="resourceTable != null">
   <form class="table-columns" (change)="updateResourceTableColumns()">
     <table>
-      <tr
-        *ngFor="let column of resourceTable.columns | keyvalue : preserveOrder"
-      >
-        <td>{{ column.key }}</td>
-        <td>
-          <input
-            [(ngModel)]="column.value.include"
-            name="include-{{ column.key }}-checkbox"
-            type="checkbox"
-          />
-        </td>
-      </tr>
+        <tr
+          *ngFor="
+            let column of resourceTable.columns | keyvalue : preserveOrder
+          "
+        >
+          <td>{{ column.key }}</td>
+          <td>
+            <input
+              [(ngModel)]="column.value.include"
+              name="include-{{ column.key }}-checkbox"
+              type="checkbox"
+            />
+          </td>
+          <td>
+            <input
+              [(ngModel)]="column.value.filter"
+              name="filter-{{ column.key }}-text"
+              type="text"
+            />
+          </td>
+          <td>
+            <select
+              [(ngModel)]="column.value.order"
+              name="order-{{ column.key }}-select"
+            >
+              <option>asc</option>
+              <option>desc</option>
+            </select>
+          </td>
+        </tr>
     </table>
   </form>
   <table>
