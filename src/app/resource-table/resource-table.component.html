@@ -1,4 +1,4 @@
-<div class="content" *ngIf="resourceTable">
+<div class="content" *ngIf="resourceTable != null">
   <form class="table-columns" (change)="updateResourceTableColumns()">
     <table>
       <tr
@@ -8,7 +8,7 @@
         <td>
           <input
             [(ngModel)]="column.value.include"
-            name="include-{{ column.key }}"
+            name="include-{{ column.key }}-checkbox"
             type="checkbox"
           />
         </td>
@@ -35,7 +35,11 @@
       [ignoreIntersection]="defer || page.value.items != null"
       observeIntersection
     >
-      <tr *ngIf="!page.value.items">
+      <tr
+        *ngIf="
+          page.value.items == null && isConnected(resourceTable, page.value)
+        "
+      >
         ⋯
       </tr>
       <tr

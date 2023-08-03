@@ -53,6 +53,22 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     );
   }
 
+  protected isConnected(
+    resourceTable: Resource.Table<T>,
+    resourceTableRowsPage: Resource.TableRowsPage<T>
+  ): boolean {
+    return (
+      (resourceTableRowsPage.nextPageToken == null &&
+        resourceTableRowsPage.previousPageToken == null) ||
+      (resourceTableRowsPage.nextPageToken != null &&
+        resourceTable.rows[resourceTableRowsPage.nextPageToken].items !=
+          null) ||
+      (resourceTableRowsPage.previousPageToken != null &&
+        resourceTable.rows[resourceTableRowsPage.previousPageToken].items !=
+          null)
+    );
+  }
+
   protected patchResourceItem(
     resourceTable: Resource.Table<T>,
     resourceTableField: Resource.TableField<T>

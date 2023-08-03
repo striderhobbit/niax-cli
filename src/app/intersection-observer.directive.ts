@@ -30,37 +30,28 @@ export class IntersectionObserverDirective
 
   constructor(private readonly host: ElementRef) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.createObserver({
       rootMargin: '0px',
       threshold: this.threshold,
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.startObservingElements();
   }
 
-  ngOnDestroy() {
-    if (this.observer) {
+  ngOnDestroy(): void {
+    if (this.observer != null) {
       this.observer.disconnect();
+
       delete this.observer;
     }
 
     this.subject.complete();
   }
 
-  private isVisible(element: HTMLElement) {
-    return new Promise((resolve) => {
-      new IntersectionObserver(([entry], observer) => {
-        resolve(entry.isIntersecting);
-
-        observer.disconnect();
-      }).observe(element);
-    });
-  }
-
-  private createObserver(options: IntersectionObserverInit) {
+  private createObserver(options: IntersectionObserverInit): void {
     this.observer = new IntersectionObserver(
       (entries, observer) =>
         entries.forEach((entry) => {
@@ -75,8 +66,18 @@ export class IntersectionObserverDirective
     );
   }
 
-  private startObservingElements() {
-    if (this.observer) {
+  private isVisible(element: HTMLElement): Promise<boolean> {
+    return new Promise((resolve) => {
+      new IntersectionObserver(([entry], observer) => {
+        resolve(entry.isIntersecting);
+
+        observer.disconnect();
+      }).observe(element);
+    });
+  }
+
+  private startObservingElements(): void {
+    if (this.observer != null) {
       this.observer.observe(this.host.nativeElement);
 
       this.subject
