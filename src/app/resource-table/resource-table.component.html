@@ -1,6 +1,7 @@
 <div class="content" *ngIf="resourceTable">
   <form
     (change)="fetchResourceTableColumns(resourceTable)"
+    #form="ngForm"
     class="table-columns"
   >
     <table>
@@ -53,7 +54,8 @@
           </td>
           <td>
             <input
-              [(ngModel)]="column.value.filter"
+              (ngModelChange)="form.invalid || (column.value.filter = $event)"
+              [ngModel]="column.value.filter"
               name="filter-{{ column.key }}-text"
               pattern="[^,]*"
               type="text"
