@@ -4,7 +4,7 @@ import { filter } from 'lodash';
 @Pipe({ name: 'filter' })
 @Injectable()
 export class FilterPipe implements PipeTransform {
-  transform<T>(items: T[], predicate: string): T[] {
+  transform<I>(items: I[], predicate: string): I[] {
     return filter(items, predicate);
   }
 }

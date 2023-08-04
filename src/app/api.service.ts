@@ -1,18 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UniqItem } from '@shared/schema';
 import { Request } from '@shared/schema/request';
+import { Resource } from '@shared/schema/resource';
 import { Observable, OperatorFunction, catchError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService<T extends UniqItem> {
+export class ApiService<I extends Resource.Item> {
   constructor(private readonly httpClient: HttpClient) {}
 
-  public getResourceTable<R extends Request.GetResourceTable<T>['ResBody']>(
-    params: Request.GetResourceTable<T>['ReqParams'],
-    query: Request.GetResourceTable<T>['ReqQuery']
+  public getResourceTable<R extends Request.GetResourceTable<I>['ResBody']>(
+    params: Request.GetResourceTable<I>['ReqParams'],
+    query: Request.GetResourceTable<I>['ReqQuery']
   ): Observable<R> {
     return this.httpClient
       .get<R>(`http://localhost:3000/api/resource/table/${params.resource}`, {
@@ -22,10 +22,10 @@ export class ApiService<T extends UniqItem> {
   }
 
   public getResourceTableRowsPage<
-    R extends Request.GetResourceTableRowsPage<T>['ResBody']
+    R extends Request.GetResourceTableRowsPage<I>['ResBody']
   >(
-    params: Request.GetResourceTableRowsPage<T>['ReqParams'],
-    query: Request.GetResourceTableRowsPage<T>['ReqQuery']
+    params: Request.GetResourceTableRowsPage<I>['ReqParams'],
+    query: Request.GetResourceTableRowsPage<I>['ReqQuery']
   ): Observable<R> {
     return this.httpClient
       .get<R>(
@@ -35,9 +35,9 @@ export class ApiService<T extends UniqItem> {
       .pipe(this.pipeError());
   }
 
-  public patchResourceItem<R extends Request.PatchResourceItem<T>['ResBody']>(
-    params: Request.PatchResourceItem<T>['ReqParams'],
-    body: Request.PatchResourceItem<T>['ReqBody']
+  public patchResourceItem<R extends Request.PatchResourceItem<I>['ResBody']>(
+    params: Request.PatchResourceItem<I>['ReqParams'],
+    body: Request.PatchResourceItem<I>['ReqBody']
   ): Observable<R> {
     return this.httpClient
       .patch<R>(`http://localhost:3000/api/${params.resource}/item`, body)
