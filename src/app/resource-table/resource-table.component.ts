@@ -4,7 +4,15 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { forOwn, pick, pull } from 'lodash';
-import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
+import {
+  defer,
+  filter,
+  first,
+  firstValueFrom,
+  forkJoin,
+  map,
+  mergeMap,
+} from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -31,6 +39,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     return firstValueFrom(
       this.route.queryParams.pipe(
         filter((params) => 'resource' in params),
+        first(),
         mergeMap((params) =>
           this.apiService.getResourceTable(
             pick(params, 'resource'),

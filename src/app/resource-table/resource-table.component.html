@@ -64,22 +64,23 @@
         </tr>
       </tbody>
     </table>
-    <ul
+    <div
       (cdkDropListDropped)="
         onPrimaryPathDropped(resourceTable, $event);
         fetchResourceTableColumns(resourceTable)
       "
       [cdkDropListData]="resourceTable.$primaryPaths"
       cdkDropList
+      class="primary-paths"
     >
-      <li
+      <div
         *ngFor="let primaryPath of resourceTable.$primaryPaths"
         [cdkDragData]="primaryPath"
         cdkDrag
       >
         {{ primaryPath }}
-      </li>
-    </ul>
+      </div>
+    </div>
   </form>
   <table>
     <thead>
