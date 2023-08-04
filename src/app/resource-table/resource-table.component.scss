@@ -15,6 +15,12 @@
 
     td {
         padding: 0.5em;
+
+        input {
+            &:invalid {
+                color: red;
+            }
+        }
     }
 }
 
@@ -39,7 +45,7 @@
     tr {
         scroll-margin-top: 1.8em;
 
-        &[ng-reflect-ignore-view-init="false"] {
+        &[ng-reflect-view-init-ignored="false"] {
             box-shadow: 0 0 0 3px inset blue;
         }
 

@@ -41,7 +41,7 @@ export class IntersectionObserverDirective
   }
 
   ngOnDestroy(): void {
-    if (this.observer != null) {
+    if (this.observer) {
       this.observer.disconnect();
 
       delete this.observer;
@@ -76,7 +76,7 @@ export class IntersectionObserverDirective
   }
 
   private startObservingElements(): void {
-    if (this.observer != null) {
+    if (this.observer) {
       this.observer.observe(this.host.nativeElement);
 
       this.subject

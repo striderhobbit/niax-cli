@@ -1,6 +1,19 @@
-<div class="content" *ngIf="resourceTable != null">
-  <form class="table-columns" (change)="updateResourceTableColumns()">
+<div class="content" *ngIf="resourceTable">
+  <form
+    (change)="fetchResourceTableColumns(resourceTable)"
+    class="table-columns"
+  >
     <table>
+      <thead>
+        <tr>
+          <th>path</th>
+          <th>include</th>
+          <th>primaryPath</th>
+          <th>order</th>
+          <th>filter</th>
+        </tr>
+      </thead>
+      <tbody>
         <tr
           *ngFor="
             let column of resourceTable.columns | keyvalue : preserveOrder
@@ -16,9 +29,17 @@
           </td>
           <td>
             <input
-              [(ngModel)]="column.value.filter"
-              name="filter-{{ column.key }}-text"
-              type="text"
+              (ngModelChange)="
+                onPrimaryPathToggled(resourceTable, {
+                  item: column.value.path,
+                  state: $event
+                })
+              "
+              [ngModel]="
+                resourceTable.$primaryPaths.includes(column.value.path)
+              "
+              name="primary-path-{{ column.key }}-checkbox"
+              type="checkbox"
             />
           </td>
           <td>
@@ -30,8 +51,33 @@
               <option>desc</option>
             </select>
           </td>
+          <td>
+            <input
+              [(ngModel)]="column.value.filter"
+              name="filter-{{ column.key }}-text"
+              pattern="[^,]*"
+              type="text"
+            />
+          </td>
         </tr>
+      </tbody>
     </table>
+    <ul
+      (cdkDropListDropped)="
+        onPrimaryPathDropped(resourceTable, $event);
+        fetchResourceTableColumns(resourceTable)
+      "
+      [cdkDropListData]="resourceTable.$primaryPaths"
+      cdkDropList
+    >
+      <li
+        *ngFor="let primaryPath of resourceTable.$primaryPaths"
+        [cdkDragData]="primaryPath"
+        cdkDrag
+      >
+        {{ primaryPath }}
+      </li>
+    </ul>
   </form>
   <table>
     <thead>
@@ -54,8 +100,7 @@
     >
       <tr
         *ngIf="
-          rowsPage.value.items == null &&
-          isConnected(resourceTable, rowsPage.value)
+          !rowsPage.value.items && isConnected(resourceTable, rowsPage.value)
         "
         (intersection)="fetchResourceTableRows(resourceTable, rowsPage.key)"
         observeIntersection
@@ -65,7 +110,7 @@
       <tr
         *ngFor="let row of rowsPage.value.items"
         (viewInit)="$event.scrollIntoView({ block: 'start' })"
-        [ignoreViewInit]="row.resource.id !== resourceTable.resourceId"
+        [viewInitIgnored]="row.resource.id !== resourceTable.query.resourceId"
         observeViewInit
       >
         <td

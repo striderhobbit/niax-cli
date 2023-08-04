@@ -1,8 +1,9 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { UniqItem } from '@shared/schema';
 import { Resource } from '@shared/schema/resource';
-import { pick, pickBy } from 'lodash';
+import { PropertyPath } from '@shared/schema/utility';
+import { forOwn, pick, pull } from 'lodash';
 import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -11,23 +12,58 @@ import { ApiService } from '../api.service';
   templateUrl: './resource-table.component.html',
   styleUrls: ['./resource-table.component.scss'],
 })
-export class ResourceTableComponent<T extends UniqItem> implements OnInit {
-  protected resourceTable?: Resource.Table<T>;
+export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
+  protected resourceTable?: Resource.TableHeader<I>;
 
   protected readonly preserveOrder = () => 0;
 
   constructor(
-    private readonly apiService: ApiService<T>,
+    private readonly apiService: ApiService<I>,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
-    this.updateResourceTable();
+    this.fetchResourceTable();
+  }
+
+  private fetchResourceTable(): Promise<void> {
+    return firstValueFrom(
+      this.route.queryParams.pipe(
+        filter((params) => 'resource' in params),
+        mergeMap((params) =>
+          this.apiService.getResourceTable(
+            pick(params, 'resource'),
+            pick(params, 'hash', 'limit', 'paths', 'resourceId')
+          )
+        ),
+        map((resourceTable) => (this.resourceTable = resourceTable)),
+        mergeMap((resourceTable) => {
+          const { hash, query } = resourceTable;
+
+          return this.setQueryParams({ hash }).then(async () => {
+            if (query.pageToken != null) {
+              return this.fetchResourceTableRows(
+                resourceTable,
+                query.pageToken
+              );
+            }
+          });
+        })
+      )
+    );
+  }
+
+  protected fetchResourceTableColumns(
+    resourceTable: Resource.TableHeader<I>
+  ): Promise<void> {
+    return this.setQueryParams({
+      paths: this.stringifyResourceTableColumns(resourceTable),
+    }).then(() => this.fetchResourceTable());
   }
 
   protected async fetchResourceTableRows(
-    resourceTable: Resource.Table<T>,
+    resourceTable: Resource.TableHeader<I>,
     pageToken: string
   ): Promise<void> {
     return firstValueFrom(
@@ -45,8 +81,8 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
   }
 
   protected isConnected(
-    resourceTable: Resource.Table<T>,
-    resourceTableRowsPage: Resource.TableRowsPageHeader<T>
+    resourceTable: Resource.TableHeader<I>,
+    resourceTableRowsPage: Resource.TableRowsPageHeader<I>
   ): boolean {
     return (
       (resourceTableRowsPage.nextPageToken == null &&
@@ -60,18 +96,61 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     );
   }
 
+  private onPrimaryPathsChanged(resourceTable: Resource.TableHeader<I>) {
+    forOwn(resourceTable.columns, (resourceTableColumn) => {
+      if (
+        (resourceTableColumn.sortIndex = resourceTable.$primaryPaths.indexOf(
+          resourceTableColumn.path
+        )) === -1
+      ) {
+        delete resourceTableColumn.sortIndex;
+      }
+    });
+  }
+
+  protected onPrimaryPathDropped(
+    resourceTable: Resource.TableHeader<I>,
+    event: CdkDragDrop<PropertyPath<I>[]>
+  ): void {
+    moveItemInArray(
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
+
+    this.onPrimaryPathsChanged(resourceTable);
+  }
+
+  protected onPrimaryPathToggled(
+    resourceTable: Resource.TableHeader<I>,
+    event: {
+      item: PropertyPath<I>;
+      state: boolean;
+    }
+  ): void {
+    if (event.state) {
+      resourceTable.$primaryPaths.push(event.item);
+    } else {
+      pull(resourceTable.$primaryPaths, event.item);
+    }
+
+    this.onPrimaryPathsChanged(resourceTable);
+  }
+
   protected patchResourceItem(
-    resourceTable: Resource.Table<T>,
-    resourceTableField: Resource.TableField<T>
-  ): Promise<T> {
-    return this.setQueryParams({ resourceId: resourceTableField.id }).then(() =>
+    resourceTable: Resource.TableHeader<I>,
+    resourceTableField: Resource.TableField<I>
+  ): Promise<I> {
+    return this.setQueryParams({
+      resourceId: resourceTableField.resource.id,
+    }).then(() =>
       firstValueFrom(
         forkJoin([
           this.apiService.patchResourceItem(
             pick(resourceTable, 'resource'),
             resourceTableField
           ),
-          defer(() => this.updateResourceTable()),
+          defer(() => this.fetchResourceTable()),
         ]).pipe(map(([resourceItem]) => resourceItem))
       )
     );
@@ -84,35 +163,24 @@ export class ResourceTableComponent<T extends UniqItem> implements OnInit {
     });
   }
 
-  private updateResourceTable(): Promise<void> {
-    return firstValueFrom(
-      this.route.queryParams.pipe(
-        filter((params) => 'resource' in params),
-        mergeMap((params) =>
-          this.apiService.getResourceTable(
-            pick(params, 'resource'),
-            pick(params, 'hash', 'limit', 'paths', 'resourceId')
-          )
-        ),
-        map((resourceTable) => (this.resourceTable = resourceTable)),
-        mergeMap((resourceTable) => {
-          const { hash, pageToken } = resourceTable;
+  private stringifyResourceTableColumns(
+    resourceTable: Resource.TableHeader<I>
+  ): string {
+    let paths: string[] = [];
 
-          return this.setQueryParams({ hash }).then(async () => {
-            if (pageToken != null) {
-              return this.fetchResourceTableRows(resourceTable, pageToken);
-            }
-          });
-        })
-      )
-    );
-  }
+    forOwn(resourceTable.columns, (column) => {
+      if (column.include) {
+        paths.push(
+          [
+            column.path,
+            column.sortIndex ?? '',
+            column.order ?? '',
+            column.filter ?? '',
+          ].join(':')
+        );
+      }
+    });
 
-  protected updateResourceTableColumns(): Promise<void> {
-    return this.setQueryParams({
-      paths: Object.keys(pickBy(this.resourceTable!.columns, 'include')).join(
-        ','
-      ),
-    }).then(() => this.updateResourceTable());
+    return paths.join(',');
   }
 }
