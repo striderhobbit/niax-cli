@@ -1,4 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { KeyValue } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
@@ -15,8 +16,6 @@ import { ApiService } from '../api.service';
 export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   protected resourceTable?: Resource.TableHeader<I>;
 
-  protected readonly preserveOrder = () => 0;
-
   constructor(
     private readonly apiService: ApiService<I>,
     private readonly route: ActivatedRoute,
@@ -25,6 +24,14 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
 
   ngOnInit(): void {
     this.fetchResourceTable();
+  }
+
+  protected compareIndex<T extends { index: number }>(
+    a: KeyValue<string, T>,
+    b: KeyValue<string, T>,
+    ascending: boolean = true
+  ): number {
+    return (ascending ? 1 : -1) * (a.value.index - b.value.index);
   }
 
   private fetchResourceTable(): Promise<Resource.TableHeader<I>> {

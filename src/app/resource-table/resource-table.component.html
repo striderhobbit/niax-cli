@@ -85,9 +85,7 @@
       </tr>
     </thead>
     <tbody
-      *ngFor="
-        let rowsPage of resourceTable.rowsPages | keyvalue : preserveOrder
-      "
+      *ngFor="let rowsPage of resourceTable.rowsPages | keyvalue : compareIndex"
     >
       <tr
         *ngIf="
