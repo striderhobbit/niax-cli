@@ -39,28 +39,26 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     return firstValueFrom(
       this.route.queryParams.pipe(
         filter((params) => 'resource' in params),
-        first(),
         mergeMap((params) =>
           this.apiService.getResourceTable(
             pick(params, 'resource'),
             pick(params, 'hash', 'limit', 'paths', 'resourceId')
           )
         ),
-        map((resourceTable) => (this.resourceTable = resourceTable)),
-        mergeMap((resourceTable) => {
-          const {
-            hash,
-            $query: { pageToken },
-          } = resourceTable;
-
-          return this.setQueryParams({ hash }).then(async () => {
-            if (pageToken != null) {
-              return this.fetchResourceTableRows(resourceTable, pageToken);
-            }
-          });
-        })
+        map((resourceTable) => (this.resourceTable = resourceTable))
       )
-    );
+    ).then((resourceTable) => {
+      const {
+        hash,
+        $query: { pageToken },
+      } = resourceTable;
+
+      return this.setQueryParams({ hash }).then(async () => {
+        if (pageToken != null) {
+          return this.fetchResourceTableRows(resourceTable, pageToken);
+        }
+      });
+    });
   }
 
   protected fetchResourceTableColumns(
