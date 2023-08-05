@@ -84,20 +84,18 @@
         </th>
       </tr>
     </thead>
-    <tbody
-      *ngFor="let rowsPage of resourceTable.rowsPages | keyvalue : compareIndex"
-    >
+    <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
       <tr
-        *ngIf="
-          !rowsPage.value.items && isConnected(resourceTable, rowsPage.value)
+        *ngIf="rowsPage.deferred && isConnected(resourceTable, rowsPage)"
+        (intersection)="
+          fetchResourceTableRows(resourceTable, rowsPage.pageToken)
         "
-        (intersection)="fetchResourceTableRows(resourceTable, rowsPage.key)"
         observeIntersection
       >
         ⋯
       </tr>
       <tr
-        *ngFor="let row of rowsPage.value.items"
+        *ngFor="let row of rowsPage.items"
         (viewInit)="$event.scrollIntoView({ block: 'start' })"
         [viewInitIgnored]="row.resource.id !== resourceTable.$query.resourceId"
         observeViewInit

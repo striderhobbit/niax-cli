@@ -1,10 +1,9 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { KeyValue } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { pick, pull } from 'lodash';
+import { find, keyBy, pick, pull } from 'lodash';
 import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -24,14 +23,6 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
 
   ngOnInit(): void {
     this.fetchResourceTable();
-  }
-
-  protected compareIndex<T extends { index: number }>(
-    a: KeyValue<string, T>,
-    b: KeyValue<string, T>,
-    ascending: boolean = true
-  ): number {
-    return (ascending ? 1 : -1) * (a.value.index - b.value.index);
   }
 
   private fetchResourceTable(): Promise<Resource.TableHeader<I>> {
@@ -82,28 +73,36 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
           pageToken,
         })
         .pipe(
-          map(
-            (resourceTableRowsPage) =>
-              (resourceTable.rowsPages[pageToken].items =
-                resourceTableRowsPage.items)
-          )
+          map(({ items }) => {
+            const resourceTableRowsPage = find(resourceTable.rowsPages, {
+              pageToken,
+            })!;
+
+            delete resourceTableRowsPage.deferred;
+
+            return (resourceTableRowsPage.items = items);
+          })
         )
     );
   }
 
   protected isConnected(
     resourceTable: Resource.TableHeader<I>,
-    resourceTableRowsPage: Resource.TableRowsPageHeader<I>
+    resourceTableRowsPage: Resource.TableRowsPage<I>
   ): boolean {
+    const resourceTableRowsPagesDictionary = keyBy(
+      resourceTable.rowsPages,
+      'pageToken'
+    );
+
+    const { previousPageToken, nextPageToken } = resourceTableRowsPage;
+
     return (
-      (resourceTableRowsPage.nextPageToken == null &&
-        resourceTableRowsPage.previousPageToken == null) ||
-      (resourceTableRowsPage.nextPageToken != null &&
-        resourceTable.rowsPages[resourceTableRowsPage.nextPageToken].items !=
-          null) ||
-      (resourceTableRowsPage.previousPageToken != null &&
-        resourceTable.rowsPages[resourceTableRowsPage.previousPageToken]
-          .items != null)
+      (previousPageToken == null && nextPageToken == null) ||
+      (previousPageToken != null &&
+        !resourceTableRowsPagesDictionary[previousPageToken].deferred) ||
+      (nextPageToken != null &&
+        !resourceTableRowsPagesDictionary[nextPageToken].deferred)
     );
   }
 
