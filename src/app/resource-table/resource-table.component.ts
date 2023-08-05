@@ -27,7 +27,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     this.fetchResourceTable();
   }
 
-  private fetchResourceTable(): Promise<void> {
+  private fetchResourceTable(): Promise<Resource.TableHeader<I>> {
     return firstValueFrom(
       this.route.queryParams.pipe(
         filter((params) => 'resource' in params),
@@ -47,34 +47,39 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
 
       return this.setQueryParams({ hash }).then(async () => {
         if (pageToken != null) {
-          return this.fetchResourceTableRows(resourceTable, pageToken);
+          await this.fetchResourceTableRows(resourceTable, pageToken);
         }
+
+        return resourceTable;
       });
     });
   }
 
   protected fetchResourceTableColumns(
     resourceTable: Resource.TableHeader<I>
-  ): Promise<void> {
+  ): Promise<Resource.TableColumns<I>> {
     return this.setQueryParams({
       paths: this.stringifyResourceTableColumns(resourceTable),
-    }).then(() => this.fetchResourceTable());
+    })
+      .then(() => this.fetchResourceTable())
+      .then(({ columns }) => columns);
   }
 
   protected async fetchResourceTableRows(
     resourceTable: Resource.TableHeader<I>,
     pageToken: string
-  ): Promise<void> {
+  ): Promise<Resource.TableRow<I>[]> {
     return firstValueFrom(
       this.apiService
         .getResourceTableRowsPage(pick(resourceTable, 'resource'), {
           pageToken,
         })
         .pipe(
-          map((resourceTableRowsPage) => {
-            resourceTable.rowsPages[pageToken].items =
-              resourceTableRowsPage.items;
-          })
+          map(
+            (resourceTableRowsPage) =>
+              (resourceTable.rowsPages[pageToken].items =
+                resourceTableRowsPage.items)
+          )
         )
     );
   }
