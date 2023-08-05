@@ -4,15 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { forOwn, pick, pull } from 'lodash';
-import {
-  defer,
-  filter,
-  first,
-  firstValueFrom,
-  forkJoin,
-  map,
-  mergeMap,
-} from 'rxjs';
+import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
