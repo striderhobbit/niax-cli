@@ -109,7 +109,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   private onPrimaryPathsChanged(resourceTable: Resource.TableHeader<I>): void {
     resourceTable.columns.forEach((resourceTableColumn) => {
       if (
-        (resourceTableColumn.sortIndex = resourceTable.$primaryPaths.indexOf(
+        (resourceTableColumn.sortIndex = resourceTable.primaryPaths.indexOf(
           resourceTableColumn.path
         )) === -1
       ) {
@@ -139,9 +139,9 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     }
   ): void {
     if (event.state) {
-      resourceTable.$primaryPaths.push(event.item);
+      resourceTable.primaryPaths.push(event.item);
     } else {
-      pull(resourceTable.$primaryPaths, event.item);
+      pull(resourceTable.primaryPaths, event.item);
     }
 
     this.onPrimaryPathsChanged(resourceTable);

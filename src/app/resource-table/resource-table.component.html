@@ -32,7 +32,7 @@
                   state: $event
                 })
               "
-              [ngModel]="resourceTable.$primaryPaths.includes(column.path)"
+              [ngModel]="resourceTable.primaryPaths.includes(column.path)"
               name="primary-path-{{ column.path }}-checkbox"
               type="checkbox"
             />
@@ -63,12 +63,12 @@
         onPrimaryPathDropped(resourceTable, $event);
         fetchResourceTableColumns(resourceTable)
       "
-      [cdkDropListData]="resourceTable.$primaryPaths"
+      [cdkDropListData]="resourceTable.primaryPaths"
       cdkDropList
       class="primary-paths"
     >
       <div
-        *ngFor="let primaryPath of resourceTable.$primaryPaths"
+        *ngFor="let primaryPath of resourceTable.primaryPaths"
         [cdkDragData]="primaryPath"
         cdkDrag
       >
