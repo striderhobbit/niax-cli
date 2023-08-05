@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { forOwn, pick, pull } from 'lodash';
+import { pick, pull } from 'lodash';
 import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -100,8 +100,8 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     );
   }
 
-  private onPrimaryPathsChanged(resourceTable: Resource.TableHeader<I>) {
-    forOwn(resourceTable.columns, (resourceTableColumn) => {
+  private onPrimaryPathsChanged(resourceTable: Resource.TableHeader<I>): void {
+    resourceTable.columns.forEach((resourceTableColumn) => {
       if (
         (resourceTableColumn.sortIndex = resourceTable.$primaryPaths.indexOf(
           resourceTableColumn.path
@@ -170,21 +170,16 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   private stringifyResourceTableColumns(
     resourceTable: Resource.TableHeader<I>
   ): string {
-    let paths: string[] = [];
-
-    forOwn(resourceTable.columns, (column) => {
-      if (column.include) {
-        paths.push(
-          [
-            column.path,
-            column.sortIndex ?? '',
-            column.order ?? '',
-            column.filter ?? '',
-          ].join(':')
-        );
-      }
-    });
-
-    return paths.join(',');
+    return resourceTable.columns
+      .filter((column) => column.include)
+      .map((column) =>
+        [
+          column.path,
+          column.sortIndex ?? '',
+          column.order ?? '',
+          column.filter ?? '',
+        ].join(':')
+      )
+      .join(',');
   }
 }

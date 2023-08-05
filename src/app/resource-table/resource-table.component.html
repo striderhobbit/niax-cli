@@ -15,16 +15,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="
-            let column of resourceTable.columns | keyvalue : preserveOrder
-          "
-        >
-          <td>{{ column.key }}</td>
+        <tr *ngFor="let column of resourceTable.columns">
+          <td>{{ column.path }}</td>
           <td>
             <input
-              [(ngModel)]="column.value.include"
-              name="include-{{ column.key }}-checkbox"
+              [(ngModel)]="column.include"
+              name="include-{{ column.path }}-checkbox"
               type="checkbox"
             />
           </td>
@@ -32,21 +28,19 @@
             <input
               (ngModelChange)="
                 onPrimaryPathToggled(resourceTable, {
-                  item: column.value.path,
+                  item: column.path,
                   state: $event
                 })
               "
-              [ngModel]="
-                resourceTable.$primaryPaths.includes(column.value.path)
-              "
-              name="primary-path-{{ column.key }}-checkbox"
+              [ngModel]="resourceTable.$primaryPaths.includes(column.path)"
+              name="primary-path-{{ column.path }}-checkbox"
               type="checkbox"
             />
           </td>
           <td>
             <select
-              [(ngModel)]="column.value.order"
-              name="order-{{ column.key }}-select"
+              [(ngModel)]="column.order"
+              name="order-{{ column.path }}-select"
             >
               <option>asc</option>
               <option>desc</option>
@@ -54,9 +48,9 @@
           </td>
           <td>
             <input
-              (ngModelChange)="form.invalid || (column.value.filter = $event)"
-              [ngModel]="column.value.filter"
-              name="filter-{{ column.key }}-text"
+              (ngModelChange)="form.invalid || (column.filter = $event)"
+              [ngModel]="column.filter"
+              name="filter-{{ column.path }}-text"
               pattern="[^,]*"
               type="text"
             />
@@ -85,14 +79,8 @@
   <table>
     <thead>
       <tr>
-        <th
-          *ngFor="
-            let column of resourceTable.columns
-              | keyvalue : preserveOrder
-              | filter : 'value.include'
-          "
-        >
-          {{ column.key }}
+        <th *ngFor="let column of resourceTable.columns | filter : 'include'">
+          {{ column.path }}
         </th>
       </tr>
     </thead>
