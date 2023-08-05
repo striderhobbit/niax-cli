@@ -48,14 +48,14 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
         ),
         map((resourceTable) => (this.resourceTable = resourceTable)),
         mergeMap((resourceTable) => {
-          const { hash, query } = resourceTable;
+          const {
+            hash,
+            $query: { pageToken },
+          } = resourceTable;
 
           return this.setQueryParams({ hash }).then(async () => {
-            if (query.pageToken != null) {
-              return this.fetchResourceTableRows(
-                resourceTable,
-                query.pageToken
-              );
+            if (pageToken != null) {
+              return this.fetchResourceTableRows(resourceTable, pageToken);
             }
           });
         })
