@@ -4,14 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { find, keyBy, pick, pull } from 'lodash';
-import {
-  combineLatest,
-  defer,
-  firstValueFrom,
-  forkJoin,
-  map,
-  mergeMap,
-} from 'rxjs';
+import { combineLatest, firstValueFrom, map, mergeMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -46,9 +39,9 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
         ),
         map((resourceTable) => (this.resourceTable = resourceTable))
       )
-    ).then((resourceTable) =>
-      this.setQueryParams({ hash: resourceTable.hash }).then(
-        () => resourceTable
+    ).then(
+      async (resourceTable) => (
+        await this.setQueryParams({ hash: resourceTable.hash }), resourceTable
       )
     );
   }
@@ -160,15 +153,14 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
       resourceId: resourceTableField.resource.id,
     }).then(() =>
       firstValueFrom(
-        forkJoin([
-          this.apiService.patchResourceItem(
-            {
-              resourceName: resourceTable.resource.name,
-            },
-            resourceTableField
-          ),
-          defer(() => this.fetchResourceTable()),
-        ]).pipe(map(([resourceItem]) => resourceItem))
+        this.apiService.patchResourceItem(
+          {
+            resourceName: resourceTable.resource.name,
+          },
+          resourceTableField
+        )
+      ).then(
+        async (resourceItem) => (await this.fetchResourceTable(), resourceItem)
       )
     );
   }
