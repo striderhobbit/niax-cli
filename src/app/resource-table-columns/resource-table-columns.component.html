@@ -4,8 +4,6 @@
       <tr>
         <th>path</th>
         <th>include</th>
-        <th>primaryPath</th>
-        <th>order</th>
         <th>filter</th>
       </tr>
     </thead>
@@ -18,25 +16,6 @@
             name="include-{{ column.path }}-checkbox"
             type="checkbox"
           />
-        </td>
-        <td>
-          <input
-            (ngModelChange)="
-              onPrimaryPathToggled({ item: column.path, state: $event })
-            "
-            [ngModel]="resourceTable.primaryPaths.includes(column.path)"
-            name="primary-path-{{ column.path }}-checkbox"
-            type="checkbox"
-          />
-        </td>
-        <td>
-          <select
-            [(ngModel)]="column.order"
-            name="order-{{ column.path }}-select"
-          >
-            <option>asc</option>
-            <option>desc</option>
-          </select>
         </td>
         <td>
           <input
@@ -55,18 +34,18 @@
       </tr>
     </tbody>
   </table>
-  <div
-    (cdkDropListDropped)="onPrimaryPathDropped($event); columnsChange.emit()"
-    [cdkDropListData]="resourceTable.primaryPaths"
-    cdkDropList
-    class="primary-paths"
-  >
-    <div
-      *ngFor="let primaryPath of resourceTable.primaryPaths"
-      [cdkDragData]="primaryPath"
-      cdkDrag
-    >
-      {{ primaryPath }}
-    </div>
-  </div>
 </form>
+<div
+  (cdkDropListDropped)="onPrimaryPathDropped($event)"
+  [cdkDropListData]="resourceTable.primaryPaths"
+  cdkDropList
+  class="primary-paths"
+>
+  <div
+    *ngFor="let primaryPath of resourceTable.primaryPaths"
+    [cdkDragData]="primaryPath"
+    cdkDrag
+  >
+    {{ primaryPath }}
+  </div>
+</div>

@@ -2,7 +2,6 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { pull } from 'lodash';
 
 @Component({
   selector: 'app-resource-table-columns',
@@ -21,19 +20,6 @@ export class ResourceTableColumnsComponent<I extends Resource.Item> {
       event.previousIndex,
       event.currentIndex
     );
-
-    this.primaryPathsChange.emit();
-  }
-
-  protected onPrimaryPathToggled(event: {
-    item: PropertyPath<I>;
-    state: boolean;
-  }): void {
-    if (event.state) {
-      this.resourceTable.primaryPaths.push(event.item);
-    } else {
-      pull(this.resourceTable.primaryPaths, event.item);
-    }
 
     this.primaryPathsChange.emit();
   }

@@ -1,4 +1,4 @@
-form {
+:host {
     background-color: white;
     bottom: 0;
     box-shadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
@@ -6,21 +6,21 @@ form {
     padding: 1em;
     position: fixed;
     z-index: 2;
+}
 
-    table {
-        th,
-        td {
-            padding: 0.5em;
-        }
-
-        td {
-            input.ng-invalid {
-                color: red;
-            }
-        }
-    }
-
-    .primary-paths > * {
+table {
+    th,
+    td {
         padding: 0.5em;
     }
+
+    td {
+        input.ng-invalid {
+            color: red;
+        }
+    }
+}
+
+.primary-paths > * {
+    padding: 0.5em;
 }

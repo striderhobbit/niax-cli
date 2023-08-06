@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
-import { find, keyBy, pick } from 'lodash';
+import { find, keyBy, pick, pull } from 'lodash';
 import { Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -83,7 +83,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected onPrimaryPathsChanged(): void {
+  protected writeBackPrimaryPaths(): Promise<boolean> {
     this.resourceTable.columns.forEach((resourceTableColumn) => {
       if (
         (resourceTableColumn.sortIndex =
@@ -93,6 +93,24 @@ export class ResourceTableComponent<I extends Resource.Item>
         delete resourceTableColumn.sortIndex;
       }
     });
+
+    return this.updateResourceTableColumns();
+  }
+
+  protected togglePrimaryPath(
+    column: Resource.TableColumn<I>
+  ): Promise<boolean> {
+    if (!this.resourceTable.primaryPaths.includes(column.path)) {
+      this.resourceTable.primaryPaths.push(column.path);
+    } else if (column.order === 'desc') {
+      pull(this.resourceTable.primaryPaths, column.path);
+    } else {
+      column.order = 'desc';
+
+      return this.updateResourceTableColumns();
+    }
+
+    return this.writeBackPrimaryPaths();
   }
 
   protected patchResourceItem(
