@@ -13,7 +13,6 @@ export class ApiService<I extends Resource.Item> {
   public getResourceTable<R extends Request.GetResourceTable<I>['ResBody']>(
     query: Request.GetResourceTable<I>['ReqQuery']
   ): Observable<R> {
-    console.log(Date.now(), 'getResourceTable'); // FIXME
     return this.httpClient
       .get<R>(`http://localhost:3000/api/resource/table`, {
         params: query,
