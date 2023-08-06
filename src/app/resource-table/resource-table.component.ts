@@ -131,36 +131,44 @@ export class ResourceTableComponent<I extends Resource.Item>
         )
         .pipe(
           tap(() =>
-            this.setQueryParams({
-              resourceId: resourceTableField.resource.id,
-              snapshotId: Date.now(),
-            })
+            this.setQueryParams(
+              { resourceId: resourceTableField.resource.id },
+              { runResolvers: true }
+            )
           )
         )
     );
   }
 
-  private setQueryParams(queryParams: Params): Promise<boolean> {
+  private setQueryParams(
+    queryParams: Params,
+    { runResolvers }: { runResolvers?: boolean } = {}
+  ): Promise<boolean> {
     return this.router.navigate([], {
-      queryParams,
+      queryParams: {
+        ...queryParams,
+        ...(runResolvers ? { snapshotId: Date.now() } : {}),
+      },
       queryParamsHandling: 'merge',
     });
   }
 
   protected updateResourceTableColumns(): Promise<boolean> {
-    return this.setQueryParams({
-      paths: this.resourceTable.columns
-        .filter((column) => column.include)
-        .map((column) =>
-          [
-            column.path,
-            column.sortIndex ?? '',
-            column.order ?? '',
-            column.filter ?? '',
-          ].join(':')
-        )
-        .join(','),
-      snapshotId: Date.now(),
-    });
+    return this.setQueryParams(
+      {
+        paths: this.resourceTable.columns
+          .filter((column) => column.include)
+          .map((column) =>
+            [
+              column.path,
+              column.sortIndex ?? '',
+              column.order ?? '',
+              column.filter ?? '',
+            ].join(':')
+          )
+          .join(','),
+      },
+      { runResolvers: true }
+    );
   }
 }
