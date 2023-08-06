@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { find, keyBy, pick, pull } from 'lodash';
-import { Observable, map, tap } from 'rxjs';
+import { firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -39,23 +39,25 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   protected fetchResourceTableRows(
     resourceTable: Resource.Table<I>,
     pageToken: string
-  ): Observable<Resource.TableRow<I>[]> {
-    return this.apiService
-      .getResourceTableRowsPage({
-        pageToken,
-        resourceName: resourceTable.params.resourceName,
-      })
-      .pipe(
-        map(({ items }) => {
-          const resourceTableRowsPage = find(resourceTable.rowsPages, {
-            pageToken,
-          })!;
-
-          delete resourceTableRowsPage.deferred;
-
-          return (resourceTableRowsPage.items = items);
+  ): Promise<Resource.TableRow<I>[]> {
+    return firstValueFrom(
+      this.apiService
+        .getResourceTableRowsPage({
+          pageToken,
+          resourceName: resourceTable.params.resourceName,
         })
-      );
+        .pipe(
+          map(({ items }) => {
+            const resourceTableRowsPage = find(resourceTable.rowsPages, {
+              pageToken,
+            })!;
+
+            delete resourceTableRowsPage.deferred;
+
+            return (resourceTableRowsPage.items = items);
+          })
+        )
+    );
   }
 
   protected isConnected(
@@ -122,20 +124,22 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   protected patchResourceItem(
     resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
-  ): Observable<I> {
-    return this.apiService
-      .patchResourceItem(
-        pick(resourceTable.params, 'resourceName'),
-        resourceTableField
-      )
-      .pipe(
-        tap(() =>
-          this.setQueryParams({
-            resourceId: resourceTableField.resource.id,
-            snapshotId: Date.now(),
-          })
+  ): Promise<I> {
+    return firstValueFrom(
+      this.apiService
+        .patchResourceItem(
+          pick(resourceTable.params, 'resourceName'),
+          resourceTableField
         )
-      );
+        .pipe(
+          tap(() =>
+            this.setQueryParams({
+              resourceId: resourceTableField.resource.id,
+              snapshotId: Date.now(),
+            })
+          )
+        )
+    );
   }
 
   private setQueryParams(queryParams: Params): Promise<boolean> {
