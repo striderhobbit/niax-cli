@@ -2,6 +2,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
+import { uniqueId } from 'lodash';
 
 @Component({
   selector: 'app-resource-table-columns',
@@ -9,6 +10,8 @@ import { PropertyPath } from '@shared/schema/utility';
   styleUrls: ['./resource-table-columns.component.scss'],
 })
 export class ResourceTableColumnsComponent<I extends Resource.Item> {
+  protected readonly uid = uniqueId();
+
   @Input() resourceTable!: Resource.Table<I>;
 
   @Output() columnsChange = new EventEmitter();
