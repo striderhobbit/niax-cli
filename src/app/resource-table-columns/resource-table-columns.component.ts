@@ -12,7 +12,7 @@ import { uniqueId } from 'lodash';
 export class ResourceTableColumnsComponent<I extends Resource.Item> {
   protected readonly uid = uniqueId();
 
-  @Input() resourceTable!: Resource.Table<I>;
+  @Input({ required: true }) resourceTable!: Resource.Table<I>;
 
   @Output() columnsChange = new EventEmitter();
   @Output() primaryPathsChange = new EventEmitter();
