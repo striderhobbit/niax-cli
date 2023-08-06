@@ -1,12 +1,15 @@
 <app-resource-table-columns
-  (change)="updateResourceTableColumns()"
+  (columnsChange)="updateResourceTableColumns()"
+  (primaryPathsChange)="onPrimaryPathsChanged()"
   [resourceTable]="resourceTable"
 ></app-resource-table-columns>
 <table>
   <thead>
     <tr>
       <th *ngFor="let column of resourceTable.columns | filter : 'include'">
-        {{ column.path }}
+        {{
+          column.sortIndex != null ? (column.order === "desc" ? "↑" : "↓") : ""
+        }}{{ column.path }}
       </th>
     </tr>
   </thead>

@@ -83,6 +83,18 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
+  protected onPrimaryPathsChanged(): void {
+    this.resourceTable.columns.forEach((resourceTableColumn) => {
+      if (
+        (resourceTableColumn.sortIndex =
+          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
+        -1
+      ) {
+        delete resourceTableColumn.sortIndex;
+      }
+    });
+  }
+
   protected patchResourceItem(
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {

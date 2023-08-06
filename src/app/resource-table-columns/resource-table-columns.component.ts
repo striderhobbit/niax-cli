@@ -12,19 +12,8 @@ import { pull } from 'lodash';
 export class ResourceTableColumnsComponent<I extends Resource.Item> {
   @Input() resourceTable!: Resource.Table<I>;
 
-  @Output() change = new EventEmitter();
-
-  private onPrimaryPathsChanged(): void {
-    this.resourceTable.columns.forEach((resourceTableColumn) => {
-      if (
-        (resourceTableColumn.sortIndex =
-          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
-        -1
-      ) {
-        delete resourceTableColumn.sortIndex;
-      }
-    });
-  }
+  @Output() columnsChange = new EventEmitter();
+  @Output() primaryPathsChange = new EventEmitter();
 
   protected onPrimaryPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     moveItemInArray(
@@ -33,7 +22,7 @@ export class ResourceTableColumnsComponent<I extends Resource.Item> {
       event.currentIndex
     );
 
-    this.onPrimaryPathsChanged();
+    this.primaryPathsChange.emit();
   }
 
   protected onPrimaryPathToggled(event: {
@@ -46,6 +35,6 @@ export class ResourceTableColumnsComponent<I extends Resource.Item> {
       pull(this.resourceTable.primaryPaths, event.item);
     }
 
-    this.onPrimaryPathsChanged();
+    this.primaryPathsChange.emit();
   }
 }
