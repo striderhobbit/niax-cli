@@ -83,36 +83,6 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected writeBackPrimaryPaths(): Promise<boolean> {
-    this.resourceTable.columns.forEach((resourceTableColumn) => {
-      if (
-        (resourceTableColumn.sortIndex =
-          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
-        -1
-      ) {
-        delete resourceTableColumn.sortIndex;
-      }
-    });
-
-    return this.updateResourceTableColumns();
-  }
-
-  protected togglePrimaryPath(
-    column: Resource.TableColumn<I>
-  ): Promise<boolean> {
-    if (!this.resourceTable.primaryPaths.includes(column.path)) {
-      this.resourceTable.primaryPaths.push(column.path);
-    } else if (column.order === 'desc') {
-      pull(this.resourceTable.primaryPaths, column.path);
-    } else {
-      column.order = 'desc';
-
-      return this.updateResourceTableColumns();
-    }
-
-    return this.writeBackPrimaryPaths();
-  }
-
   protected patchResourceItem(
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
@@ -146,6 +116,22 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
+  protected togglePrimaryPath(
+    column: Resource.TableColumn<I>
+  ): Promise<boolean> {
+    if (!this.resourceTable.primaryPaths.includes(column.path)) {
+      this.resourceTable.primaryPaths.push(column.path);
+    } else if (column.order === 'desc') {
+      pull(this.resourceTable.primaryPaths, column.path);
+    } else {
+      column.order = 'desc';
+
+      return this.updateResourceTableColumns();
+    }
+
+    return this.writeBackPrimaryPaths();
+  }
+
   protected updateResourceTableColumns(): Promise<boolean> {
     return this.setQueryParams(
       {
@@ -163,5 +149,19 @@ export class ResourceTableComponent<I extends Resource.Item>
       },
       { runResolvers: true }
     );
+  }
+
+  protected writeBackPrimaryPaths(): Promise<boolean> {
+    this.resourceTable.columns.forEach((resourceTableColumn) => {
+      if (
+        (resourceTableColumn.sortIndex =
+          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
+        -1
+      ) {
+        delete resourceTableColumn.sortIndex;
+      }
+    });
+
+    return this.updateResourceTableColumns();
   }
 }

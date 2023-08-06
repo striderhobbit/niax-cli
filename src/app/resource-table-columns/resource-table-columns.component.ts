@@ -10,12 +10,12 @@ import { uniqueId } from 'lodash';
   styleUrls: ['./resource-table-columns.component.scss'],
 })
 export class ResourceTableColumnsComponent<I extends Resource.Item> {
-  protected readonly uid = uniqueId();
-
   @Input({ required: true }) resourceTable!: Resource.Table<I>;
 
   @Output() columnsChange = new EventEmitter();
   @Output() primaryPathsChange = new EventEmitter();
+
+  protected readonly uid = uniqueId();
 
   protected onPrimaryPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     moveItemInArray(
