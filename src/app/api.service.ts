@@ -15,9 +15,12 @@ export class ApiService<I extends Resource.Item> {
     query: Request.GetResourceTable<I>['ReqQuery']
   ): Observable<R> {
     return this.httpClient
-      .get<R>(`http://localhost:3000/api/resource/table/${params.resource}`, {
-        params: query,
-      })
+      .get<R>(
+        `http://localhost:3000/api/${params.resourceName}/resource/table`,
+        {
+          params: query,
+        }
+      )
       .pipe(this.pipeError());
   }
 
@@ -29,7 +32,7 @@ export class ApiService<I extends Resource.Item> {
   ): Observable<R> {
     return this.httpClient
       .get<R>(
-        `http://localhost:3000/api/resource/table/rows/page/${params.resource}`,
+        `http://localhost:3000/api/${params.resourceName}/resource/table/rows/page`,
         { params: query }
       )
       .pipe(this.pipeError());
@@ -40,7 +43,10 @@ export class ApiService<I extends Resource.Item> {
     body: Request.PatchResourceItem<I>['ReqBody']
   ): Observable<R> {
     return this.httpClient
-      .patch<R>(`http://localhost:3000/api/${params.resource}/item`, body)
+      .patch<R>(
+        `http://localhost:3000/api/${params.resourceName}/resource/item`,
+        body
+      )
       .pipe(this.pipeError());
   }
 

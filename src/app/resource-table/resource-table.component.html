@@ -97,7 +97,7 @@
       <tr
         *ngFor="let row of rowsPage.items"
         (viewInit)="$event.scrollIntoView({ block: 'start' })"
-        [viewInitIgnored]="row.resource.id !== resourceTable.$query.resourceId"
+        [viewInitIgnored]="row.resource.id !== resourceTable.resource.id"
         observeViewInit
       >
         <td

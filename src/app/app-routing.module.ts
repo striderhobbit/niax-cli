@@ -4,7 +4,7 @@ import { ResourceTableComponent } from './resource-table/resource-table.componen
 
 const routes: Routes = [
   {
-    path: 'resource/table',
+    path: ':resourceName/resource/table',
     component: ResourceTableComponent,
   },
 ];

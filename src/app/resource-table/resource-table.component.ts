@@ -4,7 +4,14 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { find, keyBy, pick, pull } from 'lodash';
-import { defer, filter, firstValueFrom, forkJoin, map, mergeMap } from 'rxjs';
+import {
+  combineLatest,
+  defer,
+  firstValueFrom,
+  forkJoin,
+  map,
+  mergeMap,
+} from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -13,11 +20,11 @@ import { ApiService } from '../api.service';
   styleUrls: ['./resource-table.component.scss'],
 })
 export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
-  protected resourceTable?: Resource.TableHeader<I>;
+  protected resourceTable?: Resource.Table<I>;
 
   constructor(
+    private readonly activatedRoute: ActivatedRoute,
     private readonly apiService: ApiService<I>,
-    private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
@@ -25,36 +32,29 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     this.fetchResourceTable();
   }
 
-  private fetchResourceTable(): Promise<Resource.TableHeader<I>> {
+  private fetchResourceTable(): Promise<Resource.Table<I>> {
     return firstValueFrom(
-      this.route.queryParams.pipe(
-        filter((params) => 'resource' in params),
-        mergeMap((params) =>
+      combineLatest([
+        this.activatedRoute.params,
+        this.activatedRoute.queryParams,
+      ]).pipe(
+        mergeMap(([params, queryParams]) =>
           this.apiService.getResourceTable(
-            pick(params, 'resource'),
-            pick(params, 'hash', 'limit', 'paths', 'resourceId')
+            pick(params, 'resourceName'),
+            pick(queryParams, 'hash', 'limit', 'paths', 'resourceId')
           )
         ),
         map((resourceTable) => (this.resourceTable = resourceTable))
       )
-    ).then((resourceTable) => {
-      const {
-        hash,
-        $query: { pageToken },
-      } = resourceTable;
-
-      return this.setQueryParams({ hash }).then(async () => {
-        if (pageToken != null) {
-          await this.fetchResourceTableRows(resourceTable, pageToken);
-        }
-
-        return resourceTable;
-      });
-    });
+    ).then((resourceTable) =>
+      this.setQueryParams({ hash: resourceTable.hash }).then(
+        () => resourceTable
+      )
+    );
   }
 
   protected fetchResourceTableColumns(
-    resourceTable: Resource.TableHeader<I>
+    resourceTable: Resource.Table<I>
   ): Promise<Resource.TableColumns<I>> {
     return this.setQueryParams({
       paths: this.stringifyResourceTableColumns(resourceTable),
@@ -64,14 +64,19 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected async fetchResourceTableRows(
-    resourceTable: Resource.TableHeader<I>,
+    resourceTable: Resource.Table<I>,
     pageToken: string
   ): Promise<Resource.TableRow<I>[]> {
     return firstValueFrom(
       this.apiService
-        .getResourceTableRowsPage(pick(resourceTable, 'resource'), {
-          pageToken,
-        })
+        .getResourceTableRowsPage(
+          {
+            resourceName: resourceTable.resource.name,
+          },
+          {
+            pageToken,
+          }
+        )
         .pipe(
           map(({ items }) => {
             const resourceTableRowsPage = find(resourceTable.rowsPages, {
@@ -87,7 +92,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected isConnected(
-    resourceTable: Resource.TableHeader<I>,
+    resourceTable: Resource.Table<I>,
     resourceTableRowsPage: Resource.TableRowsPage<I>
   ): boolean {
     const resourceTableRowsPagesDictionary = keyBy(
@@ -106,7 +111,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     );
   }
 
-  private onPrimaryPathsChanged(resourceTable: Resource.TableHeader<I>): void {
+  private onPrimaryPathsChanged(resourceTable: Resource.Table<I>): void {
     resourceTable.columns.forEach((resourceTableColumn) => {
       if (
         (resourceTableColumn.sortIndex = resourceTable.primaryPaths.indexOf(
@@ -119,7 +124,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected onPrimaryPathDropped(
-    resourceTable: Resource.TableHeader<I>,
+    resourceTable: Resource.Table<I>,
     event: CdkDragDrop<PropertyPath<I>[]>
   ): void {
     moveItemInArray(
@@ -132,7 +137,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected onPrimaryPathToggled(
-    resourceTable: Resource.TableHeader<I>,
+    resourceTable: Resource.Table<I>,
     event: {
       item: PropertyPath<I>;
       state: boolean;
@@ -148,7 +153,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected patchResourceItem(
-    resourceTable: Resource.TableHeader<I>,
+    resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
     return this.setQueryParams({
@@ -157,7 +162,9 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
       firstValueFrom(
         forkJoin([
           this.apiService.patchResourceItem(
-            pick(resourceTable, 'resource'),
+            {
+              resourceName: resourceTable.resource.name,
+            },
             resourceTableField
           ),
           defer(() => this.fetchResourceTable()),
@@ -174,7 +181,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   private stringifyResourceTableColumns(
-    resourceTable: Resource.TableHeader<I>
+    resourceTable: Resource.Table<I>
   ): string {
     return resourceTable.columns
       .filter((column) => column.include)
