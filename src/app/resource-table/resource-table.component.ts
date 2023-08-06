@@ -1,10 +1,10 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { find, keyBy, pick, pull } from 'lodash';
-import { firstValueFrom, map, tap } from 'rxjs';
+import { Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -12,9 +12,13 @@ import { ApiService } from '../api.service';
   templateUrl: './resource-table.component.html',
   styleUrls: ['./resource-table.component.scss'],
 })
-export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
+export class ResourceTableComponent<I extends Resource.Item>
+  implements OnInit, OnDestroy
+{
   protected resourceTable: Resource.Table<I> =
     this.route.snapshot.data['resourceTable'];
+
+  private routeDataSubscription?: Subscription;
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -23,8 +27,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // TODO unsubscribe
-    this.route.data
+    this.routeDataSubscription = this.route.data
       .pipe(
         map((data) => data['resourceTable'] as Resource.Table<I>),
         tap((resourceTable) =>
@@ -34,6 +37,10 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
       .subscribe({
         next: (resourceTable) => (this.resourceTable = resourceTable),
       });
+  }
+
+  ngOnDestroy(): void {
+    this.routeDataSubscription?.unsubscribe();
   }
 
   protected fetchResourceTableRows(
