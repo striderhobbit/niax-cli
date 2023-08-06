@@ -19,6 +19,7 @@ table {
     }
 
     thead {
+        counter-reset: index;
         position: sticky;
         top: 0;
         z-index: 1;
@@ -36,6 +37,20 @@ table {
             padding: 0.5em 1em;
             text-align: left;
             text-transform: uppercase;
+
+            &.primary {
+                &::before {
+                    content: "🡓";
+                }
+
+                &.descending::before {
+                    content: "🡑";
+                }
+
+                &::after {
+                    content: counter(index, upper-roman);
+                }
+            }
         }
 
         th,
