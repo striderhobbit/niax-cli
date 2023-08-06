@@ -37,18 +37,17 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected fetchResourceTableRows(
-    resourceTable: Resource.Table<I>,
     pageToken: string
   ): Promise<Resource.TableRow<I>[]> {
     return firstValueFrom(
       this.apiService
         .getResourceTableRowsPage({
           pageToken,
-          resourceName: resourceTable.params.resourceName,
+          resourceName: this.resourceTable.params.resourceName,
         })
         .pipe(
           map(({ items }) => {
-            const resourceTableRowsPage = find(resourceTable.rowsPages, {
+            const resourceTableRowsPage = find(this.resourceTable.rowsPages, {
               pageToken,
             })!;
 
@@ -61,11 +60,10 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   }
 
   protected isConnected(
-    resourceTable: Resource.Table<I>,
     resourceTableRowsPage: Resource.TableRowsPage<I>
   ): boolean {
     const resourceTableRowsPagesDictionary = keyBy(
-      resourceTable.rowsPages,
+      this.resourceTable.rowsPages,
       'pageToken'
     );
 
@@ -80,55 +78,48 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     );
   }
 
-  private onPrimaryPathsChanged(resourceTable: Resource.Table<I>): void {
-    resourceTable.columns.forEach((resourceTableColumn) => {
+  private onPrimaryPathsChanged(): void {
+    this.resourceTable.columns.forEach((resourceTableColumn) => {
       if (
-        (resourceTableColumn.sortIndex = resourceTable.primaryPaths.indexOf(
-          resourceTableColumn.path
-        )) === -1
+        (resourceTableColumn.sortIndex =
+          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
+        -1
       ) {
         delete resourceTableColumn.sortIndex;
       }
     });
   }
 
-  protected onPrimaryPathDropped(
-    resourceTable: Resource.Table<I>,
-    event: CdkDragDrop<PropertyPath<I>[]>
-  ): void {
+  protected onPrimaryPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     moveItemInArray(
       event.container.data,
       event.previousIndex,
       event.currentIndex
     );
 
-    this.onPrimaryPathsChanged(resourceTable);
+    this.onPrimaryPathsChanged();
   }
 
-  protected onPrimaryPathToggled(
-    resourceTable: Resource.Table<I>,
-    event: {
-      item: PropertyPath<I>;
-      state: boolean;
-    }
-  ): void {
+  protected onPrimaryPathToggled(event: {
+    item: PropertyPath<I>;
+    state: boolean;
+  }): void {
     if (event.state) {
-      resourceTable.primaryPaths.push(event.item);
+      this.resourceTable.primaryPaths.push(event.item);
     } else {
-      pull(resourceTable.primaryPaths, event.item);
+      pull(this.resourceTable.primaryPaths, event.item);
     }
 
-    this.onPrimaryPathsChanged(resourceTable);
+    this.onPrimaryPathsChanged();
   }
 
   protected patchResourceItem(
-    resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
     return firstValueFrom(
       this.apiService
         .patchResourceItem(
-          pick(resourceTable.params, 'resourceName'),
+          pick(this.resourceTable.params, 'resourceName'),
           resourceTableField
         )
         .pipe(
@@ -149,11 +140,9 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     });
   }
 
-  protected updateResourceTableColumns(
-    resourceTable: Resource.Table<I>
-  ): Promise<boolean> {
+  protected updateResourceTableColumns(): Promise<boolean> {
     return this.setQueryParams({
-      paths: resourceTable.columns
+      paths: this.resourceTable.columns
         .filter((column) => column.include)
         .map((column) =>
           [

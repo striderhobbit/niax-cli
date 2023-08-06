@@ -1,6 +1,6 @@
-<div class="content" *ngIf="resourceTable">
+<div class="content">
   <form
-    (change)="updateResourceTableColumns(resourceTable)"
+    (change)="updateResourceTableColumns()"
     #form="ngForm"
     class="table-columns"
   >
@@ -27,10 +27,7 @@
           <td>
             <input
               (ngModelChange)="
-                onPrimaryPathToggled(resourceTable, {
-                  item: column.path,
-                  state: $event
-                })
+                onPrimaryPathToggled({ item: column.path, state: $event })
               "
               [ngModel]="resourceTable.primaryPaths.includes(column.path)"
               name="primary-path-{{ column.path }}-checkbox"
@@ -60,8 +57,7 @@
     </table>
     <div
       (cdkDropListDropped)="
-        onPrimaryPathDropped(resourceTable, $event);
-        updateResourceTableColumns(resourceTable)
+        onPrimaryPathDropped($event); updateResourceTableColumns()
       "
       [cdkDropListData]="resourceTable.primaryPaths"
       cdkDropList
@@ -86,10 +82,8 @@
     </thead>
     <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
       <tr
-        *ngIf="rowsPage.deferred && isConnected(resourceTable, rowsPage)"
-        (intersection)="
-          fetchResourceTableRows(resourceTable, rowsPage.pageToken)
-        "
+        *ngIf="rowsPage.deferred && isConnected(rowsPage)"
+        (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
         observeIntersection
       >
         ⋯
@@ -107,19 +101,19 @@
         >
           <input
             *ngSwitchCase="'boolean'"
-            (change)="patchResourceItem(resourceTable, field)"
+            (change)="patchResourceItem(field)"
             [(ngModel)]="field.value"
             type="checkbox"
           />
           <input
             *ngSwitchCase="'number'"
-            (change)="patchResourceItem(resourceTable, field)"
+            (change)="patchResourceItem(field)"
             [(ngModel)]="field.value"
             type="number"
           />
           <input
             *ngSwitchCase="'string'"
-            (change)="patchResourceItem(resourceTable, field)"
+            (change)="patchResourceItem(field)"
             [(ngModel)]="field.value"
             type="text"
           />
