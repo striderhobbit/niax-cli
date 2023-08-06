@@ -16,8 +16,8 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   protected resourceTable?: Resource.Table<I>;
 
   constructor(
-    private readonly activatedRoute: ActivatedRoute,
     private readonly apiService: ApiService<I>,
+    private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
@@ -27,10 +27,7 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
 
   private fetchResourceTable(): Promise<Resource.Table<I>> {
     return firstValueFrom(
-      combineLatest([
-        this.activatedRoute.params,
-        this.activatedRoute.queryParams,
-      ]).pipe(
+      combineLatest([this.route.params, this.route.queryParams]).pipe(
         mergeMap(([params, queryParams]) =>
           this.apiService.getResourceTable(
             pick(params, 'resourceName'),
