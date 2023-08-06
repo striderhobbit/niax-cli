@@ -10,9 +10,11 @@
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePrimaryPath(column)"
       >
-        {{
-          column.sortIndex != null ? (column.order === "desc" ? "↑" : "↓") : ""
-        }}{{ column.path }}
+        <span *ngIf="column.sortIndex != null">
+          {{ column.order === "desc" ? "🡑" : "🡓" }}
+        </span>
+        {{ column.path }}
+        <sup *ngIf="column.sortIndex != null">({{ column.sortIndex + 1 }})</sup>
       </th>
     </tr>
   </thead>
