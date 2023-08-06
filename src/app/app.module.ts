@@ -10,6 +10,7 @@ import { IntersectionObserverDirective } from './intersection-observer.directive
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
+import { ResourceTableColumnsComponent } from './resource-table-columns/resource-table-columns.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     FilterPipe,
     IntersectionObserverDirective,
     RegExpValidatorDirective,
+    ResourceTableColumnsComponent,
     ResourceTableComponent,
     ViewInitObserverDirective,
   ],

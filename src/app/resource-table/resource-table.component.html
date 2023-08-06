@@ -1,125 +1,53 @@
-<div class="content">
-  <form (change)="updateResourceTableColumns()" class="table-columns">
-    <table>
-      <thead>
-        <tr>
-          <th>path</th>
-          <th>include</th>
-          <th>primaryPath</th>
-          <th>order</th>
-          <th>filter</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let column of resourceTable.columns">
-          <td>{{ column.path }}</td>
-          <td>
-            <input
-              [(ngModel)]="column.include"
-              name="include-{{ column.path }}-checkbox"
-              type="checkbox"
-            />
-          </td>
-          <td>
-            <input
-              (ngModelChange)="
-                onPrimaryPathToggled({ item: column.path, state: $event })
-              "
-              [ngModel]="resourceTable.primaryPaths.includes(column.path)"
-              name="primary-path-{{ column.path }}-checkbox"
-              type="checkbox"
-            />
-          </td>
-          <td>
-            <select
-              [(ngModel)]="column.order"
-              name="order-{{ column.path }}-select"
-            >
-              <option>asc</option>
-              <option>desc</option>
-            </select>
-          </td>
-          <td>
-            <input
-              (ngModelChange)="
-                columnFilterInput.invalid || (column.filter = $event)
-              "
-              [ngModel]="column.filter"
-              [title]="columnFilterInput.errors?.['SyntaxError']"
-              #columnFilterInput="ngModel"
-              name="filter-{{ column.path }}-text"
-              pattern="[^,]*"
-              type="text"
-              validRegExp
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div
-      (cdkDropListDropped)="
-        onPrimaryPathDropped($event); updateResourceTableColumns()
-      "
-      [cdkDropListData]="resourceTable.primaryPaths"
-      cdkDropList
-      class="primary-paths"
+<app-resource-table-columns
+  (change)="updateResourceTableColumns()"
+  [resourceTable]="resourceTable"
+></app-resource-table-columns>
+<table>
+  <thead>
+    <tr>
+      <th *ngFor="let column of resourceTable.columns | filter : 'include'">
+        {{ column.path }}
+      </th>
+    </tr>
+  </thead>
+  <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
+    <tr
+      *ngIf="rowsPage.deferred && isConnected(rowsPage)"
+      (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
+      observeIntersection
     >
-      <div
-        *ngFor="let primaryPath of resourceTable.primaryPaths"
-        [cdkDragData]="primaryPath"
-        cdkDrag
+      ⋯
+    </tr>
+    <tr
+      *ngFor="let row of rowsPage.items"
+      (viewInit)="$event.scrollIntoView({ block: 'start' })"
+      [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
+      observeViewInit
+    >
+      <td
+        *ngFor="let field of row.fields"
+        [class.nullish]="field.value == null"
+        [ngSwitch]="field.type"
       >
-        {{ primaryPath }}
-      </div>
-    </div>
-  </form>
-  <table>
-    <thead>
-      <tr>
-        <th *ngFor="let column of resourceTable.columns | filter : 'include'">
-          {{ column.path }}
-        </th>
-      </tr>
-    </thead>
-    <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
-      <tr
-        *ngIf="rowsPage.deferred && isConnected(rowsPage)"
-        (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
-        observeIntersection
-      >
-        ⋯
-      </tr>
-      <tr
-        *ngFor="let row of rowsPage.items"
-        (viewInit)="$event.scrollIntoView({ block: 'start' })"
-        [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
-        observeViewInit
-      >
-        <td
-          *ngFor="let field of row.fields"
-          [class.nullish]="field.value == null"
-          [ngSwitch]="field.type"
-        >
-          <input
-            *ngSwitchCase="'boolean'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="checkbox"
-          />
-          <input
-            *ngSwitchCase="'number'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="number"
-          />
-          <input
-            *ngSwitchCase="'string'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="text"
-          />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <input
+          *ngSwitchCase="'boolean'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="checkbox"
+        />
+        <input
+          *ngSwitchCase="'number'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="number"
+        />
+        <input
+          *ngSwitchCase="'string'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="text"
+        />
+      </td>
+    </tr>
+  </tbody>
+</table>

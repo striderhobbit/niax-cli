@@ -1,0 +1,72 @@
+<form (change)="change.emit()">
+  <table>
+    <thead>
+      <tr>
+        <th>path</th>
+        <th>include</th>
+        <th>primaryPath</th>
+        <th>order</th>
+        <th>filter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let column of resourceTable.columns">
+        <td>{{ column.path }}</td>
+        <td>
+          <input
+            [(ngModel)]="column.include"
+            name="include-{{ column.path }}-checkbox"
+            type="checkbox"
+          />
+        </td>
+        <td>
+          <input
+            (ngModelChange)="
+              onPrimaryPathToggled({ item: column.path, state: $event })
+            "
+            [ngModel]="resourceTable.primaryPaths.includes(column.path)"
+            name="primary-path-{{ column.path }}-checkbox"
+            type="checkbox"
+          />
+        </td>
+        <td>
+          <select
+            [(ngModel)]="column.order"
+            name="order-{{ column.path }}-select"
+          >
+            <option>asc</option>
+            <option>desc</option>
+          </select>
+        </td>
+        <td>
+          <input
+            (ngModelChange)="
+              columnFilterInput.invalid || (column.filter = $event)
+            "
+            [ngModel]="column.filter"
+            [title]="columnFilterInput.errors?.['SyntaxError']"
+            #columnFilterInput="ngModel"
+            name="filter-{{ column.path }}-text"
+            pattern="[^,]*"
+            type="text"
+            validRegExp
+          />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div
+    (cdkDropListDropped)="onPrimaryPathDropped($event); change.emit()"
+    [cdkDropListData]="resourceTable.primaryPaths"
+    cdkDropList
+    class="primary-paths"
+  >
+    <div
+      *ngFor="let primaryPath of resourceTable.primaryPaths"
+      [cdkDragData]="primaryPath"
+      cdkDrag
+    >
+      {{ primaryPath }}
+    </div>
+  </div>
+</form>
