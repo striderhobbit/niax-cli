@@ -9,9 +9,9 @@
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePrimaryPath(column)"
+        [attr.data-index]="resourceTable.primaryPaths.indexOf(column.path) + 1"
         [class.descending]="column.order === 'desc'"
         [class.primary]="column.sortIndex != null"
-        style.counterSet="index {{ (column.sortIndex ?? -2) + 1 }}"
       >
         {{ column.path }}
       </th>
