@@ -36,25 +36,6 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
       });
   }
 
-  protected fetchResourceTableColumns(
-    resourceTable: Resource.Table<I>
-  ): Promise<boolean> {
-    return this.setQueryParams({
-      paths: resourceTable.columns
-        .filter((column) => column.include)
-        .map((column) =>
-          [
-            column.path,
-            column.sortIndex ?? '',
-            column.order ?? '',
-            column.filter ?? '',
-          ].join(':')
-        )
-        .join(','),
-      snapshotId: Date.now(),
-    });
-  }
-
   protected async fetchResourceTableRows(
     resourceTable: Resource.Table<I>,
     pageToken: string
@@ -165,6 +146,25 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     return this.router.navigate([], {
       queryParams,
       queryParamsHandling: 'merge',
+    });
+  }
+
+  protected updateResourceTableColumns(
+    resourceTable: Resource.Table<I>
+  ): Promise<boolean> {
+    return this.setQueryParams({
+      paths: resourceTable.columns
+        .filter((column) => column.include)
+        .map((column) =>
+          [
+            column.path,
+            column.sortIndex ?? '',
+            column.order ?? '',
+            column.filter ?? '',
+          ].join(':')
+        )
+        .join(','),
+      snapshotId: Date.now(),
     });
   }
 }

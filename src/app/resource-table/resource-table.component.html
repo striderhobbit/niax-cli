@@ -1,6 +1,6 @@
 <div class="content" *ngIf="resourceTable">
   <form
-    (change)="fetchResourceTableColumns(resourceTable)"
+    (change)="updateResourceTableColumns(resourceTable)"
     #form="ngForm"
     class="table-columns"
   >
@@ -61,7 +61,7 @@
     <div
       (cdkDropListDropped)="
         onPrimaryPathDropped(resourceTable, $event);
-        fetchResourceTableColumns(resourceTable)
+        updateResourceTableColumns(resourceTable)
       "
       [cdkDropListData]="resourceTable.primaryPaths"
       cdkDropList
