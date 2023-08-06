@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { find, keyBy, pick, pull } from 'lodash';
-import { combineLatest, firstValueFrom, map, mergeMap } from 'rxjs';
+import { firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -13,7 +13,8 @@ import { ApiService } from '../api.service';
   styleUrls: ['./resource-table.component.scss'],
 })
 export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
-  protected resourceTable?: Resource.Table<I>;
+  protected resourceTable: Resource.Table<I> =
+    this.route.snapshot.data['resourceTable'];
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -22,35 +23,36 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchResourceTable();
-  }
-
-  private fetchResourceTable(): Promise<Resource.Table<I>> {
-    return firstValueFrom(
-      combineLatest([this.route.params, this.route.queryParams]).pipe(
-        mergeMap(([params, queryParams]) =>
-          this.apiService.getResourceTable(
-            pick(params, 'resourceName'),
-            pick(queryParams, 'hash', 'limit', 'paths', 'resourceId')
-          )
-        ),
-        map((resourceTable) => (this.resourceTable = resourceTable))
+    // TODO unsubscribe
+    this.route.data
+      .pipe(
+        map((data) => data['resourceTable'] as Resource.Table<I>),
+        tap((resourceTable) =>
+          this.setQueryParams(pick(resourceTable.params, 'hash'))
+        )
       )
-    ).then(
-      async (resourceTable) => (
-        await this.setQueryParams({ hash: resourceTable.hash }), resourceTable
-      )
-    );
+      .subscribe({
+        next: (resourceTable) => (this.resourceTable = resourceTable),
+      });
   }
 
   protected fetchResourceTableColumns(
     resourceTable: Resource.Table<I>
-  ): Promise<Resource.TableColumns<I>> {
+  ): Promise<boolean> {
     return this.setQueryParams({
-      paths: this.stringifyResourceTableColumns(resourceTable),
-    })
-      .then(() => this.fetchResourceTable())
-      .then(({ columns }) => columns);
+      paths: resourceTable.columns
+        .filter((column) => column.include)
+        .map((column) =>
+          [
+            column.path,
+            column.sortIndex ?? '',
+            column.order ?? '',
+            column.filter ?? '',
+          ].join(':')
+        )
+        .join(','),
+      snapshotId: Date.now(),
+    });
   }
 
   protected async fetchResourceTableRows(
@@ -59,14 +61,10 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
   ): Promise<Resource.TableRow<I>[]> {
     return firstValueFrom(
       this.apiService
-        .getResourceTableRowsPage(
-          {
-            resourceName: resourceTable.resource.name,
-          },
-          {
-            pageToken,
-          }
-        )
+        .getResourceTableRowsPage({
+          pageToken,
+          resourceName: resourceTable.params.resourceName,
+        })
         .pipe(
           map(({ items }) => {
             const resourceTableRowsPage = find(resourceTable.rowsPages, {
@@ -146,19 +144,20 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
     resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
-    return this.setQueryParams({
-      resourceId: resourceTableField.resource.id,
-    }).then(() =>
-      firstValueFrom(
-        this.apiService.patchResourceItem(
-          {
-            resourceName: resourceTable.resource.name,
-          },
+    return firstValueFrom(
+      this.apiService
+        .patchResourceItem(
+          pick(resourceTable.params, 'resourceName'),
           resourceTableField
         )
-      ).then(
-        async (resourceItem) => (await this.fetchResourceTable(), resourceItem)
-      )
+        .pipe(
+          tap(() =>
+            this.setQueryParams({
+              resourceId: resourceTableField.resource.id,
+              snapshotId: Date.now(),
+            })
+          )
+        )
     );
   }
 
@@ -167,21 +166,5 @@ export class ResourceTableComponent<I extends Resource.Item> implements OnInit {
       queryParams,
       queryParamsHandling: 'merge',
     });
-  }
-
-  private stringifyResourceTableColumns(
-    resourceTable: Resource.Table<I>
-  ): string {
-    return resourceTable.columns
-      .filter((column) => column.include)
-      .map((column) =>
-        [
-          column.path,
-          column.sortIndex ?? '',
-          column.order ?? '',
-          column.filter ?? '',
-        ].join(':')
-      )
-      .join(',');
   }
 }

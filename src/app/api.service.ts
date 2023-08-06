@@ -11,42 +11,34 @@ export class ApiService<I extends Resource.Item> {
   constructor(private readonly httpClient: HttpClient) {}
 
   public getResourceTable<R extends Request.GetResourceTable<I>['ResBody']>(
-    params: Request.GetResourceTable<I>['ReqParams'],
     query: Request.GetResourceTable<I>['ReqQuery']
   ): Observable<R> {
+    console.log(Date.now(), 'getResourceTable'); // FIXME
     return this.httpClient
-      .get<R>(
-        `http://localhost:3000/api/${params.resourceName}/resource/table`,
-        {
-          params: query,
-        }
-      )
+      .get<R>(`http://localhost:3000/api/resource/table`, {
+        params: query,
+      })
       .pipe(this.pipeError());
   }
 
   public getResourceTableRowsPage<
     R extends Request.GetResourceTableRowsPage<I>['ResBody']
-  >(
-    params: Request.GetResourceTableRowsPage<I>['ReqParams'],
-    query: Request.GetResourceTableRowsPage<I>['ReqQuery']
-  ): Observable<R> {
+  >(query: Request.GetResourceTableRowsPage<I>['ReqQuery']): Observable<R> {
     return this.httpClient
-      .get<R>(
-        `http://localhost:3000/api/${params.resourceName}/resource/table/rows/page`,
-        { params: query }
-      )
+      .get<R>(`http://localhost:3000/api/resource/table/rows/page`, {
+        params: query,
+      })
       .pipe(this.pipeError());
   }
 
   public patchResourceItem<R extends Request.PatchResourceItem<I>['ResBody']>(
-    params: Request.PatchResourceItem<I>['ReqParams'],
+    query: Request.PatchResourceItem<I>['ReqQuery'],
     body: Request.PatchResourceItem<I>['ReqBody']
   ): Observable<R> {
     return this.httpClient
-      .patch<R>(
-        `http://localhost:3000/api/${params.resourceName}/resource/item`,
-        body
-      )
+      .patch<R>(`http://localhost:3000/api/resource/item`, body, {
+        params: query,
+      })
       .pipe(this.pipeError());
   }
 
