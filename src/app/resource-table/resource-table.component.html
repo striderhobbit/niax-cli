@@ -1,9 +1,5 @@
 <div class="content">
-  <form
-    (change)="updateResourceTableColumns()"
-    #form="ngForm"
-    class="table-columns"
-  >
+  <form (change)="updateResourceTableColumns()" class="table-columns">
     <table>
       <thead>
         <tr>
@@ -45,11 +41,16 @@
           </td>
           <td>
             <input
-              (ngModelChange)="form.invalid || (column.filter = $event)"
+              (ngModelChange)="
+                columnFilterInput.invalid || (column.filter = $event)
+              "
               [ngModel]="column.filter"
+              [title]="columnFilterInput.errors?.['SyntaxError']"
+              #columnFilterInput="ngModel"
               name="filter-{{ column.path }}-text"
               pattern="[^,]*"
               type="text"
+              validRegExp
             />
           </td>
         </tr>

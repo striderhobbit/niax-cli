@@ -17,10 +17,8 @@
     td {
         padding: 0.5em;
 
-        input {
-            &:invalid {
-                color: red;
-            }
+        input.ng-invalid {
+            color: red;
         }
     }
 
