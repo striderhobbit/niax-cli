@@ -10,38 +10,38 @@ import { Observable, OperatorFunction, catchError } from 'rxjs';
 export class ApiService<I extends Resource.Item> {
   constructor(private readonly httpClient: HttpClient) {}
 
-  public getResourceTable<R extends Request.GetResourceTable<I>['ResBody']>(
+  public getResourceTable<T extends Request.GetResourceTable<I>['ResBody']>(
     query: Request.GetResourceTable<I>['ReqQuery']
-  ): Observable<R> {
+  ): Observable<T> {
     return this.httpClient
-      .get<R>(`http://localhost:3000/api/resource/table`, {
+      .get<T>(`http://localhost:3000/api/resource/table`, {
         params: query,
       })
       .pipe(this.pipeError());
   }
 
   public getResourceTableRowsPage<
-    R extends Request.GetResourceTableRowsPage<I>['ResBody']
-  >(query: Request.GetResourceTableRowsPage<I>['ReqQuery']): Observable<R> {
+    T extends Request.GetResourceTableRowsPage<I>['ResBody']
+  >(query: Request.GetResourceTableRowsPage<I>['ReqQuery']): Observable<T> {
     return this.httpClient
-      .get<R>(`http://localhost:3000/api/resource/table/rows/page`, {
+      .get<T>(`http://localhost:3000/api/resource/table/rows/page`, {
         params: query,
       })
       .pipe(this.pipeError());
   }
 
-  public patchResourceItem<R extends Request.PatchResourceItem<I>['ResBody']>(
+  public patchResourceItem<T extends Request.PatchResourceItem<I>['ResBody']>(
     query: Request.PatchResourceItem<I>['ReqQuery'],
     body: Request.PatchResourceItem<I>['ReqBody']
-  ): Observable<R> {
+  ): Observable<T> {
     return this.httpClient
-      .patch<R>(`http://localhost:3000/api/resource/item`, body, {
+      .patch<T>(`http://localhost:3000/api/resource/item`, body, {
         params: query,
       })
       .pipe(this.pipeError());
   }
 
-  private pipeError<R>(): OperatorFunction<R, R> {
+  private pipeError<T>(): OperatorFunction<T, T> {
     return catchError((error) => {
       alert(error.message);
 

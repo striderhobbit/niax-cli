@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 
 @Directive({
-  selector: '[validRegExp]',
+  selector: '[validateRegExp]',
   providers: [
     {
       provide: NG_VALIDATORS,
