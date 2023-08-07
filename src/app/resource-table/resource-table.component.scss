@@ -22,59 +22,62 @@
             z-index: 1;
         }
 
-        > * > tr {
-            scroll-margin-top: 1.8em;
+        > thead,
+        > tbody {
+            > tr {
+                scroll-margin-top: 1.8em;
 
-            &[ng-reflect-view-init-ignored="false"] {
-                box-shadow: 0 0 0 3px inset blue;
-            }
-
-            > th {
-                cursor: pointer;
-                font-size: 0.8em;
-                padding: 0.5em 1em;
-                text-align: left;
-                text-transform: uppercase;
-
-                &.primary {
-                    &::before {
-                        color: blue;
-                        content: "🡓";
-                        line-height: 1em;
-                    }
-
-                    &.descending::before {
-                        content: "🡑";
-                    }
-
-                    &::after {
-                        color: purple;
-                        content: "#" attr(data-index);
-                    }
-                }
-            }
-
-            > th,
-            > td {
-                background-color: rgba(var(--primary-color-1-rgb), var(--background-opacity, 1));
-                border: 1px solid var(--primary-color-2);
-            }
-
-            > td {
-                text-align: center;
-
-                --background-opacity: 0;
-
-                &.nullish {
-                    --background-opacity: 30%;
+                &[ng-reflect-view-init-ignored="false"] {
+                    box-shadow: 0 0 0 3px inset blue;
                 }
 
-                > input {
-                    background: inherit;
-                    border: none;
-                    color: inherit;
-                    font: inherit;
-                    padding: 0.4em 0.8em;
+                > th {
+                    cursor: pointer;
+                    font-size: 0.8em;
+                    padding: 0.5em 1em;
+                    text-align: left;
+                    text-transform: uppercase;
+
+                    &.primary {
+                        &::before {
+                            color: blue;
+                            content: "🡓";
+                            line-height: 1em;
+                        }
+
+                        &.descending::before {
+                            content: "🡑";
+                        }
+
+                        &::after {
+                            color: purple;
+                            content: "#" attr(data-index);
+                        }
+                    }
+                }
+
+                > th,
+                > td {
+                    background-color: rgba(var(--primary-color-1-rgb), var(--background-opacity, 1));
+                    border: 1px solid var(--primary-color-2);
+                }
+
+                > td {
+                    text-align: center;
+
+                    --background-opacity: 0;
+
+                    &.nullish {
+                        --background-opacity: 30%;
+                    }
+
+                    > input {
+                        background: inherit;
+                        border: none;
+                        color: inherit;
+                        font: inherit;
+                        padding: 0.4em 0.8em;
+                    }
                 }
             }
         }
