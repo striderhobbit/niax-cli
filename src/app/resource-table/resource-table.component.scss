@@ -4,75 +4,76 @@
     overflow: auto;
     position: relative;
     width: 100%;
-}
 
-table {
-    border-collapse: separate;
-    border-spacing: 0;
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
 
-    &::after {
-        content: "";
-        height: 100%;
-        position: absolute;
-        width: 100%;
-    }
-
-    thead {
-        position: sticky;
-        top: 0;
-    }
-
-    tr {
-        scroll-margin-top: 1.8em;
-
-        &[ng-reflect-view-init-ignored="false"] {
-            box-shadow: 0 0 0 3px inset blue;
+        &::after {
+            content: "";
+            height: 100%;
+            position: absolute;
+            width: 100%;
+            z-index: -1;
         }
 
-        th {
-            cursor: pointer;
-            font-size: 0.8em;
-            padding: 0.5em 1em;
-            text-align: left;
-            text-transform: uppercase;
-
-            &.primary {
-                &::before {
-                    content: "🡓";
-                    line-height: 1em;
-                }
-
-                &.descending::before {
-                    content: "🡑";
-                }
-
-                &::after {
-                    content: "#" attr(data-index);
-                }
-            }
+        thead {
+            position: sticky;
+            top: 0;
         }
 
-        th,
-        td {
-            background-color: rgba(242, 240, 230, var(--background-opacity, 1));
-            border: 1px solid #d9d7ce;
-        }
+        tr {
+            scroll-margin-top: 1.8em;
 
-        td {
-            text-align: center;
-
-            --background-opacity: 0;
-
-            &.nullish {
-                --background-opacity: 30%;
+            &[ng-reflect-view-init-ignored="false"] {
+                box-shadow: 0 0 0 3px inset blue;
             }
 
-            input {
-                background: inherit;
-                border: none;
-                color: inherit;
-                font: inherit;
-                padding: 0.4em 0.8em;
+            th {
+                cursor: pointer;
+                font-size: 0.8em;
+                padding: 0.5em 1em;
+                text-align: left;
+                text-transform: uppercase;
+
+                &.primary {
+                    &::before {
+                        content: "🡓";
+                        line-height: 1em;
+                    }
+
+                    &.descending::before {
+                        content: "🡑";
+                    }
+
+                    &::after {
+                        content: "#" attr(data-index);
+                    }
+                }
+            }
+
+            th,
+            td {
+                background-color: rgba(242, 240, 230, var(--background-opacity, 1));
+                border: 1px solid #d9d7ce;
+            }
+
+            td {
+                text-align: center;
+
+                --background-opacity: 0;
+
+                &.nullish {
+                    --background-opacity: 30%;
+                }
+
+                input {
+                    background: inherit;
+                    border: none;
+                    color: inherit;
+                    font: inherit;
+                    padding: 0.4em 0.8em;
+                }
             }
         }
     }

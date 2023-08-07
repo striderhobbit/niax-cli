@@ -1,24 +1,31 @@
-:host {
+.content {
+    :host:not(:focus-within) & {
+        display: none;
+    }
+
     background-color: white;
     box-shadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
     display: flex;
     padding: 1em;
     position: absolute;
-}
 
-table {
-    th,
-    td {
-        padding: 0.5em;
-    }
+    form {
+        table {
+            tr {
+                td {
+                    padding: 0.5em;
 
-    td {
-        input.ng-invalid {
-            color: red;
+                    input.ng-invalid {
+                        color: red;
+                    }
+                }
+            }
         }
     }
-}
 
-.primary-paths > * {
-    padding: 0.5em;
+    .primary-paths {
+        .primary-path {
+            padding: 0.5em;
+        }
+    }
 }
