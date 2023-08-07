@@ -24,11 +24,11 @@ $padding: 0.5em;
         user-select: none;
     }
 
-    > tr > td {
-        :not(:hover) > tr > & {
-            display: none;
-        }
+    &:not(:hover) > tr > td {
+        display: none;
+    }
 
+    > tr > td {
         position: relative;
 
         > * {
