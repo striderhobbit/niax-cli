@@ -1,23 +1,32 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
   HostBinding,
   Input,
   Output,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { uniqueId } from 'lodash';
+
+type DrilldownKey = 'columns' | 'sort';
 
 @Component({
   selector: 'app-resource-table-columns',
   templateUrl: './resource-table-columns.component.html',
   styleUrls: ['./resource-table-columns.component.scss'],
 })
-export class ResourceTableColumnsComponent<I extends Resource.Item> {
-  @HostBinding('tabindex') tabindex = -1;
+export class ResourceTableColumnsComponent<I extends Resource.Item>
+  implements AfterViewInit
+{
+  @HostBinding('tabindex') tabindex = 0;
+  @ViewChildren('drilldownHandle')
+  drilldownHandles!: QueryList<ElementRef<HTMLTableCellElement>>;
 
   @Input({ required: true }) resourceTable!: Resource.Table<I>;
 
@@ -26,9 +35,27 @@ export class ResourceTableColumnsComponent<I extends Resource.Item> {
 
   protected readonly uid = uniqueId();
 
-  protected drilldown?: 'columns' | 'sort';
+  protected drilldownKey?: DrilldownKey;
 
   constructor(private readonly host: ElementRef) {}
+
+  ngAfterViewInit(): void {
+    this.drilldownHandles
+      .map((handle) => handle.nativeElement)
+      .forEach((handle) => {
+        ['focus', 'mouseenter'].forEach((event) =>
+          handle.addEventListener(
+            event,
+            () =>
+              (this.drilldownKey = handle.dataset[
+                'drilldownKey'
+              ] as DrilldownKey)
+          )
+        );
+        
+        handle.setAttribute('tabindex', '0');
+      });
+  }
 
   public focus(): boolean {
     this.host.nativeElement.focus();

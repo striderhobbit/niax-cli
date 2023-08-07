@@ -1,7 +1,7 @@
 <table>
   <tr>
-    <th (mouseenter)="drilldown = 'columns'">Columns</th>
-    <td *ngIf="drilldown === 'columns'">
+    <th #drilldownHandle data-drilldown-key="columns">Columns</th>
+    <td *ngIf="drilldownKey === 'columns'">
       <form (change)="columnsChange.emit()">
         <table>
           <tr *ngFor="let column of resourceTable.columns; index as i">
@@ -40,8 +40,8 @@
     </td>
   </tr>
   <tr>
-    <th (mouseenter)="drilldown = 'sort'">Sort</th>
-    <td *ngIf="drilldown === 'sort'">
+    <th #drilldownHandle data-drilldown-key="sort">Sort</th>
+    <td *ngIf="drilldownKey === 'sort'">
       <div
         (cdkDropListDropped)="onPrimaryPathDropped($event)"
         [cdkDropListData]="resourceTable.primaryPaths"
@@ -53,6 +53,7 @@
           [cdkDragData]="primaryPath"
           cdkDrag
           class="primary-path"
+          tabindex="0"
         >
           {{ primaryPath }}
         </div>
