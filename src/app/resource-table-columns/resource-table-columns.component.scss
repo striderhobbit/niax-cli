@@ -2,7 +2,7 @@ $boxShadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
 $padding: 0.5em;
 
 @mixin backgroundStyle() {
-    background-color: hsl(50, 32%, var(--background-lightness, 97%));
+    background-color: hsl(var(--primary-color-1-h), var(--primary-color-1-s), var(--background-lightness, 97%));
 
     &:hover {
         --background-lightness: 93%;

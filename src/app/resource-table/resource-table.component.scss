@@ -56,8 +56,8 @@
 
             > th,
             > td {
-                background-color: rgba(242, 240, 230, var(--background-opacity, 1));
-                border: 1px solid #d9d7ce;
+                background-color: rgba(var(--primary-color-1-rgb), var(--background-opacity, 1));
+                border: 1px solid var(--primary-color-2);
             }
 
             > td {
