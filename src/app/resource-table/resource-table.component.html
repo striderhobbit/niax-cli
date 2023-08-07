@@ -1,11 +1,6 @@
-<app-resource-table-columns
-  (columnsChange)="updateResourceTableColumns()"
-  (primaryPathsChange)="writeBackPrimaryPaths()"
-  [resourceTable]="resourceTable"
-></app-resource-table-columns>
 <table>
   <thead>
-    <tr>
+    <tr (contextmenu)="resourceTableColumnsComponent.focus()">
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePrimaryPath(column)"
@@ -15,6 +10,14 @@
       >
         {{ column.path }}
       </th>
+    </tr>
+    <tr>
+      <app-resource-table-columns
+        (columnsChange)="updateResourceTableColumns()"
+        (primaryPathsChange)="writeBackPrimaryPaths()"
+        [resourceTable]="resourceTable"
+        #resourceTableColumnsComponent
+      ></app-resource-table-columns>
     </tr>
   </thead>
   <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
