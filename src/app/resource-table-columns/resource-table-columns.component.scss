@@ -25,6 +25,7 @@ $padding: 0.5em;
     > tr > th {
         @include backgroundStyle();
         padding: $padding;
+        user-select: none;
     }
 
     > tr > td {
