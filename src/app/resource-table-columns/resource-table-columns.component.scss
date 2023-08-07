@@ -42,23 +42,26 @@ $padding: 0.5em;
             > tr {
                 @include backgroundStyle();
 
-                > td > * {
-                    padding: $padding;
-                }
+                > th,
+                > td {
+                    > * {
+                        padding: $padding;
+                    }
 
-                > td > label {
-                    display: block;
-                    text-transform: uppercase;
-                }
+                    > label {
+                        display: block;
+                        text-transform: uppercase;
+                    }
 
-                > td > input {
-                    background: inherit;
-                    border: none;
-                    color: inherit;
-                    font: inherit;
+                    > input {
+                        background: inherit;
+                        border: none;
+                        color: inherit;
+                        font: inherit;
 
-                    &.ng-invalid {
-                        color: red;
+                        &.ng-invalid {
+                            color: red;
+                        }
                     }
                 }
             }
