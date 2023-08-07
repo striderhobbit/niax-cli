@@ -26,6 +26,8 @@ export class ResourceTableColumnsComponent<I extends Resource.Item> {
 
   protected readonly uid = uniqueId();
 
+  protected drilldown?: 'columns' | 'sort';
+
   constructor(private readonly host: ElementRef) {}
 
   public focus(): boolean {

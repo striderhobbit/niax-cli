@@ -1,46 +1,62 @@
-<div class="content">
-  <form (change)="columnsChange.emit()">
-    <table>
-      <tr *ngFor="let column of resourceTable.columns; index as i">
-        <td>
-          <input
-            [(ngModel)]="column.include"
-            [name]="columnToggle.id"
-            #columnToggle
-            id="column-toggle-{{ uid }}-{{ i }}"
-            type="checkbox"
-          />
-          <label [for]="columnToggle.id">{{ column.path }}</label>
-        </td>
-        <td>
-          <input
-            (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
-            [ngModel]="column.filter"
-            [title]="columnFilter.errors?.['SyntaxError']"
-            #columnFilter="ngModel"
-            name="column-filter-{{ uid }}-{{ i }}"
-            pattern="[^,]*"
-            placeholder="/(?:)/"
-            type="text"
-            validateRegExp
-          />
-        </td>
-      </tr>
-    </table>
-  </form>
-  <div
-    (cdkDropListDropped)="onPrimaryPathDropped($event)"
-    [cdkDropListData]="resourceTable.primaryPaths"
-    cdkDropList
-    class="primary-paths"
-  >
-    <div
-      *ngFor="let primaryPath of resourceTable.primaryPaths"
-      [cdkDragData]="primaryPath"
-      cdkDrag
-      class="primary-path"
-    >
-      {{ primaryPath }}
-    </div>
-  </div>
-</div>
+<table>
+  <tr>
+    <th (mouseenter)="drilldown = 'columns'">Show Columns</th>
+    <td *ngIf="drilldown === 'columns'">
+      <form (change)="columnsChange.emit()">
+        <table>
+          <tr *ngFor="let column of resourceTable.columns; index as i">
+            <td>
+              <div>
+                <input
+                  [(ngModel)]="column.include"
+                  [name]="columnToggle.id"
+                  #columnToggle
+                  id="column-toggle-{{ uid }}-{{ i }}"
+                  type="checkbox"
+                />
+              </div>
+            </td>
+            <td>
+              <label [for]="columnToggle.id">{{ column.path }}</label>
+            </td>
+            <td>
+              <input
+                (ngModelChange)="
+                  columnFilter.invalid || (column.filter = $event)
+                "
+                [ngModel]="column.filter"
+                [title]="columnFilter.errors?.['SyntaxError']"
+                #columnFilter="ngModel"
+                name="column-filter-{{ uid }}-{{ i }}"
+                pattern="[^,]*"
+                placeholder="/(?:)/"
+                type="text"
+                validateRegExp
+              />
+            </td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+  <tr>
+    <th (mouseenter)="drilldown = 'sort'">Sort</th>
+    <td *ngIf="drilldown === 'sort'">
+      <ol
+        (cdkDropListDropped)="onPrimaryPathDropped($event)"
+        [cdkDropListData]="resourceTable.primaryPaths"
+        cdkDropList
+        class="primary-paths"
+      >
+        <li
+          *ngFor="let primaryPath of resourceTable.primaryPaths"
+          [cdkDragData]="primaryPath"
+          cdkDrag
+          class="primary-path"
+        >
+          {{ primaryPath }}
+        </li>
+      </ol>
+    </td>
+  </tr>
+</table>

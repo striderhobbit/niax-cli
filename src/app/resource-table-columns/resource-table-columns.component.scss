@@ -1,31 +1,76 @@
-.content {
-    :host:not(:focus-within) & {
+$boxShadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
+$padding: 0.5em;
+
+@mixin backgroundStyle() {
+    background-color: hsl(50, 32%, var(--background-lightness, 97%));
+
+    &:hover {
+        --background-lightness: 93%;
+    }
+}
+
+:host > table {
+    border-collapse: collapse;
+    box-shadow: $boxShadow;
+    position: absolute;
+
+    :not(:focus-within) > & {
         display: none;
     }
 
-    background-color: white;
-    box-shadow: 0 0 1.5vmin rgb(0 0 0 / 30%);
-    display: flex;
-    padding: 1em;
-    position: absolute;
+    &:not(:hover) > tr > td {
+        display: none;
+    }
 
-    form {
-        table {
-            tr {
-                td {
-                    padding: 0.5em;
+    > tr > th {
+        @include backgroundStyle();
+        padding: $padding;
+    }
 
-                    input.ng-invalid {
+    > tr > td {
+        position: relative;
+
+        > * {
+            box-shadow: $boxShadow;
+            position: absolute;
+            top: 0;
+        }
+
+        > form > table {
+            border-collapse: collapse;
+
+            > tr {
+                @include backgroundStyle();
+
+                > td > * {
+                    padding: $padding;
+                }
+
+                > td > label {
+                    display: block;
+                    text-transform: uppercase;
+                }
+
+                > td > input {
+                    background: inherit;
+                    border: none;
+                    color: inherit;
+                    font: inherit;
+
+                    &.ng-invalid {
                         color: red;
                     }
                 }
             }
         }
-    }
 
-    .primary-paths {
-        .primary-path {
-            padding: 0.5em;
+        > .primary-paths > .primary-path {
+            @include backgroundStyle();
+            cursor: grab;
+            list-style-position: inside;
+            min-width: max-content;
+            padding: $padding;
+            text-transform: uppercase;
         }
     }
 }
