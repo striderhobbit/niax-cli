@@ -38,6 +38,7 @@
 
                 &.primary {
                     &::before {
+                        color: blue;
                         content: "🡓";
                         line-height: 1em;
                     }
@@ -47,6 +48,7 @@
                     }
 
                     &::after {
+                        color: purple;
                         content: "#" attr(data-index);
                     }
                 }

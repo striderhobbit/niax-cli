@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <th (mouseenter)="drilldown = 'columns'">Show Columns</th>
+    <th (mouseenter)="drilldown = 'columns'">Columns</th>
     <td *ngIf="drilldown === 'columns'">
       <form (change)="columnsChange.emit()">
         <table>
