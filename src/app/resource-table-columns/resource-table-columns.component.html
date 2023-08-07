@@ -42,21 +42,21 @@
   <tr>
     <th (mouseenter)="drilldown = 'sort'">Sort</th>
     <td *ngIf="drilldown === 'sort'">
-      <ol
+      <div
         (cdkDropListDropped)="onPrimaryPathDropped($event)"
         [cdkDropListData]="resourceTable.primaryPaths"
         cdkDropList
         class="primary-paths"
       >
-        <li
+        <div
           *ngFor="let primaryPath of resourceTable.primaryPaths"
           [cdkDragData]="primaryPath"
           cdkDrag
           class="primary-path"
         >
           {{ primaryPath }}
-        </li>
-      </ol>
+        </div>
+      </div>
     </td>
   </tr>
 </table>

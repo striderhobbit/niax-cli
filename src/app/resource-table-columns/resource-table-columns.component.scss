@@ -68,13 +68,22 @@ $padding: 0.5em;
             }
         }
 
-        > .primary-paths > .primary-path {
-            @include backgroundStyle();
-            cursor: grab;
-            list-style-position: inside;
-            min-width: max-content;
-            padding: $padding;
-            text-transform: uppercase;
+        > .primary-paths {
+            counter-reset: index;
+
+            > .primary-path {
+                @include backgroundStyle();
+                counter-increment: index;
+                cursor: grab;
+                min-width: max-content;
+                padding: $padding;
+                text-transform: uppercase;
+
+                &::before {
+                    color: purple;
+                    content: "#" counter(index);
+                }
+            }
         }
     }
 }
