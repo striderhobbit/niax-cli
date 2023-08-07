@@ -18,10 +18,6 @@ $padding: 0.5em;
         display: none;
     }
 
-    &:not(:hover) > tr > td {
-        display: none;
-    }
-
     > tr > th {
         @include backgroundStyle();
         padding: $padding;
@@ -29,6 +25,10 @@ $padding: 0.5em;
     }
 
     > tr > td {
+        :not(:hover) > tr > & {
+            display: none;
+        }
+
         position: relative;
 
         > * {
