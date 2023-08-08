@@ -10,16 +10,17 @@ $padding: 0.5em;
 }
 
 :host {
-    box-shadow: $boxShadow;
-    height: auto;
-    position: absolute;
+    > .content {
+        box-shadow: $boxShadow;
+        position: absolute;
+    }
 
-    > table {
+    &:not(:focus-within) > .content > table {
+        display: none;
+    }
+
+    > .content > table {
         border-collapse: collapse;
-
-        :not(:focus-within) > & {
-            display: none;
-        }
 
         > tr > th {
             @include backgroundStyle();

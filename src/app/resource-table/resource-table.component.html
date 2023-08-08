@@ -1,6 +1,6 @@
 <table>
   <thead>
-    <tr (contextmenu)="resourceTableColumnsComponent.focus()">
+    <tr (contextmenu)="resourceTableColumnsComponent.open()">
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePrimaryPath(column)"

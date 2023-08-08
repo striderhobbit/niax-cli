@@ -24,7 +24,7 @@ type DrilldownKey = 'columns' | 'sort';
 export class ResourceTableColumnsComponent<I extends Resource.Item>
   implements AfterViewInit
 {
-  @HostBinding('tabindex') tabindex = 0;
+  @HostBinding('tabindex') tabindex = -1;
   @ViewChildren('drilldownHandle')
   drilldownHandles!: QueryList<ElementRef<HTMLTableCellElement>>;
 
@@ -57,12 +57,6 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
       });
   }
 
-  public focus(): boolean {
-    this.host.nativeElement.focus();
-
-    return false;
-  }
-
   protected onPrimaryPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     moveItemInArray(
       event.container.data,
@@ -71,5 +65,11 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
     );
 
     this.primaryPathsChange.emit();
+  }
+
+  public open(): boolean {
+    this.host.nativeElement.focus();
+
+    return false;
   }
 }
