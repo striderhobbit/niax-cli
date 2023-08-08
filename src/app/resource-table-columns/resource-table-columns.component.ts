@@ -52,7 +52,7 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
               ] as DrilldownKey)
           )
         );
-        
+
         handle.setAttribute('tabindex', '0');
       });
   }

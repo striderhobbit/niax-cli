@@ -9,79 +9,83 @@ $padding: 0.5em;
     }
 }
 
-:host > table {
-    border-collapse: collapse;
+:host {
     box-shadow: $boxShadow;
+    height: auto;
     position: absolute;
 
-    :not(:focus-within) > & {
-        display: none;
-    }
+    > table {
+        border-collapse: collapse;
 
-    > tr > th {
-        @include backgroundStyle();
-        padding: $padding;
-        user-select: none;
-    }
-
-    &:not(:hover) > tr:not(:focus-within) > td {
-        display: none;
-    }
-
-    > tr > td {
-        position: relative;
-
-        > * {
-            box-shadow: $boxShadow;
-            position: absolute;
-            top: 0;
+        :not(:focus-within) > & {
+            display: none;
         }
 
-        > form > table {
-            border-collapse: collapse;
+        > tr > th {
+            @include backgroundStyle();
+            padding: $padding;
+            user-select: none;
+        }
 
-            > tr {
-                @include backgroundStyle();
+        &:not(:hover) > tr:not(:focus-within) > td {
+            display: none;
+        }
 
-                > th,
-                > td {
-                    > * {
-                        padding: $padding;
-                    }
+        > tr > td {
+            position: relative;
 
-                    > label {
-                        display: block;
-                        text-transform: uppercase;
-                    }
+            > * {
+                box-shadow: $boxShadow;
+                position: absolute;
+                top: 0;
+            }
 
-                    > input {
-                        background: inherit;
-                        border: none;
-                        color: inherit;
-                        font: inherit;
+            > form > table {
+                border-collapse: collapse;
 
-                        &.ng-invalid {
-                            color: red;
+                > tr {
+                    @include backgroundStyle();
+
+                    > th,
+                    > td {
+                        > * {
+                            padding: $padding;
+                        }
+
+                        > label {
+                            display: block;
+                            text-transform: uppercase;
+                        }
+
+                        > input {
+                            background: inherit;
+                            border: none;
+                            color: inherit;
+                            font: inherit;
+
+                            &.ng-invalid {
+                                color: red;
+                            }
                         }
                     }
                 }
             }
-        }
 
-        > .primary-paths {
-            counter-reset: index;
+            > .primary-paths {
+                counter-reset: index;
 
-            > .primary-path {
-                @include backgroundStyle();
-                counter-increment: index;
-                cursor: grab;
-                min-width: max-content;
-                padding: $padding;
-                text-transform: uppercase;
+                > .primary-path {
+                    @include backgroundStyle();
+                    counter-increment: index;
+                    cursor: grab;
+                    min-width: max-content;
+                    padding: $padding;
+                    text-transform: uppercase;
 
-                &::before {
-                    color: purple;
-                    content: "#" counter(index);
+                    &::before {
+                        color: purple;
+                        content: "#" counter(index);
+                    }
                 }
             }
         }
