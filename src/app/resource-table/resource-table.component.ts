@@ -116,9 +116,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
-  protected togglePrimaryPath(
-    column: Resource.TableColumn<I>
-  ): Promise<boolean> {
+  protected togglePath(column: Resource.TableColumn<I>): Promise<boolean> {
     if (!this.resourceTable.primaryPaths.includes(column.path)) {
       this.resourceTable.primaryPaths.push(column.path);
     } else if (column.order === 'desc') {
@@ -129,7 +127,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       return this.updateResourceTableColumns();
     }
 
-    return this.writeBackPrimaryPaths();
+    return this.writeBackPaths();
   }
 
   protected updateResourceTableColumns(): Promise<boolean> {
@@ -151,7 +149,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected writeBackPrimaryPaths(): Promise<boolean> {
+  protected writeBackPaths(): Promise<boolean> {
     this.resourceTable.columns.forEach((resourceTableColumn) => {
       if (
         (resourceTableColumn.sortIndex =

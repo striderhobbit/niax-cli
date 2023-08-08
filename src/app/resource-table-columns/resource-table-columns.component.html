@@ -43,19 +43,36 @@
     <tr>
       <th #drilldownHandle data-drilldown-key="sort">Sort</th>
       <td *ngIf="drilldownKey === 'sort'">
-        <div
-          (cdkDropListDropped)="onPrimaryPathDropped($event)"
-          [cdkDropListData]="resourceTable.primaryPaths"
-          cdkDropList
-          class="primary-paths"
-        >
+        <div cdkDropListGroup class="drop-list-group">
           <div
-            *ngFor="let primaryPath of resourceTable.primaryPaths"
-            [cdkDragData]="primaryPath"
-            cdkDrag
-            class="primary-path"
+            (cdkDropListDropped)="onPathDropped($event)"
+            [cdkDropListData]="resourceTable.primaryPaths"
+            cdkDropList
+            class="drop-list drop-list--primary"
           >
-            {{ primaryPath }}
+            <div
+              *ngFor="let primaryPath of resourceTable.primaryPaths"
+              [cdkDragData]="primaryPath"
+              cdkDrag
+              class="drop-list-item"
+            >
+              {{ primaryPath }}
+            </div>
+          </div>
+          <div
+            (cdkDropListDropped)="onPathDropped($event)"
+            [cdkDropListData]="resourceTable.secondaryPaths"
+            cdkDropList
+            class="drop-list drop-list--secondary"
+          >
+            <div
+              *ngFor="let secondaryPath of resourceTable.secondaryPaths"
+              [cdkDragData]="secondaryPath"
+              cdkDrag
+              class="drop-list-item"
+            >
+              {{ secondaryPath }}
+            </div>
           </div>
         </div>
       </td>

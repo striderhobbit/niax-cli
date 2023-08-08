@@ -72,20 +72,28 @@ $padding: 0.5em;
                 }
             }
 
-            > .primary-paths {
-                counter-reset: index;
+            > .drop-list-group > .drop-list {
+                background-color: yellow;
+                padding: 1em 0;
 
-                > .primary-path {
+                > .drop-list-item {
                     @include backgroundStyle();
-                    counter-increment: index;
                     cursor: grab;
                     min-width: max-content;
                     padding: $padding;
                     text-transform: uppercase;
+                }
 
-                    &::before {
-                        color: purple;
-                        content: "#" counter(index);
+                &--primary {
+                    counter-reset: index;
+
+                    > .drop-list-item {
+                        counter-increment: index;
+
+                        &::before {
+                            color: purple;
+                            content: "#" counter(index);
+                        }
                     }
                 }
             }

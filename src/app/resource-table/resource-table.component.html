@@ -3,7 +3,7 @@
     <tr (contextmenu)="resourceTableColumnsComponent.open()">
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
-        (click)="togglePrimaryPath(column)"
+        (click)="togglePath(column)"
         [attr.data-index]="resourceTable.primaryPaths.indexOf(column.path) + 1"
         [class.descending]="column.order === 'desc'"
         [class.primary]="column.sortIndex != null"
@@ -14,7 +14,7 @@
     <tr>
       <app-resource-table-columns
         (columnsChange)="updateResourceTableColumns()"
-        (primaryPathsChange)="writeBackPrimaryPaths()"
+        (pathsChange)="writeBackPaths()"
         [resourceTable]="resourceTable"
         #resourceTableColumnsComponent
       ></app-resource-table-columns>

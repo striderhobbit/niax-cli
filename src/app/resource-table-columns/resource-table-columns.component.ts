@@ -1,4 +1,8 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
 import {
   AfterViewInit,
   Component,
@@ -31,7 +35,7 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
   @Input({ required: true }) resourceTable!: Resource.Table<I>;
 
   @Output() columnsChange = new EventEmitter();
-  @Output() primaryPathsChange = new EventEmitter();
+  @Output() pathsChange = new EventEmitter();
 
   protected readonly uid = uniqueId();
 
@@ -57,14 +61,23 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
       });
   }
 
-  protected onPrimaryPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
-    moveItemInArray(
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    );
+  protected onPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    }
 
-    this.primaryPathsChange.emit();
+    this.pathsChange.emit();
   }
 
   public open(): boolean {
