@@ -68,6 +68,8 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
   }
 
   public open(): boolean {
+    delete this.drilldownKey;
+
     this.host.nativeElement.focus();
 
     return false;
