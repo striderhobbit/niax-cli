@@ -8,6 +8,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
         background-color: $backgroundColor;
         box-shadow: $boxShadow;
         position: absolute;
+        user-select: none;
     }
 
     &:not(:focus-within) > .context-menu-mount > table.context-menu {
@@ -24,7 +25,6 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
 
             > th.context-menu-handle {
                 padding: $cellPadding;
-                user-select: none;
             }
         }
 
@@ -78,13 +78,13 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                     border-collapse: collapse;
 
                     > tbody.cdk-drop-list {
-                        &:first-of-type {
+                        &:first-child {
                             counter-reset: index;
 
                             > tr.cdk-drag {
                                 counter-increment: index;
 
-                                > td:first-of-type::before {
+                                > td:first-child::before {
                                     color: purple;
                                     content: "#" counter(index);
                                 }
@@ -94,8 +94,8 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         &.cdk-drop-list-dragging {
                             background-color: $highlightBackgroundColor;
 
-                            &:first-of-type > tr.cdk-drag {
-                                > td:first-of-type::before {
+                            &:first-child > tr.cdk-drag {
+                                > td:first-child::before {
                                     visibility: hidden;
                                 }
                             }
@@ -115,7 +115,6 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                             > th,
                             > td {
                                 padding: $cellPadding;
-                                user-select: none;
                             }
                         }
                     }
