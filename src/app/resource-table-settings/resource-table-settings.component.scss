@@ -13,6 +13,7 @@ $padding: 0.5em;
 
             &.selected {
                 background-color: $background;
+                order: -1;
                 pointer-events: none;
             }
 
