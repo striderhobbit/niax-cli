@@ -91,11 +91,16 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                                     content: "#" counter(index);
                                 }
                             }
+
+                            &.cdk-drop-list-dragging > tr.cdk-drag {
+                                > td:first-of-type::before {
+                                    visibility: hidden;
+                                }
+                            }
                         }
 
                         > tr {
                             &.cdk-drag {
-                                cursor: grab;
                                 text-transform: uppercase;
 
                                 &:hover {
@@ -103,13 +108,10 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                                 }
                             }
 
-                            > th {
-                                user-select: none;
-                            }
-
                             > th,
                             > td {
                                 padding: $cellPadding;
+                                user-select: none;
                             }
                         }
                     }
