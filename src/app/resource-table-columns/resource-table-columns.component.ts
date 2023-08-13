@@ -18,19 +18,18 @@ import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { uniqueId } from 'lodash';
 
-type DrilldownKey = 'columns' | 'sort';
-
 @Component({
   selector: 'app-resource-table-columns',
   templateUrl: './resource-table-columns.component.html',
   styleUrls: ['./resource-table-columns.component.scss'],
 })
-export class ResourceTableColumnsComponent<I extends Resource.Item>
-  implements AfterViewInit
+export class ResourceTableColumnsComponent<
+  I extends Resource.Item,
+  K extends 'columns' | 'sort'
+> implements AfterViewInit
 {
   @HostBinding('tabindex') tabindex = -1;
-  @ViewChildren('drilldownHandle')
-  drilldownHandles!: QueryList<ElementRef<HTMLTableCellElement>>;
+  @ViewChildren('item') items!: QueryList<ElementRef<HTMLTableRowElement>>;
 
   @Input({ required: true }) resourceTable!: Resource.Table<I>;
 
@@ -39,25 +38,22 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
 
   protected readonly uid = uniqueId();
 
-  protected drilldownKey?: DrilldownKey;
+  protected selectedKey?: K;
 
   constructor(private readonly host: ElementRef) {}
 
   ngAfterViewInit(): void {
-    this.drilldownHandles
-      .map((handle) => handle.nativeElement)
-      .forEach((handle) => {
+    this.items
+      .map((item) => item.nativeElement)
+      .forEach((tr) => {
         ['focus', 'mouseenter'].forEach((event) =>
-          handle.addEventListener(
+          tr.addEventListener(
             event,
-            () =>
-              (this.drilldownKey = handle.dataset[
-                'drilldownKey'
-              ] as DrilldownKey)
+            () => (this.selectedKey = tr.dataset['key'] as K)
           )
         );
 
-        handle.setAttribute('tabindex', '0');
+        tr.setAttribute('tabindex', '0');
       });
   }
 
@@ -79,11 +75,11 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
 
     this.pathsChange.emit();
 
-    delete this.drilldownKey;
+    delete this.selectedKey;
   }
 
   public open(): boolean {
-    delete this.drilldownKey;
+    delete this.selectedKey;
 
     this.host.nativeElement.focus();
 

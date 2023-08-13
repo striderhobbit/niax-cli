@@ -1,14 +1,8 @@
 <div class="context-menu-mount" tabindex="0">
   <table class="context-menu">
-    <tr class="context-menu-item">
-      <th
-        #drilldownHandle
-        class="context-menu-handle"
-        data-drilldown-key="columns"
-      >
-        Columns
-      </th>
-      <td *ngIf="drilldownKey === 'columns'" class="context-menu-mount">
+    <tr #item class="context-menu-item" data-key="columns">
+      <th class="context-menu-handle">Columns</th>
+      <td *ngIf="selectedKey === 'columns'" class="context-menu-mount">
         <form
           (change)="columnsChange.emit()"
           class="context-menu context-menu__columns"
@@ -49,15 +43,9 @@
         </form>
       </td>
     </tr>
-    <tr class="context-menu-item">
-      <th
-        #drilldownHandle
-        class="context-menu-handle"
-        data-drilldown-key="sort"
-      >
-        Sort
-      </th>
-      <td *ngIf="drilldownKey === 'sort'" class="context-menu-mount">
+    <tr #item class="context-menu-item" data-key="sort">
+      <th class="context-menu-handle">Sort</th>
+      <td *ngIf="selectedKey === 'sort'" class="context-menu-mount">
         <div class="context-menu context-menu__sort">
           <table cdkDropListGroup tabindex="0">
             <tbody
