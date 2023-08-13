@@ -1,7 +1,7 @@
 $backgroundColor: var(--primary-color-1);
-$highlightBackgroundColor: rgb(0 0 0 / 5%);
 $boxShadow: 0 0 0.6em rgb(0 0 0 / 30%);
 $cellPadding: 0.5em;
+$highlightBackgroundColor: rgb(0 0 0 / 5%);
 
 :host {
     > .context-menu-mount {
