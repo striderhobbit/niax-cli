@@ -4,64 +4,60 @@
   [resourceTable]="resourceTable"
   #resourceTableSettingsComponent
 ></app-resource-table-settings>
-<div class="container">
-  <table>
-    <thead>
-      <tr>
-        <th (click)="resourceTableSettingsComponent.toggle()"></th>
-        <th
-          *ngFor="let column of resourceTable.columns | filter : 'include'"
-          (click)="togglePath(column)"
-          [attr.data-index]="
-            resourceTable.primaryPaths.indexOf(column.path) + 1
-          "
-          [class.descending]="column.order === 'desc'"
-          [class.primary]="column.sortIndex != null"
-        >
-          {{ column.path }}
-        </th>
-      </tr>
-    </thead>
-    <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
-      <tr
-        *ngIf="rowsPage.deferred && isConnected(rowsPage)"
-        (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
-        observeIntersection
+<table>
+  <thead>
+    <tr>
+      <th (click)="resourceTableSettingsComponent.toggle()"></th>
+      <th
+        *ngFor="let column of resourceTable.columns | filter : 'include'"
+        (click)="togglePath(column)"
+        [attr.data-index]="resourceTable.primaryPaths.indexOf(column.path) + 1"
+        [class.descending]="column.order === 'desc'"
+        [class.primary]="column.sortIndex != null"
       >
-        ⋯
-      </tr>
-      <tr
-        *ngFor="let row of rowsPage.items"
-        (viewInit)="$event.scrollIntoView({ block: 'start' })"
-        [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
-        observeViewInit
+        {{ column.path }}
+      </th>
+    </tr>
+  </thead>
+  <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
+    <tr
+      *ngIf="rowsPage.deferred && isConnected(rowsPage)"
+      (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
+      observeIntersection
+    >
+      ⋯
+    </tr>
+    <tr
+      *ngFor="let row of rowsPage.items"
+      (viewInit)="$event.scrollIntoView({ block: 'start' })"
+      [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
+      observeViewInit
+    >
+      <td></td>
+      <td
+        *ngFor="let field of row.fields"
+        [class.nullish]="field.value == null"
+        [ngSwitch]="field.type"
       >
-        <td></td>
-        <td
-          *ngFor="let field of row.fields"
-          [class.nullish]="field.value == null"
-          [ngSwitch]="field.type"
-        >
-          <input
-            *ngSwitchCase="'boolean'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="checkbox"
-          />
-          <input
-            *ngSwitchCase="'number'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="number"
-          />
-          <input
-            *ngSwitchCase="'string'"
-            (change)="patchResourceItem(field)"
-            [(ngModel)]="field.value"
-            type="text"
-          />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <input
+          *ngSwitchCase="'boolean'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="checkbox"
+        />
+        <input
+          *ngSwitchCase="'number'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="number"
+        />
+        <input
+          *ngSwitchCase="'string'"
+          (change)="patchResourceItem(field)"
+          [(ngModel)]="field.value"
+          type="text"
+        />
+      </td>
+    </tr>
+  </tbody>
+</table>

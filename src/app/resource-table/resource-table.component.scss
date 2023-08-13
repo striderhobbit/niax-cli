@@ -1,13 +1,14 @@
 :host {
-    > .container {
-        height: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > table {
+        border-spacing: 0;
+        display: block;
+        flex-grow: 1;
         overflow: auto;
         position: relative;
-    }
-
-    > .container > table {
-        border-collapse: separate;
-        border-spacing: 0;
 
         &::after {
             content: "";

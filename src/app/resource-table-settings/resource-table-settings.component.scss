@@ -1,45 +1,48 @@
 $background: var(--primary-color-1);
-$boxShadow: 0 0 0.6em rgb(0 0 0 / 30%);
-$cellPadding: 0.5em;
-$highlightBackground3: rgb(0 0 0 / 3%);
-$highlightBackground5: rgb(0 0 0 / 5%);
+$highlightBackground: rgb(0 0 0 / 5%);
+$padding: 0.5em;
 
-:host > table {
-    background-color: $background;
-    border-collapse: collapse;
-    box-shadow: $boxShadow;
-    position: absolute;
-    user-select: none;
+:host {
+    > .tabs {
+        display: flex;
 
-    &.hidden {
-        visibility: hidden;
+        > .tab {
+            cursor: pointer;
+            padding: $padding;
+            text-transform: capitalize;
+
+            &.selected {
+                background-color: $background;
+                pointer-events: none;
+            }
+
+            &:hover {
+                background-color: $highlightBackground;
+            }
+        }
     }
 
-    > tr.tab {
-        > th.tab-handle {
-            padding: $cellPadding;
-            text-transform: capitalize;
-        }
+    > .contents {
+        background-color: $background;
 
-        > td.tab-content {
-            background-color: $background;
-            box-shadow: $boxShadow;
-            position: absolute;
-            top: 0;
+        > .content {
+            box-shadow: 0 0 0.6em rgb(0 0 0 / 30%);
+            display: inline-flex;
+            position: relative;
+            z-index: 2;
 
             &__columns {
                 > form > table {
                     border-collapse: collapse;
 
                     > tr {
-                        &:focus-within,
                         &:hover {
-                            background-color: $highlightBackground5;
+                            background-color: $highlightBackground;
                         }
 
                         > td {
                             > * {
-                                padding: $cellPadding;
+                                padding: $padding;
                             }
 
                             > div {
@@ -67,17 +70,30 @@ $highlightBackground5: rgb(0 0 0 / 5%);
             }
 
             &__sort {
-                > table {
-                    border-collapse: collapse;
+                > .cdk-drop-list-group {
+                    display: flex;
 
-                    > tbody.cdk-drop-list {
+                    > .cdk-drop-list {
+                        &::before {
+                            content: "secondary";
+                            display: block;
+                            font-weight: bold;
+                            padding: $padding;
+                            text-align: center;
+                            text-transform: capitalize;
+                        }
+
                         &:first-child {
                             counter-reset: index;
 
-                            > tr.cdk-drag {
+                            &::before {
+                                content: "primary";
+                            }
+
+                            > .cdk-drag {
                                 counter-increment: index;
 
-                                > td:nth-child(2)::before {
+                                &::before {
                                     color: purple;
                                     content: "#" counter(index);
                                 }
@@ -85,46 +101,24 @@ $highlightBackground5: rgb(0 0 0 / 5%);
                         }
 
                         &.cdk-drop-list-dragging {
-                            background-color: $highlightBackground5;
+                            background-color: $highlightBackground;
 
-                            &:first-child > tr.cdk-drag > td:nth-child(2)::before {
+                            &:first-child > .cdk-drag::before {
                                 visibility: hidden;
                             }
                         }
 
-                        &:not(.cdk-drop-list-dragging) > tr.cdk-drag:hover {
-                            background-color: $highlightBackground5;
+                        &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
+                            background-color: $highlightBackground;
                         }
 
-                        > tr {
-                            &.cdk-drag {
-                                text-transform: uppercase;
-                            }
-
-                            > th,
-                            > td {
-                                padding: $cellPadding;
-                            }
+                        > .cdk-drag {
+                            padding: $padding;
+                            text-transform: uppercase;
+                            user-select: none;
                         }
                     }
                 }
-            }
-        }
-
-        &.selected {
-            > th.tab-handle {
-                background-color: $highlightBackground3;
-            }
-        }
-
-        &:not(.selected) {
-            > th.tab-handle:hover {
-                background-color: $highlightBackground5;
-                cursor: pointer;
-            }
-
-            > td.tab-content {
-                display: none;
             }
         }
     }

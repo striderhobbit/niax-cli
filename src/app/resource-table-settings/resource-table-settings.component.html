@@ -1,84 +1,85 @@
-<table [class.hidden]="!visible">
-  <tr class="tab" #tab>
-    <th class="tab-handle">columns</th>
-    <td class="tab-content">
-      <form (change)="columnsChange.emit()">
-        <table>
-          <tr *ngFor="let column of resourceTable.columns; index as i">
-            <td>
-              <div>
-                <input [checked]="column.include" disabled type="checkbox" />
-              </div>
-            </td>
-            <td>
-              <input
-                [(ngModel)]="column.include"
-                [name]="columnToggle.id"
-                #columnToggle
-                hidden
-                id="column-toggle-{{ uid }}-{{ i }}"
-                type="checkbox"
-              />
-              <label [for]="columnToggle.id">{{ column.path }}</label>
-            </td>
-            <td>
-              <input
-                (ngModelChange)="
-                  columnFilter.invalid || (column.filter = $event)
-                "
-                [ngModel]="column.filter"
-                [title]="columnFilter.errors?.['SyntaxError'] ?? ''"
-                #columnFilter="ngModel"
-                name="column-filter-{{ uid }}-{{ i }}"
-                pattern="[^,]*"
-                placeholder="/(?:)/"
-                type="text"
-                validateRegExp
-              />
-            </td>
-          </tr>
-        </table>
-      </form>
-    </td>
-  </tr>
-  <tr class="tab" #tab>
-    <th class="tab-handle">sort</th>
-    <td class="tab-content">
-      <table cdkDropListGroup>
-        <tbody
-          (cdkDropListDropped)="onPathDropped($event)"
-          [cdkDropListData]="resourceTable.primaryPaths"
-          cdkDropList
-        >
-          <tr>
-            <th colspan="2">Primary</th>
-          </tr>
-          <tr
-            *ngFor="let primaryPath of resourceTable.primaryPaths"
-            [cdkDragData]="primaryPath"
-            cdkDrag
-          >
-            <td>{{ primaryPath }}</td>
-            <td></td>
-          </tr>
-        </tbody>
-        <tbody
-          (cdkDropListDropped)="onPathDropped($event)"
-          [cdkDropListData]="resourceTable.secondaryPaths"
-          cdkDropList
-        >
-          <tr>
-            <th colspan="2">Secondary</th>
-          </tr>
-          <tr
-            *ngFor="let secondaryPath of resourceTable.secondaryPaths"
-            [cdkDragData]="secondaryPath"
-            cdkDrag
-          >
-            <td colspan="2">{{ secondaryPath }}</td>
-          </tr>
-        </tbody>
+<div class="tabs">
+  <div
+    class="tab"
+    (click)="tabKey = 'columns'"
+    [class.selected]="tabKey === 'columns'"
+  >
+    columns
+  </div>
+  <div
+    class="tab"
+    (click)="tabKey = 'sort'"
+    [class.selected]="tabKey === 'sort'"
+  >
+    sort
+  </div>
+</div>
+<div class="contents">
+  <div class="content content__columns" *ngIf="tabKey === 'columns'">
+    <form (change)="columnsChange.emit()">
+      <table>
+        <tr *ngFor="let column of resourceTable.columns; index as i">
+          <td>
+            <div>
+              <input [checked]="column.include" disabled type="checkbox" />
+            </div>
+          </td>
+          <td>
+            <input
+              [(ngModel)]="column.include"
+              [name]="columnToggle.id"
+              #columnToggle
+              hidden
+              id="column-toggle-{{ uid }}-{{ i }}"
+              type="checkbox"
+            />
+            <label [for]="columnToggle.id">{{ column.path }}</label>
+          </td>
+          <td>
+            <input
+              (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
+              [ngModel]="column.filter"
+              [title]="columnFilter.errors?.['SyntaxError'] ?? ''"
+              #columnFilter="ngModel"
+              name="column-filter-{{ uid }}-{{ i }}"
+              pattern="[^,]*"
+              placeholder="/(?:)/"
+              type="text"
+              validateRegExp
+            />
+          </td>
+        </tr>
       </table>
-    </td>
-  </tr>
-</table>
+    </form>
+  </div>
+  <div class="content content__sort" *ngIf="tabKey === 'sort'">
+    <div class="cdk-drop-list-group" cdkDropListGroup>
+      <div
+        (cdkDropListDropped)="onPathDropped($event)"
+        [cdkDropListData]="resourceTable.primaryPaths"
+        cdkDropList
+      >
+        <div
+          *ngFor="let primaryPath of resourceTable.primaryPaths"
+          [cdkDragData]="primaryPath"
+          cdkDrag
+        >
+          {{ primaryPath }}
+        </div>
+      </div>
+      <div
+        (cdkDropListDropped)="onPathDropped($event)"
+        [cdkDropListData]="resourceTable.secondaryPaths"
+        cdkDropList
+      >
+        <div
+          *ngFor="let secondaryPath of resourceTable.secondaryPaths"
+          [cdkDragData]="secondaryPath"
+          cdkDrag
+        >
+          {{ secondaryPath }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
