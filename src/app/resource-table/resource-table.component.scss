@@ -40,6 +40,11 @@
                     text-transform: uppercase;
                     white-space: nowrap;
 
+                    &:first-child {
+                        left: 0;
+                        position: sticky;
+                    }
+
                     &.primary {
                         &::before {
                             color: blue;

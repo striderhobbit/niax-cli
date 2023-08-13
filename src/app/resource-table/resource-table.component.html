@@ -33,7 +33,7 @@
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       observeViewInit
     >
-      <td></td>
+      <th></th>
       <td
         *ngFor="let field of row.fields"
         [class.nullish]="field.value == null"
