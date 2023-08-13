@@ -1,21 +1,14 @@
 <div class="tabs">
   <div
-    class="tab"
-    (click)="tabKey = 'columns'"
-    [class.selected]="tabKey === 'columns'"
+    *ngFor="let key of tabKeys"
+    (click)="tabKey = key"
+    [class.selected]="tabKey === key"
   >
-    columns
-  </div>
-  <div
-    class="tab"
-    (click)="tabKey = 'sort'"
-    [class.selected]="tabKey === 'sort'"
-  >
-    sort
+    {{ key }}
   </div>
 </div>
 <div class="contents">
-  <div class="content content__columns" *ngIf="tabKey === 'columns'">
+  <div *ngIf="tabKey === 'columns'" class="content content__columns">
     <form (change)="columnsChange.emit()">
       <table>
         <tr *ngFor="let column of resourceTable.columns; index as i">
@@ -52,7 +45,7 @@
       </table>
     </form>
   </div>
-  <div class="content content__sort" *ngIf="tabKey === 'sort'">
+  <div *ngIf="tabKey === 'sort'" class="content content__sort">
     <div class="cdk-drop-list-group" cdkDropListGroup>
       <div
         (cdkDropListDropped)="onPathDropped($event)"

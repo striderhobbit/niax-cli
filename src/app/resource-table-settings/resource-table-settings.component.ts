@@ -24,6 +24,7 @@ export class ResourceTableSettingsComponent<I extends Resource.Item> {
   @Output() columnsChange = new EventEmitter();
   @Output() pathsChange = new EventEmitter();
 
+  protected readonly tabKeys: TabKey[] = ['columns', 'sort'];
   protected readonly uid = uniqueId();
 
   protected tabKey: TabKey = 'columns';

@@ -6,7 +6,7 @@ $padding: 0.5em;
     > .tabs {
         display: flex;
 
-        > .tab {
+        > * {
             cursor: pointer;
             padding: $padding;
             text-transform: capitalize;
