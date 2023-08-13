@@ -59,7 +59,7 @@ export class ResourceTableColumnsComponent<
 
   protected onPathDropped(
     event: CdkDragDrop<PropertyPath<I>[]>,
-    container: HTMLTableElement
+    groupTable: HTMLTableElement
   ): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(
@@ -78,7 +78,7 @@ export class ResourceTableColumnsComponent<
 
     this.pathsChange.emit();
 
-    container.blur();
+    groupTable.blur();
   }
 
   public open(): boolean {

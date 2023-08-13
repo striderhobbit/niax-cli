@@ -14,7 +14,7 @@
                   <input [checked]="column.include" disabled type="checkbox" />
                 </div>
               </td>
-              <th>
+              <td>
                 <input
                   [(ngModel)]="column.include"
                   [name]="columnToggle.id"
@@ -26,7 +26,7 @@
                 <label [for]="columnToggle.id" tabindex="0">
                   {{ column.path }}
                 </label>
-              </th>
+              </td>
               <td>
                 <input
                   (ngModelChange)="
