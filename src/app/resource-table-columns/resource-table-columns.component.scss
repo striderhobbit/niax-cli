@@ -1,98 +1,116 @@
+$backgroundColor: var(--primary-color-1);
+$highlightBackgroundColor: rgb(0 0 0 / 5%);
 $boxShadow: 0 0 0.6em rgb(0 0 0 / 30%);
-$padding: 0.5em;
-
-@mixin backgroundStyle() {
-    background-color: hsl(var(--primary-color-1-h), var(--primary-color-1-s), var(--background-lightness, 97%));
-
-    &:hover {
-        --background-lightness: 93%;
-    }
-}
+$cellPadding: 0.5em;
 
 :host {
-    > .content {
+    > .context-menu-mount {
+        background-color: $backgroundColor;
         box-shadow: $boxShadow;
         position: absolute;
     }
 
-    &:not(:focus-within) > .content > table {
+    &:not(:focus-within) > .context-menu-mount > table.context-menu {
         display: none;
     }
 
-    > .content > table {
+    > .context-menu-mount > table.context-menu {
         border-collapse: collapse;
 
-        > tr > th {
-            @include backgroundStyle();
-            padding: $padding;
+        > tr.context-menu-item > th.context-menu-handle {
+            padding: $cellPadding;
             user-select: none;
+
+            &:hover {
+                background-color: $highlightBackgroundColor;
+            }
         }
 
-        &:not(:hover) > tr:not(:focus-within) > td {
+        &:not(:hover) > tr.context-menu-item:not(:focus-within) > td.context-menu-mount {
             display: none;
         }
 
-        > tr > td {
+        > tr.context-menu-item > td.context-menu-mount {
             position: relative;
 
-            > * {
+            > .context-menu {
+                background-color: $backgroundColor;
                 box-shadow: $boxShadow;
                 position: absolute;
                 top: 0;
-            }
 
-            > form > table {
-                border-collapse: collapse;
+                &__columns > table {
+                    border-collapse: collapse;
 
-                > tr {
-                    @include backgroundStyle();
-
-                    > th,
-                    > td {
-                        > * {
-                            padding: $padding;
+                    > tr {
+                        &:hover {
+                            background-color: $highlightBackgroundColor;
                         }
 
-                        > label {
-                            display: block;
-                            text-transform: uppercase;
-                        }
+                        > th,
+                        > td {
+                            > * {
+                                padding: $cellPadding;
+                            }
 
-                        > input {
-                            background: inherit;
-                            border: none;
-                            color: inherit;
-                            font: inherit;
+                            > label {
+                                display: block;
+                                text-transform: uppercase;
+                            }
 
-                            &.ng-invalid {
-                                color: red;
+                            > input {
+                                background: inherit;
+                                border: none;
+                                color: inherit;
+                                font: inherit;
+
+                                &.ng-invalid {
+                                    color: red;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            > .drop-list-group > .drop-list {
-                background-color: yellow;
-                padding: 1em 0;
+                &__sort > table {
+                    border-collapse: collapse;
 
-                > .drop-list-item {
-                    @include backgroundStyle();
-                    cursor: grab;
-                    min-width: max-content;
-                    padding: $padding;
-                    text-transform: uppercase;
-                }
+                    > tbody.cdk-drop-list {
+                        &.cdk-drop-list-dragging {
+                            background-color: $highlightBackgroundColor;
+                        }
 
-                &--primary {
-                    counter-reset: index;
+                        &:first-of-type {
+                            counter-reset: index;
 
-                    > .drop-list-item {
-                        counter-increment: index;
+                            > tr.cdk-drag {
+                                counter-increment: index;
 
-                        &::before {
-                            color: purple;
-                            content: "#" counter(index);
+                                > td:first-of-type::before {
+                                    color: purple;
+                                    content: "#" counter(index);
+                                }
+                            }
+                        }
+
+                        > tr {
+                            &.cdk-drag {
+                                cursor: grab;
+                                text-transform: uppercase;
+
+                                &:hover {
+                                    background-color: $highlightBackgroundColor;
+                                }
+                            }
+
+                            > th {
+                                user-select: none;
+                            }
+
+                            > th,
+                            > td {
+                                padding: $cellPadding;
+                            }
                         }
                     }
                 }

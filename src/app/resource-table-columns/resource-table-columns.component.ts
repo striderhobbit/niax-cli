@@ -78,6 +78,8 @@ export class ResourceTableColumnsComponent<I extends Resource.Item>
     }
 
     this.pathsChange.emit();
+
+    delete this.drilldownKey;
   }
 
   public open(): boolean {

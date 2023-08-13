@@ -1,9 +1,18 @@
-<div class="content" tabindex="0">
-  <table>
-    <tr>
-      <th #drilldownHandle data-drilldown-key="columns">Columns</th>
-      <td *ngIf="drilldownKey === 'columns'">
-        <form (change)="columnsChange.emit()">
+<div class="context-menu-mount" tabindex="0">
+  <table class="context-menu">
+    <tr class="context-menu-item">
+      <th
+        #drilldownHandle
+        class="context-menu-handle"
+        data-drilldown-key="columns"
+      >
+        Columns
+      </th>
+      <td *ngIf="drilldownKey === 'columns'" class="context-menu-mount">
+        <form
+          (change)="columnsChange.emit()"
+          class="context-menu context-menu__columns"
+        >
           <table>
             <tr *ngFor="let column of resourceTable.columns; index as i">
               <td>
@@ -40,40 +49,52 @@
         </form>
       </td>
     </tr>
-    <tr>
-      <th #drilldownHandle data-drilldown-key="sort">Sort</th>
-      <td *ngIf="drilldownKey === 'sort'">
-        <div cdkDropListGroup class="drop-list-group">
-          <div
-            (cdkDropListDropped)="onPathDropped($event)"
-            [cdkDropListData]="resourceTable.primaryPaths"
-            cdkDropList
-            class="drop-list drop-list--primary"
-          >
-            <div
-              *ngFor="let primaryPath of resourceTable.primaryPaths"
-              [cdkDragData]="primaryPath"
-              cdkDrag
-              class="drop-list-item"
+    <tr class="context-menu-item">
+      <th
+        #drilldownHandle
+        class="context-menu-handle"
+        data-drilldown-key="sort"
+      >
+        Sort
+      </th>
+      <td *ngIf="drilldownKey === 'sort'" class="context-menu-mount">
+        <div class="context-menu context-menu__sort">
+          <table cdkDropListGroup tabindex="0">
+            <tbody
+              (cdkDropListDropped)="onPathDropped($event)"
+              [cdkDropListData]="resourceTable.primaryPaths"
+              cdkDropList
             >
-              {{ primaryPath }}
-            </div>
-          </div>
-          <div
-            (cdkDropListDropped)="onPathDropped($event)"
-            [cdkDropListData]="resourceTable.secondaryPaths"
-            cdkDropList
-            class="drop-list drop-list--secondary"
-          >
-            <div
-              *ngFor="let secondaryPath of resourceTable.secondaryPaths"
-              [cdkDragData]="secondaryPath"
-              cdkDrag
-              class="drop-list-item"
+              <tr>
+                <th colspan="2">Primary</th>
+              </tr>
+              <tr
+                *ngFor="let primaryPath of resourceTable.primaryPaths"
+                [cdkDragData]="primaryPath"
+                cdkDrag
+              >
+                <td></td>
+                <td>{{ primaryPath }}</td>
+              </tr>
+            </tbody>
+            <tbody
+              (cdkDropListDropped)="onPathDropped($event)"
+              [cdkDropListData]="resourceTable.secondaryPaths"
+              cdkDropList
             >
-              {{ secondaryPath }}
-            </div>
-          </div>
+              <tr>
+                <th colspan="2">Secondary</th>
+              </tr>
+              <tr
+                *ngFor="let secondaryPath of resourceTable.secondaryPaths"
+                [cdkDragData]="secondaryPath"
+                cdkDrag
+              >
+                <td></td>
+                <td>{{ secondaryPath }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </td>
     </tr>
