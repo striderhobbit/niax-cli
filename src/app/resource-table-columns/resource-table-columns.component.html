@@ -23,7 +23,9 @@
                   id="column-toggle-{{ uid }}-{{ i }}"
                   type="checkbox"
                 />
-                <label [for]="columnToggle.id">{{ column.path }}</label>
+                <label [for]="columnToggle.id" tabindex="0">
+                  {{ column.path }}
+                </label>
               </th>
               <td>
                 <input
@@ -49,9 +51,9 @@
       <th class="context-menu-handle">Sort</th>
       <td *ngIf="selectedKey === 'sort'" class="context-menu-mount">
         <div class="context-menu context-menu__sort">
-          <table cdkDropListGroup>
+          <table #cdkDropListGroup cdkDropListGroup tabindex="-1">
             <tbody
-              (cdkDropListDropped)="onPathDropped($event)"
+              (cdkDropListDropped)="onPathDropped($event, cdkDropListGroup)"
               [cdkDropListData]="resourceTable.primaryPaths"
               cdkDropList
             >
@@ -68,7 +70,7 @@
               </tr>
             </tbody>
             <tbody
-              (cdkDropListDropped)="onPathDropped($event)"
+              (cdkDropListDropped)="onPathDropped($event, cdkDropListGroup)"
               [cdkDropListData]="resourceTable.secondaryPaths"
               cdkDropList
             >

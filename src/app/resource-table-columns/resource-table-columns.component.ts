@@ -57,7 +57,10 @@ export class ResourceTableColumnsComponent<
       });
   }
 
-  protected onPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
+  protected onPathDropped(
+    event: CdkDragDrop<PropertyPath<I>[]>,
+    container: HTMLTableElement
+  ): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(
         event.container.data,
@@ -74,6 +77,8 @@ export class ResourceTableColumnsComponent<
     }
 
     this.pathsChange.emit();
+
+    container.blur();
   }
 
   public open(): boolean {

@@ -19,6 +19,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
         border-collapse: collapse;
 
         > tr.context-menu-item {
+            &:focus-within,
             &:hover {
                 background-color: $highlightBackgroundColor;
             }
@@ -45,6 +46,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                     border-collapse: collapse;
 
                     > tr {
+                        &:focus-within,
                         &:hover {
                             background-color: $highlightBackgroundColor;
                         }
