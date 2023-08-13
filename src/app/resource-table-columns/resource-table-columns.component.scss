@@ -94,17 +94,13 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         &.cdk-drop-list-dragging {
                             background-color: $highlightBackgroundColor;
 
-                            &:first-child > tr.cdk-drag {
-                                > td:first-child::before {
-                                    visibility: hidden;
-                                }
+                            &:first-child > tr.cdk-drag > td:first-child::before {
+                                visibility: hidden;
                             }
                         }
 
-                        &:not(.cdk-drop-list-dragging) {
-                            > tr.cdk-drag:hover {
-                                background-color: $highlightBackgroundColor;
-                            }
+                        &:not(.cdk-drop-list-dragging) > tr.cdk-drag:hover {
+                            background-color: $highlightBackgroundColor;
                         }
 
                         > tr {
