@@ -26,7 +26,7 @@ $padding: 0.5em;
             }
 
             &:hover {
-                box-shadow: 0 0 1px black inset;
+                box-shadow: 0 0 0 1px rgb(0 0 0 / 20%) inset;
             }
         }
     }
@@ -35,7 +35,7 @@ $padding: 0.5em;
         background-color: $background;
 
         > .content {
-            box-shadow: 0 0 0.6em rgb(0 0 0 / 30%);
+            box-shadow: 0 0 0.5em rgb(0 0 0 / 30%) inset;
             display: inline-flex;
             position: relative;
             z-index: 2;
