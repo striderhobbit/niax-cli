@@ -11,12 +11,17 @@ $padding: 0.5em;
             padding: $padding;
             text-transform: capitalize;
 
+            &::after {
+                content: "✖";
+                visibility: hidden;
+            }
+
             &.selected {
                 background-color: $background;
                 order: -1;
 
-                &:hover {
-                    text-decoration: line-through;
+                &:hover::after {
+                    visibility: unset;
                 }
             }
 
