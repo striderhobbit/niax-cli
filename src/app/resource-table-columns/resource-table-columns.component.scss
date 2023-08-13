@@ -86,7 +86,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                             > tr.cdk-drag {
                                 counter-increment: index;
 
-                                > td:first-child::before {
+                                > td:nth-child(2)::before {
                                     color: purple;
                                     content: "#" counter(index);
                                 }
@@ -96,7 +96,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         &.cdk-drop-list-dragging {
                             background-color: $highlightBackgroundColor;
 
-                            &:first-child > tr.cdk-drag > td:first-child::before {
+                            &:first-child > tr.cdk-drag > td:nth-child(2)::before {
                                 visibility: hidden;
                             }
                         }
