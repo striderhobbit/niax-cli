@@ -1,6 +1,7 @@
 <table>
   <thead>
-    <tr (contextmenu)="resourceTableColumnsComponent.open()">
+    <tr>
+      <th (click)="resourceTableSettingsComponent.toggle()"></th>
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePath(column)"
@@ -12,12 +13,12 @@
       </th>
     </tr>
     <tr>
-      <app-resource-table-columns
+      <app-resource-table-settings
         (columnsChange)="updateResourceTableColumns()"
         (pathsChange)="writeBackPaths()"
         [resourceTable]="resourceTable"
-        #resourceTableColumnsComponent
-      ></app-resource-table-columns>
+        #resourceTableSettingsComponent
+      ></app-resource-table-settings>
     </tr>
   </thead>
   <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
@@ -34,6 +35,7 @@
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       observeViewInit
     >
+      <td></td>
       <td
         *ngFor="let field of row.fields"
         [class.nullish]="field.value == null"

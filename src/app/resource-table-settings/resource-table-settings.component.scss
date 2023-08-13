@@ -1,54 +1,40 @@
-$backgroundColor: var(--primary-color-1);
+$background: var(--primary-color-1);
 $boxShadow: 0 0 0.6em rgb(0 0 0 / 30%);
 $cellPadding: 0.5em;
-$highlightBackgroundColor: rgb(0 0 0 / 5%);
+$highlightBackground3: rgb(0 0 0 / 3%);
+$highlightBackground5: rgb(0 0 0 / 5%);
 
-:host {
-    > .context-menu-mount {
-        background-color: $backgroundColor;
-        box-shadow: $boxShadow;
-        position: absolute;
-        user-select: none;
+:host > table {
+    background-color: $background;
+    border-collapse: collapse;
+    box-shadow: $boxShadow;
+    position: absolute;
+    user-select: none;
+
+    &.hidden {
+        visibility: hidden;
     }
 
-    &:not(:focus-within) > .context-menu-mount > table.context-menu {
-        display: none;
-    }
-
-    > .context-menu-mount > table.context-menu {
-        border-collapse: collapse;
-
-        > tr.context-menu-item {
-            &:focus-within,
-            &:hover {
-                background-color: $highlightBackgroundColor;
-            }
-
-            > th.context-menu-handle {
-                padding: $cellPadding;
-            }
+    > tr.tab {
+        > th.tab-handle {
+            padding: $cellPadding;
+            text-transform: capitalize;
         }
 
-        &:not(:hover) > tr.context-menu-item:not(:focus-within) > td.context-menu-mount {
-            display: none;
-        }
+        > td.tab-content {
+            background-color: $background;
+            box-shadow: $boxShadow;
+            position: absolute;
+            top: 0;
 
-        > tr.context-menu-item > td.context-menu-mount {
-            position: relative;
-
-            > .context-menu {
-                background-color: $backgroundColor;
-                box-shadow: $boxShadow;
-                position: absolute;
-                top: 0;
-
-                &__columns > table {
+            &__columns {
+                > form > table {
                     border-collapse: collapse;
 
                     > tr {
                         &:focus-within,
                         &:hover {
-                            background-color: $highlightBackgroundColor;
+                            background-color: $highlightBackground5;
                         }
 
                         > td {
@@ -78,8 +64,10 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         }
                     }
                 }
+            }
 
-                &__sort > table {
+            &__sort {
+                > table {
                     border-collapse: collapse;
 
                     > tbody.cdk-drop-list {
@@ -97,7 +85,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         }
 
                         &.cdk-drop-list-dragging {
-                            background-color: $highlightBackgroundColor;
+                            background-color: $highlightBackground5;
 
                             &:first-child > tr.cdk-drag > td:nth-child(2)::before {
                                 visibility: hidden;
@@ -105,7 +93,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         }
 
                         &:not(.cdk-drop-list-dragging) > tr.cdk-drag:hover {
-                            background-color: $highlightBackgroundColor;
+                            background-color: $highlightBackground5;
                         }
 
                         > tr {
@@ -120,6 +108,23 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                         }
                     }
                 }
+            }
+        }
+
+        &.selected {
+            > th.tab-handle {
+                background-color: $highlightBackground3;
+            }
+        }
+
+        &:not(.selected) {
+            > th.tab-handle:hover {
+                background-color: $highlightBackground5;
+                cursor: pointer;
+            }
+
+            > td.tab-content {
+                display: none;
             }
         }
     }

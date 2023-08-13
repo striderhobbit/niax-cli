@@ -8,9 +8,9 @@ import { AppComponent } from './app.component';
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
+import { ResourceTableSettingsComponent } from './resource-table-settings/resource-table-settings.component';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
-import { ResourceTableColumnsComponent } from './resource-table-columns/resource-table-columns.component';
 
 @NgModule({
   declarations: [
@@ -18,8 +18,8 @@ import { ResourceTableColumnsComponent } from './resource-table-columns/resource
     FilterPipe,
     IntersectionObserverDirective,
     RegExpValidatorDirective,
-    ResourceTableColumnsComponent,
     ResourceTableComponent,
+    ResourceTableSettingsComponent,
     ViewInitObserverDirective,
   ],
   imports: [
