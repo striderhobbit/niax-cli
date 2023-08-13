@@ -40,11 +40,6 @@
                     text-transform: uppercase;
                     white-space: nowrap;
 
-                    &:first-child {
-                        left: 0;
-                        position: sticky;
-                    }
-
                     &.primary {
                         &::before {
                             color: blue;
@@ -66,7 +61,15 @@
                 > th,
                 > td {
                     background-color: rgba(var(--primary-color-1-rgb), var(--background-opacity, 1));
-                    border: 1px solid var(--primary-color-2);
+
+                    &:not(.placeholder) {
+                        border: 1px solid var(--primary-color-2);
+                    }
+
+                    &.sticky {
+                        left: 0;
+                        position: sticky;
+                    }
                 }
 
                 > td {
@@ -76,6 +79,11 @@
 
                     &.nullish {
                         --background-opacity: 30%;
+                    }
+
+                    &.placeholder::before {
+                        content: "⋯";
+                        user-select: none;
                     }
 
                     > input {

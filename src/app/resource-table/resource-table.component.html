@@ -7,7 +7,7 @@
 <table>
   <thead>
     <tr>
-      <th (click)="resourceTableSettingsComponent.toggle()"></th>
+      <th class="sticky" (click)="resourceTableSettingsComponent.toggle()"></th>
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePath(column)"
@@ -25,7 +25,7 @@
       (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
       observeIntersection
     >
-      ⋯
+      <td class="placeholder sticky"></td>
     </tr>
     <tr
       *ngFor="let row of rowsPage.items"
@@ -33,7 +33,7 @@
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       observeViewInit
     >
-      <th></th>
+      <th class="sticky"></th>
       <td
         *ngFor="let field of row.fields"
         [class.nullish]="field.value == null"
