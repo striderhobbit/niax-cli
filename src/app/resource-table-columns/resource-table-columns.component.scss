@@ -17,12 +17,14 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
     > .context-menu-mount > table.context-menu {
         border-collapse: collapse;
 
-        > tr.context-menu-item > th.context-menu-handle {
-            padding: $cellPadding;
-            user-select: none;
-
+        > tr.context-menu-item {
             &:hover {
                 background-color: $highlightBackgroundColor;
+            }
+
+            > th.context-menu-handle {
+                padding: $cellPadding;
+                user-select: none;
             }
         }
 
