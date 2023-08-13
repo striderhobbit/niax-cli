@@ -7,10 +7,12 @@
 
         > label {
             display: flex;
+            justify-content: center;
             padding: var(--padding, 0.5em);
 
             > .caption {
-                margin-left: 1ch;
+                margin: 0 auto;
+                padding-left: 1ch;
             }
         }
     }
