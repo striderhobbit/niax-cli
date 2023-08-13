@@ -1,0 +1,17 @@
+:host {
+    display: inline-flex;
+    width: 100%;
+
+    > form {
+        flex-grow: 1;
+
+        > label {
+            display: flex;
+            padding: var(--padding, 0.5em);
+
+            > .caption {
+                margin-left: 1ch;
+            }
+        }
+    }
+}

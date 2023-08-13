@@ -11,10 +11,12 @@ import { RegExpValidatorDirective } from './reg-exp-validator.directive';
 import { ResourceTableSettingsComponent } from './resource-table-settings/resource-table-settings.component';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
+import { CheckboxComponent } from './checkbox/checkbox.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    CheckboxComponent,
     FilterPipe,
     IntersectionObserverDirective,
     RegExpValidatorDirective,

@@ -45,24 +45,14 @@ $padding: 0.5em;
                         }
 
                         > td {
-                            > * {
-                                padding: $padding;
-                            }
-
-                            > div {
-                                display: flex;
-                            }
-
-                            > label {
-                                display: block;
-                                text-transform: uppercase;
-                            }
+                            --padding: #{$padding};
 
                             > input[type="text"] {
                                 background: inherit;
                                 border: none;
                                 color: inherit;
                                 font: inherit;
+                                padding: var(--padding);
 
                                 &.ng-invalid {
                                     color: red;

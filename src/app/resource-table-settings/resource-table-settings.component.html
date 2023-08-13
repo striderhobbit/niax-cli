@@ -13,20 +13,11 @@
       <table>
         <tr *ngFor="let column of resourceTable.columns; index as i">
           <td>
-            <div>
-              <input [checked]="column.include" disabled type="checkbox" />
-            </div>
-          </td>
-          <td>
-            <input
-              [(ngModel)]="column.include"
-              [name]="columnToggle.id"
-              #columnToggle
-              hidden
-              id="column-toggle-{{ uid }}-{{ i }}"
-              type="checkbox"
-            />
-            <label [for]="columnToggle.id">{{ column.path }}</label>
+            <app-checkbox
+              (value)="column.include = $event"
+              [label]="column.path"
+              [value]="column.include"
+            ></app-checkbox>
           </td>
           <td>
             <input
