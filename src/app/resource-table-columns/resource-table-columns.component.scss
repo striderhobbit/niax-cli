@@ -76,10 +76,6 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                     border-collapse: collapse;
 
                     > tbody.cdk-drop-list {
-                        &.cdk-drop-list-dragging {
-                            background-color: $highlightBackgroundColor;
-                        }
-
                         &:first-of-type {
                             counter-reset: index;
 
@@ -91,8 +87,12 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                                     content: "#" counter(index);
                                 }
                             }
+                        }
 
-                            &.cdk-drop-list-dragging > tr.cdk-drag {
+                        &.cdk-drop-list-dragging {
+                            background-color: $highlightBackgroundColor;
+
+                            &:first-of-type > tr.cdk-drag {
                                 > td:first-of-type::before {
                                     visibility: hidden;
                                 }
