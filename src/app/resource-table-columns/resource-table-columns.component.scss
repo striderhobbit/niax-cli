@@ -56,6 +56,10 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                                 padding: $cellPadding;
                             }
 
+                            > div {
+                                display: flex;
+                            }
+
                             > label {
                                 display: block;
                                 text-transform: uppercase;
