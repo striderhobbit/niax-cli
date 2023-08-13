@@ -99,13 +99,15 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                             }
                         }
 
+                        &:not(.cdk-drop-list-dragging) {
+                            > tr.cdk-drag:hover {
+                                background-color: $highlightBackgroundColor;
+                            }
+                        }
+
                         > tr {
                             &.cdk-drag {
                                 text-transform: uppercase;
-
-                                &:hover {
-                                    background-color: $highlightBackgroundColor;
-                                }
                             }
 
                             > th,
