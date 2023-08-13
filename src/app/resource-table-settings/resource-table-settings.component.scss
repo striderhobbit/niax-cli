@@ -14,11 +14,10 @@ $padding: 0.5em;
             &.selected {
                 background-color: $background;
                 order: -1;
-                pointer-events: none;
             }
 
             &:hover {
-                background-color: $highlightBackground;
+                box-shadow: 0 0 1px black inset;
             }
         }
     }

@@ -1,7 +1,7 @@
 <div class="tabs">
   <div
     *ngFor="let key of tabKeys"
-    (click)="tabKey = key"
+    (click)="tabKey === key ? toggle() : (tabKey = key)"
     [class.selected]="tabKey === key"
   >
     {{ key }}
