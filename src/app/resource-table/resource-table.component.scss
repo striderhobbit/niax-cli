@@ -1,11 +1,11 @@
 :host {
-    display: block;
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    width: 100%;
+    > .container {
+        height: 100%;
+        overflow: auto;
+        position: relative;
+    }
 
-    > table {
+    > .container > table {
         border-collapse: separate;
         border-spacing: 0;
 
