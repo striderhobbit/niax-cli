@@ -11,16 +11,18 @@
             <tr *ngFor="let column of resourceTable.columns; index as i">
               <td>
                 <div>
-                  <input
-                    [(ngModel)]="column.include"
-                    [name]="columnToggle.id"
-                    #columnToggle
-                    id="column-toggle-{{ uid }}-{{ i }}"
-                    type="checkbox"
-                  />
+                  <input [checked]="column.include" disabled type="checkbox" />
                 </div>
               </td>
               <th>
+                <input
+                  [(ngModel)]="column.include"
+                  [name]="columnToggle.id"
+                  #columnToggle
+                  hidden
+                  id="column-toggle-{{ uid }}-{{ i }}"
+                  type="checkbox"
+                />
                 <label [for]="columnToggle.id">{{ column.path }}</label>
               </th>
               <td>
@@ -47,7 +49,7 @@
       <th class="context-menu-handle">Sort</th>
       <td *ngIf="selectedKey === 'sort'" class="context-menu-mount">
         <div class="context-menu context-menu__sort">
-          <table cdkDropListGroup tabindex="0">
+          <table cdkDropListGroup>
             <tbody
               (cdkDropListDropped)="onPathDropped($event)"
               [cdkDropListData]="resourceTable.primaryPaths"

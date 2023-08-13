@@ -74,8 +74,6 @@ export class ResourceTableColumnsComponent<
     }
 
     this.pathsChange.emit();
-
-    delete this.selectedKey;
   }
 
   public open(): boolean {

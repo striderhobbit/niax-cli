@@ -60,7 +60,7 @@ $highlightBackgroundColor: rgb(0 0 0 / 5%);
                                 text-transform: uppercase;
                             }
 
-                            > input {
+                            > input[type="text"] {
                                 background: inherit;
                                 border: none;
                                 color: inherit;
