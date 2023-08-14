@@ -1,6 +1,4 @@
 $background: var(--primary-color-1);
-$highlightBackground: rgb(0 0 0 / 5%);
-$padding: 0.5em;
 
 :host {
     > .tabs {
@@ -8,7 +6,7 @@ $padding: 0.5em;
 
         > .tab {
             cursor: pointer;
-            padding: $padding;
+            padding: 0.5em;
             text-transform: capitalize;
 
             &::after {
@@ -45,47 +43,13 @@ $padding: 0.5em;
                 display: flex;
 
                 > .cdk-drop-list {
-                    &::before {
-                        content: "secondary";
-                        display: block;
+                    > [matsubheader] {
                         font-weight: bold;
-                        padding: $padding;
-                        text-align: center;
-                        text-transform: capitalize;
-                    }
-
-                    &:first-child {
-                        counter-reset: index;
-
-                        &::before {
-                            content: "primary";
-                        }
-
-                        > .cdk-drag {
-                            counter-increment: index;
-
-                            &::before {
-                                color: purple;
-                                content: "#" counter(index);
-                            }
-                        }
-                    }
-
-                    &.cdk-drop-list-dragging {
-                        background-color: $highlightBackground;
-
-                        &:first-child > .cdk-drag::before {
-                            visibility: hidden;
-                        }
                     }
 
                     &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
-                        background-color: $highlightBackground;
-                    }
-
-                    > .cdk-drag {
-                        padding: $padding;
-                        user-select: none;
+                        background-color: rgb(0 0 0 / 5%);
+                        cursor: move;
                     }
                 }
             }

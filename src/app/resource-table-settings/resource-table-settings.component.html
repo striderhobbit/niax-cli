@@ -42,32 +42,34 @@
   </div>
   <div *ngIf="tabKey === 'sort'" class="content content__sort">
     <div class="cdk-drop-list-group" cdkDropListGroup>
-      <div
+      <mat-list
         (cdkDropListDropped)="onPathDropped($event)"
         [cdkDropListData]="resourceTable.primaryPaths"
         cdkDropList
       >
-        <div
+        <div matSubheader>Primary</div>
+        <mat-list-item
           *ngFor="let primaryPath of resourceTable.primaryPaths"
           [cdkDragData]="primaryPath"
           cdkDrag
         >
           {{ primaryPath }}
-        </div>
-      </div>
-      <div
+        </mat-list-item>
+      </mat-list>
+      <mat-list
         (cdkDropListDropped)="onPathDropped($event)"
         [cdkDropListData]="resourceTable.secondaryPaths"
         cdkDropList
       >
-        <div
+        <div matSubheader>Secondary</div>
+        <mat-list-item
           *ngFor="let secondaryPath of resourceTable.secondaryPaths"
           [cdkDragData]="secondaryPath"
           cdkDrag
         >
           {{ secondaryPath }}
-        </div>
-      </div>
+        </mat-list-item>
+      </mat-list>
     </div>
   </div>
 </div>
