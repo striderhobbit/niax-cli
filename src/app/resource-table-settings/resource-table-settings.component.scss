@@ -49,17 +49,15 @@ $padding: 0.5em;
                             background-color: $highlightBackground;
                         }
 
-                        > td {
-                            > input[type="text"] {
-                                background: inherit;
-                                border: none;
-                                color: inherit;
-                                font: inherit;
-                                padding: $padding;
+                        > td > input {
+                            background: inherit;
+                            border: none;
+                            color: inherit;
+                            font: inherit;
+                            padding: $padding;
 
-                                &.ng-invalid {
-                                    color: red;
-                                }
+                            &.ng-invalid {
+                                color: red;
                             }
                         }
                     }

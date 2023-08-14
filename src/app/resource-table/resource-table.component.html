@@ -39,12 +39,11 @@
         [class.nullish]="field.value == null"
         [ngSwitch]="field.type"
       >
-        <input
+        <mat-checkbox
           *ngSwitchCase="'boolean'"
           (change)="patchResourceItem(field)"
           [(ngModel)]="field.value"
-          type="checkbox"
-        />
+        ></mat-checkbox>
         <input
           *ngSwitchCase="'number'"
           (change)="patchResourceItem(field)"

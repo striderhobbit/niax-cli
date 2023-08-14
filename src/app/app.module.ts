@@ -7,7 +7,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CheckboxComponent } from './checkbox/checkbox.component';
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
@@ -18,7 +17,6 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
 @NgModule({
   declarations: [
     AppComponent,
-    CheckboxComponent,
     FilterPipe,
     IntersectionObserverDirective,
     RegExpValidatorDirective,
