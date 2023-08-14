@@ -29,7 +29,9 @@
                 scroll-margin-top: 1.8em;
 
                 &[ng-reflect-view-init-ignored="false"] {
-                    box-shadow: 0 0 0 3px inset blue;
+                    box-shadow:
+                        0 3px 0 inset blue,
+                        0 -3px 0 inset blue;
                 }
 
                 > th {
