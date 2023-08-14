@@ -41,7 +41,7 @@ $padding: 0.5em;
             z-index: 2;
 
             &__columns {
-                > form > table {
+                > table {
                     border-collapse: collapse;
 
                     > tr {
@@ -50,14 +50,12 @@ $padding: 0.5em;
                         }
 
                         > td {
-                            --padding: #{$padding};
-
                             > input[type="text"] {
                                 background: inherit;
                                 border: none;
                                 color: inherit;
                                 font: inherit;
-                                padding: var(--padding);
+                                padding: $padding;
 
                                 &.ng-invalid {
                                     color: red;

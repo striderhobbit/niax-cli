@@ -6,7 +6,6 @@ import {
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { uniqueId } from 'lodash';
 
 type TabKey = 'columns' | 'sort';
 
@@ -25,7 +24,6 @@ export class ResourceTableSettingsComponent<I extends Resource.Item> {
   @Output() pathsChange = new EventEmitter();
 
   protected readonly tabKeys: TabKey[] = ['columns', 'sort'];
-  protected readonly uid = uniqueId();
 
   protected tabKey: TabKey = 'columns';
   protected visible?: boolean;

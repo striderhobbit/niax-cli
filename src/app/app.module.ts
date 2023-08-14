@@ -2,6 +2,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -31,6 +32,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     DragDropModule,
     FormsModule,
     HttpClientModule,
+    MatCheckboxModule,
     NoopAnimationsModule,
   ],
   providers: [],

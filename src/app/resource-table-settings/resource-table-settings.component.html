@@ -9,32 +9,31 @@
 </div>
 <div class="contents">
   <div *ngIf="tabKey === 'columns'" class="content content__columns">
-    <form (change)="columnsChange.emit()">
-      <table>
-        <tr *ngFor="let column of resourceTable.columns; index as i">
-          <td>
-            <app-checkbox
-              (value)="column.include = $event"
-              [label]="column.path"
-              [value]="column.include"
-            ></app-checkbox>
-          </td>
-          <td>
-            <input
-              (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
-              [ngModel]="column.filter"
-              [title]="columnFilter.errors?.['SyntaxError'] ?? ''"
-              #columnFilter="ngModel"
-              name="column-filter-{{ uid }}-{{ i }}"
-              pattern="[^,]*"
-              placeholder="/(?:)/"
-              type="text"
-              validateRegExp
-            />
-          </td>
-        </tr>
-      </table>
-    </form>
+    <table>
+      <tr *ngFor="let column of resourceTable.columns">
+        <td>
+          <mat-checkbox
+            (change)="columnsChange.emit()"
+            [(ngModel)]="column.include"
+          >
+            {{ column.path }}
+          </mat-checkbox>
+        </td>
+        <td>
+          <input
+            (change)="columnsChange.emit()"
+            (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
+            [ngModel]="column.filter"
+            [title]="columnFilter.errors?.['SyntaxError'] ?? ''"
+            #columnFilter="ngModel"
+            pattern="[^,]*"
+            placeholder="/(?:)/"
+            type="text"
+            validateRegExp
+          />
+        </td>
+      </tr>
+    </table>
   </div>
   <div *ngIf="tabKey === 'sort'" class="content content__sort">
     <div class="cdk-drop-list-group" cdkDropListGroup>
