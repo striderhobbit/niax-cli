@@ -7,7 +7,13 @@
 <table>
   <thead>
     <tr>
-      <th class="sticky" (click)="resourceTableSettingsComponent.toggle()"></th>
+      <th class="sticky" (click)="resourceTableSettingsComponent.toggle()">
+        <mat-icon>
+          unfold{{
+            resourceTableSettingsComponent.isVisible ? "_less" : "_more"
+          }}
+        </mat-icon>
+      </th>
       <th
         *ngFor="let column of resourceTable.columns | filter : 'include'"
         (click)="togglePath(column)"

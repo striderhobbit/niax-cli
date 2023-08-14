@@ -36,9 +36,12 @@
                     cursor: pointer;
                     font-size: 0.8em;
                     padding: 0.5em 1em;
-                    text-align: left;
                     text-transform: uppercase;
                     white-space: nowrap;
+
+                    &:not(.sticky) {
+                        text-align: left;
+                    }
 
                     &.primary {
                         &::before {

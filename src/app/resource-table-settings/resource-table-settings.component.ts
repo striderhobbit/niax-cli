@@ -7,8 +7,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 
-type TabKey = 'columns' | 'sort';
-
 @Component({
   host: {
     '[hidden]': '!visible',
@@ -25,9 +23,9 @@ export class ResourceTableSettingsComponent<I extends Resource.Item> {
 
   private visible?: boolean;
 
-  protected readonly tabKeys: TabKey[] = ['columns', 'sort'];
-
-  protected tabKey: TabKey = 'columns';
+  public get isVisible(): boolean {
+    return Boolean(this.visible);
+  }
 
   protected onPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     if (event.previousContainer === event.container) {
