@@ -6,7 +6,7 @@ $padding: 0.5em;
     > .tabs {
         display: flex;
 
-        > * {
+        > .tab {
             cursor: pointer;
             padding: $padding;
             text-transform: capitalize;
@@ -35,82 +35,57 @@ $padding: 0.5em;
         background-color: $background;
 
         > .content {
-            box-shadow: 0 0 0.5em rgb(0 0 0 / 30%) inset;
+            box-shadow: 0 0 0.5em rgb(0 0 0 / 30%);
             display: inline-flex;
+            padding: 1em;
             position: relative;
             z-index: 2;
 
-            &__columns {
-                > table {
-                    border-collapse: collapse;
+            &__sort > .cdk-drop-list-group {
+                display: flex;
 
-                    > tr {
-                        &:hover {
-                            background-color: $highlightBackground;
-                        }
-
-                        > td > input {
-                            background: inherit;
-                            border: none;
-                            color: inherit;
-                            font: inherit;
-                            padding: $padding;
-
-                            &.ng-invalid {
-                                color: red;
-                            }
-                        }
+                > .cdk-drop-list {
+                    &::before {
+                        content: "secondary";
+                        display: block;
+                        font-weight: bold;
+                        padding: $padding;
+                        text-align: center;
+                        text-transform: capitalize;
                     }
-                }
-            }
 
-            &__sort {
-                > .cdk-drop-list-group {
-                    display: flex;
+                    &:first-child {
+                        counter-reset: index;
 
-                    > .cdk-drop-list {
                         &::before {
-                            content: "secondary";
-                            display: block;
-                            font-weight: bold;
-                            padding: $padding;
-                            text-align: center;
-                            text-transform: capitalize;
-                        }
-
-                        &:first-child {
-                            counter-reset: index;
-
-                            &::before {
-                                content: "primary";
-                            }
-
-                            > .cdk-drag {
-                                counter-increment: index;
-
-                                &::before {
-                                    color: purple;
-                                    content: "#" counter(index);
-                                }
-                            }
-                        }
-
-                        &.cdk-drop-list-dragging {
-                            background-color: $highlightBackground;
-
-                            &:first-child > .cdk-drag::before {
-                                visibility: hidden;
-                            }
-                        }
-
-                        &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
-                            background-color: $highlightBackground;
+                            content: "primary";
                         }
 
                         > .cdk-drag {
-                            padding: $padding;
-                            user-select: none;
+                            counter-increment: index;
+
+                            &::before {
+                                color: purple;
+                                content: "#" counter(index);
+                            }
                         }
+                    }
+
+                    &.cdk-drop-list-dragging {
+                        background-color: $highlightBackground;
+
+                        &:first-child > .cdk-drag::before {
+                            visibility: hidden;
+                        }
+                    }
+
+                    &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
+                        background-color: $highlightBackground;
+                    }
+
+                    > .cdk-drag {
+                        padding: $padding;
+                        user-select: none;
                     }
                 }
             }

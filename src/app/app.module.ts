@@ -3,6 +3,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {
+  ErrorStateMatcher,
+  ShowOnDirtyErrorStateMatcher,
+} from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
@@ -31,9 +38,14 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     FormsModule,
     HttpClientModule,
     MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
     NoopAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

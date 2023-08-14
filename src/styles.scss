@@ -25,3 +25,10 @@ body {
     font-size: 0.875em;
     padding: 1em;
 }
+
+mat-error,
+mat-hint {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

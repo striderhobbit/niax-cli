@@ -23,7 +23,7 @@ export class RegExpValidatorDirective implements Validator {
     } catch (error) {
       if (error instanceof SyntaxError) {
         return {
-          [error.name]: error.message,
+          syntax: error.message,
         };
       }
 
