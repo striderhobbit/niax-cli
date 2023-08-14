@@ -60,7 +60,11 @@
 
                 > th,
                 > td {
-                    background-color: rgba(var(--primary-color-1-rgb), var(--background-opacity, 1));
+                    background-color: color-mix(
+                        in srgb,
+                        var(--primary-color-1) var(--background-opacity, 100%),
+                        transparent
+                    );
 
                     &:not(.placeholder) {
                         border: 1px solid var(--primary-color-2);
