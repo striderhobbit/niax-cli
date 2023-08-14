@@ -27,6 +27,7 @@ export class IntersectionObserverDirective
   @Output() intersection = new EventEmitter<HTMLElement>();
 
   private observer?: IntersectionObserver;
+  
   private readonly intersectionEventSubject = new Subject<IntersectionEvent>();
 
   constructor(private readonly host: ElementRef) {}

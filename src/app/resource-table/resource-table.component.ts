@@ -13,10 +13,10 @@ import { ApiService } from '../api.service';
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
 {
+  private routeDataSubscription?: Subscription;
+
   protected resourceTable: Resource.Table<I> =
     this.route.snapshot.data['resourceTable'];
-
-  private routeDataSubscription?: Subscription;
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -116,6 +116,20 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
+  protected syncPaths(): Promise<boolean> {
+    this.resourceTable.columns.forEach((resourceTableColumn) => {
+      if (
+        (resourceTableColumn.sortIndex =
+          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
+        -1
+      ) {
+        delete resourceTableColumn.sortIndex;
+      }
+    });
+
+    return this.updateResourceTableColumns();
+  }
+
   protected togglePath(column: Resource.TableColumn<I>): Promise<boolean> {
     if (!this.resourceTable.primaryPaths.includes(column.path)) {
       this.resourceTable.primaryPaths.push(column.path);
@@ -127,7 +141,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       return this.updateResourceTableColumns();
     }
 
-    return this.writeBackPaths();
+    return this.syncPaths();
   }
 
   protected updateResourceTableColumns(): Promise<boolean> {
@@ -147,19 +161,5 @@ export class ResourceTableComponent<I extends Resource.Item>
       },
       { runResolvers: true }
     );
-  }
-
-  protected writeBackPaths(): Promise<boolean> {
-    this.resourceTable.columns.forEach((resourceTableColumn) => {
-      if (
-        (resourceTableColumn.sortIndex =
-          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
-        -1
-      ) {
-        delete resourceTableColumn.sortIndex;
-      }
-    });
-
-    return this.updateResourceTableColumns();
   }
 }

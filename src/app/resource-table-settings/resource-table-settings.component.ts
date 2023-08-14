@@ -23,10 +23,11 @@ export class ResourceTableSettingsComponent<I extends Resource.Item> {
   @Output() columnsChange = new EventEmitter();
   @Output() pathsChange = new EventEmitter();
 
+  private visible?: boolean;
+
   protected readonly tabKeys: TabKey[] = ['columns', 'sort'];
 
   protected tabKey: TabKey = 'columns';
-  protected visible?: boolean;
 
   protected onPathDropped(event: CdkDragDrop<PropertyPath<I>[]>): void {
     if (event.previousContainer === event.container) {
