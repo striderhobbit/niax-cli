@@ -1,47 +1,35 @@
-<div class="tabs">
-  <div
-    *ngFor="let key of tabKeys"
-    class="tab"
-    (click)="tabKey === key ? toggle() : (tabKey = key)"
-    [class.selected]="tabKey === key"
-  >
-    {{ key }}
-  </div>
-</div>
-<div class="contents">
-  <div *ngIf="tabKey === 'columns'" class="content content__columns">
-    <div>
-      <div *ngFor="let column of resourceTable.columns">
-        <mat-checkbox
+<mat-tab-group>
+  <mat-tab label="Columns">
+    <div *ngFor="let column of resourceTable.columns">
+      <mat-checkbox
+        (change)="columnsChange.emit()"
+        [(ngModel)]="column.include"
+      ></mat-checkbox>
+      <mat-form-field>
+        <input
           (change)="columnsChange.emit()"
-          [(ngModel)]="column.include"
-        ></mat-checkbox>
-        <mat-form-field>
-          <input
-            (change)="columnsChange.emit()"
-            (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
-            [ngModel]="column.filter"
-            #columnFilter="ngModel"
-            matInput
-            pattern="[^,]*"
-            placeholder="/(?:)/"
-            type="text"
-            validateRegExp
-          />
-          <mat-icon matSuffix>filter_alt</mat-icon>
-          <mat-hint>{{ column.path }}</mat-hint>
-          <mat-error *ngIf="columnFilter.errors?.['syntax'] as syntaxError">
-            {{ syntaxError }}
-          </mat-error>
-          <mat-error *ngIf="columnFilter.errors?.['pattern'] as patternError">
-            Required pattern: {{ patternError.requiredPattern }}
-          </mat-error>
-        </mat-form-field>
-      </div>
+          (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
+          [ngModel]="column.filter"
+          #columnFilter="ngModel"
+          matInput
+          pattern="[^,]*"
+          placeholder="/(?:)/"
+          type="text"
+          validateRegExp
+        />
+        <mat-icon matSuffix>filter_alt</mat-icon>
+        <mat-hint>{{ column.path }}</mat-hint>
+        <mat-error *ngIf="columnFilter.errors?.['syntax'] as syntaxError">
+          {{ syntaxError }}
+        </mat-error>
+        <mat-error *ngIf="columnFilter.errors?.['pattern'] as patternError">
+          Required pattern: {{ patternError.requiredPattern }}
+        </mat-error>
+      </mat-form-field>
     </div>
-  </div>
-  <div *ngIf="tabKey === 'sort'" class="content content__sort">
-    <div class="cdk-drop-list-group" cdkDropListGroup>
+  </mat-tab>
+  <mat-tab label="Sort">
+    <div cdkDropListGroup>
       <mat-list
         (cdkDropListDropped)="onPathDropped($event)"
         [cdkDropListData]="resourceTable.primaryPaths"
@@ -71,5 +59,5 @@
         </mat-list-item>
       </mat-list>
     </div>
-  </div>
-</div>
+  </mat-tab>
+</mat-tab-group>

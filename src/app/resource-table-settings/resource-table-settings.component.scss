@@ -1,58 +1,14 @@
-$background: var(--primary-color-1);
+[cdkdropListgroup] {
+    display: flex;
 
-:host {
-    > .tabs {
-        display: flex;
-
-        > .tab {
-            cursor: pointer;
-            padding: 0.5em;
-            text-transform: capitalize;
-
-            &::after {
-                content: "✖";
-                visibility: hidden;
-            }
-
-            &.selected {
-                background-color: $background;
-                order: -1;
-
-                &:hover::after {
-                    visibility: unset;
-                }
-            }
-
-            &:hover {
-                box-shadow: 0 0 0 1px rgb(0 0 0 / 10%) inset;
-            }
+    > .cdk-drop-list {
+        > [matsubheader] {
+            font-weight: bold;
         }
-    }
 
-    > .contents {
-        background-color: $background;
-
-        > .content {
-            box-shadow: 0 0 0.5em rgb(0 0 0 / 30%);
-            display: inline-flex;
-            padding: 1em;
-            position: relative;
-            z-index: 2;
-
-            &__sort > .cdk-drop-list-group {
-                display: flex;
-
-                > .cdk-drop-list {
-                    > [matsubheader] {
-                        font-weight: bold;
-                    }
-
-                    &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
-                        background-color: rgb(0 0 0 / 5%);
-                        cursor: move;
-                    }
-                }
-            }
+        &:not(.cdk-drop-list-dragging) > .cdk-drag:hover {
+            background-color: rgb(0 0 0 / 5%);
+            cursor: move;
         }
     }
 }
