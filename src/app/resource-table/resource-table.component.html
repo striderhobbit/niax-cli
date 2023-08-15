@@ -18,12 +18,35 @@
   cdkDropListOrientation="horizontal"
   mat-table
 >
-  <ng-container *ngFor="let path of paths" matColumnDef="{{ path }}">
-    <th *matHeaderCellDef [cdkDragData]="path" cdkDrag mat-header-cell>
-      {{ path }}
+  <ng-container
+    *ngFor="let column of resourceTable.columns | filter : 'include'"
+    [matColumnDef]="column.path"
+  >
+    <th *matHeaderCellDef [cdkDragData]="column.path" cdkDrag mat-header-cell>
+      <mat-form-field>
+        <input
+          (change)="updateResourceTableColumns()"
+          (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
+          [ngModel]="column.filter"
+          #columnFilter="ngModel"
+          matInput
+          pattern="[^,]*"
+          placeholder="/(?:)/"
+          type="text"
+          validateRegExp
+        />
+        <mat-label>{{ column.path }}</mat-label>
+        <mat-icon matSuffix>filter_alt</mat-icon>
+        <mat-error *ngIf="columnFilter.errors?.['syntax'] as syntaxError">
+          {{ syntaxError }}
+        </mat-error>
+        <mat-error *ngIf="columnFilter.errors?.['pattern'] as patternError">
+          Required pattern: {{ patternError.requiredPattern }}
+        </mat-error>
+      </mat-form-field>
     </th>
     <td *matCellDef="let row" mat-cell>
-      {{ row.fields[path].value }}
+      {{ row.fields[column.path].value }}
     </td>
   </ng-container>
 
