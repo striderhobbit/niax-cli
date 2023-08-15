@@ -33,8 +33,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected paths?: PropertyPath<I>[];
 
-  protected resourceTable: Resource.Table<I> =
-    this.route.snapshot.data['resourceTable'];
+  protected resourceTable!: Resource.Table<I>;
 
   constructor(
     private readonly apiService: ApiService<I>,
