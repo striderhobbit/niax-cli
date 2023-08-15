@@ -9,17 +9,30 @@
     unfold{{ resourceTableSettingsComponent.isVisible ? "_less" : "_more" }}
   </mat-icon>
 </button>
-<table [dataSource]="dataSource" cdkDropListGroup mat-table>
+<table
+  *ngIf="paths"
+  (cdkDropListDropped)="onPathDropped($event)"
+  [cdkDropListData]="paths"
+  [dataSource]="dataSource"
+  cdkDropList
+  cdkDropListLockAxis="x"
+  cdkDropListOrientation="horizontal"
+  mat-table
+>
   <ng-container *ngFor="let path of paths" matColumnDef="{{ path }}">
-    <th *matHeaderCellDef mat-header-cell>{{ path }}</th>
-    <td *matCellDef="let row" mat-cell>{{ row.fields[path].value }}</td>
+    <th *matHeaderCellDef [cdkDragData]="path" cdkDrag mat-header-cell>
+      {{ path }}
+    </th>
+    <td *matCellDef="let row" mat-cell>
+      {{ row.fields[path].value }}
+    </td>
   </ng-container>
 
   <ng-container matColumnDef="placeholder">
     <td
       *matCellDef="let placeholder"
       (intersection)="fetchResourceTableRows(placeholder.pageToken)"
-      [colSpan]="paths?.length"
+      [colSpan]="paths.length"
       mat-cell
       observeIntersection
     >

@@ -1,11 +1,16 @@
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
-import { find, keyBy, pick, pull } from 'lodash';
+import { PropertyPath } from '@shared/schema/utility';
+import { find, keyBy, pick, pull, zipWith } from 'lodash';
 import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
-import { PropertyPath } from '@shared/schema/utility';
 
 class ResourceTableRowsPlaceholder {
   constructor(public readonly pageToken: string) {}
@@ -129,6 +134,42 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected isPlaceholder(index: number, item: Row<I>): boolean {
     return item instanceof ResourceTableRowsPlaceholder;
+  }
+
+  protected onPathDropped({
+    previousIndex,
+    currentIndex,
+    container: {
+      data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
+    },
+  }: CdkDragDrop<PropertyPath<I>[]>): void {
+    const [previousArray, currentArray] = [previousItem, currentItem].map(
+      (path) =>
+        this.resourceTable.primaryPaths.includes(path)
+          ? this.resourceTable.primaryPaths
+          : this.resourceTable.secondaryPaths
+    );
+
+    const [previousIndexInArray, currentIndexInArray] = zipWith(
+      [previousArray, currentArray],
+      [previousItem, currentItem],
+      (array, item) => array.indexOf(item)
+    );
+
+    previousArray === currentArray
+      ? moveItemInArray(
+          previousArray,
+          previousIndexInArray,
+          currentIndexInArray
+        )
+      : transferArrayItem(
+          previousArray,
+          currentArray,
+          previousIndexInArray,
+          currentIndexInArray
+        );
+
+    this.syncPaths();
   }
 
   protected patchResourceItem(

@@ -28,36 +28,4 @@
       </mat-form-field>
     </div>
   </mat-tab>
-  <mat-tab label="Order">
-    <div cdkDropListGroup>
-      <mat-list
-        (cdkDropListDropped)="onPathDropped($event)"
-        [cdkDropListData]="resourceTable.primaryPaths"
-        cdkDropList
-      >
-        <div matSubheader>Primary</div>
-        <mat-list-item
-          *ngFor="let primaryPath of resourceTable.primaryPaths"
-          [cdkDragData]="primaryPath"
-          cdkDrag
-        >
-          {{ primaryPath }}
-        </mat-list-item>
-      </mat-list>
-      <mat-list
-        (cdkDropListDropped)="onPathDropped($event)"
-        [cdkDropListData]="resourceTable.secondaryPaths"
-        cdkDropList
-      >
-        <div matSubheader>Secondary</div>
-        <mat-list-item
-          *ngFor="let secondaryPath of resourceTable.secondaryPaths"
-          [cdkDragData]="secondaryPath"
-          cdkDrag
-        >
-          {{ secondaryPath }}
-        </mat-list-item>
-      </mat-list>
-    </div>
-  </mat-tab>
 </mat-tab-group>
