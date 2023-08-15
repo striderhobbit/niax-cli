@@ -4,65 +4,34 @@
   [resourceTable]="resourceTable"
   #resourceTableSettingsComponent
 ></app-resource-table-settings>
-<table>
-  <thead>
-    <tr>
-      <th class="sticky" (click)="resourceTableSettingsComponent.toggle()">
-        <mat-icon>
-          unfold{{
-            resourceTableSettingsComponent.isVisible ? "_less" : "_more"
-          }}
-        </mat-icon>
-      </th>
-      <th
-        *ngFor="let column of resourceTable.columns | filter : 'include'"
-        (click)="togglePath(column)"
-        [attr.data-index]="resourceTable.primaryPaths.indexOf(column.path) + 1"
-        [class.descending]="column.order === 'desc'"
-        [class.primary]="column.sortIndex != null"
-      >
-        {{ column.path }}
-      </th>
-    </tr>
-  </thead>
-  <tbody *ngFor="let rowsPage of resourceTable.rowsPages">
-    <tr
-      *ngIf="rowsPage.deferred && isConnected(rowsPage)"
-      (intersection)="fetchResourceTableRows(rowsPage.pageToken)"
+<button mat-icon-button (click)="resourceTableSettingsComponent.toggle()">
+  <mat-icon>
+    unfold{{ resourceTableSettingsComponent.isVisible ? "_less" : "_more" }}
+  </mat-icon>
+</button>
+<table mat-table [dataSource]="dataSource">
+  <ng-container *ngFor="let path of paths" matColumnDef="{{ path }}">
+    <th *matHeaderCellDef mat-header-cell>{{ path }}</th>
+    <td *matCellDef="let row" mat-cell>{{ row.fields[path].value }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="placeholder">
+    <td
+      *matCellDef="let placeholder"
+      (intersection)="fetchResourceTableRows(placeholder.pageToken)"
+      [colSpan]="paths?.length"
+      mat-cell
       observeIntersection
     >
-      <td class="placeholder sticky"></td>
-    </tr>
-    <tr
-      *ngFor="let row of rowsPage.items"
-      (viewInit)="$event.scrollIntoView({ block: 'start' })"
-      [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
-      observeViewInit
-    >
-      <th class="sticky">{{ row.index + 1 }}</th>
-      <td
-        *ngFor="let field of row.fields"
-        [class.nullish]="field.value == null"
-        [ngSwitch]="field.type"
-      >
-        <mat-checkbox
-          *ngSwitchCase="'boolean'"
-          (change)="patchResourceItem(field)"
-          [(ngModel)]="field.value"
-        ></mat-checkbox>
-        <input
-          *ngSwitchCase="'number'"
-          (change)="patchResourceItem(field)"
-          [(ngModel)]="field.value"
-          type="number"
-        />
-        <input
-          *ngSwitchCase="'string'"
-          (change)="patchResourceItem(field)"
-          [(ngModel)]="field.value"
-          type="text"
-        />
-      </td>
-    </tr>
-  </tbody>
+      <mat-icon>more_horiz</mat-icon>
+    </td>
+  </ng-container>
+
+  <tr *matHeaderRowDef="paths" mat-header-row></tr>
+
+  <tr *matRowDef="let row; columns: paths" mat-row></tr>
+  <tr
+    *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
+    mat-row
+  ></tr>
 </table>

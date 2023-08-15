@@ -1,9 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { find, keyBy, pick, pull } from 'lodash';
-import { Subscription, firstValueFrom, map, tap } from 'rxjs';
+import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
+import { PropertyPath } from '@shared/schema/utility';
+
+class ResourceTableRowsPlaceholder {
+  constructor(public readonly pageToken: string) {}
+}
+
+type Row<I extends Resource.Item> =
+  | Resource.TableRow<I>
+  | ResourceTableRowsPlaceholder;
 
 @Component({
   selector: 'app-resource-table',
@@ -13,7 +23,15 @@ import { ApiService } from '../api.service';
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
 {
+  private readonly resourceTableRowsPagesChangeSubject = new Subject<
+    Resource.TableRowsPage<I>[]
+  >();
+
   private routeDataSubscription?: Subscription;
+
+  protected readonly dataSource = new MatTableDataSource<Row<I>>();
+
+  protected paths?: PropertyPath<I>[];
 
   protected resourceTable: Resource.Table<I> =
     this.route.snapshot.data['resourceTable'];
@@ -22,7 +40,20 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly apiService: ApiService<I>,
     private readonly route: ActivatedRoute,
     private readonly router: Router
-  ) {}
+  ) {
+    this.resourceTableRowsPagesChangeSubject
+      .pipe(
+        map((resourceTableRowsPages) =>
+          resourceTableRowsPages.flatMap<Row<I>>((rowsPage) =>
+            rowsPage.pending && this.isConnected(rowsPage)
+              ? new ResourceTableRowsPlaceholder(rowsPage.pageToken)
+              : rowsPage.items
+          )
+        ),
+        tap((rows) => (this.dataSource.data = rows))
+      )
+      .subscribe();
+  }
 
   ngOnInit(): void {
     this.routeDataSubscription = this.route.data
@@ -33,7 +64,14 @@ export class ResourceTableComponent<I extends Resource.Item>
         )
       )
       .subscribe({
-        next: (resourceTable) => (this.resourceTable = resourceTable),
+        next: (resourceTable) => {
+          const { primaryPaths, secondaryPaths, rowsPages } =
+            (this.resourceTable = resourceTable);
+
+          this.paths = primaryPaths.concat(secondaryPaths);
+
+          this.resourceTableRowsPagesChangeSubject.next(rowsPages);
+        },
       });
   }
 
@@ -43,7 +81,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected fetchResourceTableRows(
     pageToken: string
-  ): Promise<Resource.TableRow<I>[]> {
+  ): Promise<Resource.TableRowsPage<I>[]> {
     return firstValueFrom(
       this.apiService
         .getResourceTableRowsPage({
@@ -56,15 +94,22 @@ export class ResourceTableComponent<I extends Resource.Item>
               pageToken,
             })!;
 
-            delete resourceTableRowsPage.deferred;
+            delete resourceTableRowsPage.pending;
 
-            return (resourceTableRowsPage.items = items);
-          })
+            resourceTableRowsPage.items = items;
+
+            return this.resourceTable.rowsPages;
+          }),
+          tap((resourceTableRowsPages) =>
+            this.resourceTableRowsPagesChangeSubject.next(
+              resourceTableRowsPages
+            )
+          )
         )
     );
   }
 
-  protected isConnected(
+  private isConnected(
     resourceTableRowsPage: Resource.TableRowsPage<I>
   ): boolean {
     const resourceTableRowsPagesDictionary = keyBy(
@@ -77,10 +122,14 @@ export class ResourceTableComponent<I extends Resource.Item>
     return (
       (previousPageToken == null && nextPageToken == null) ||
       (previousPageToken != null &&
-        !resourceTableRowsPagesDictionary[previousPageToken].deferred) ||
+        !resourceTableRowsPagesDictionary[previousPageToken].pending) ||
       (nextPageToken != null &&
-        !resourceTableRowsPagesDictionary[nextPageToken].deferred)
+        !resourceTableRowsPagesDictionary[nextPageToken].pending)
     );
+  }
+
+  protected isPlaceholder(index: number, item: Row<I>): boolean {
+    return item instanceof ResourceTableRowsPlaceholder;
   }
 
   protected patchResourceItem(
