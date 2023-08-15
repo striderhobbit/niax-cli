@@ -1,25 +1,10 @@
-:root {
-    --primary-color-0: #494b4d;
-    --primary-color-1: #f2f0e6;
-    --primary-color-2: #d9d7ce;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 html,
 body {
     height: 100%;
 }
 
 body {
-    color: var(--primary-color-0);
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    font-size: 0.875em;
-    padding: 1em;
 }
 
 mat-error,
