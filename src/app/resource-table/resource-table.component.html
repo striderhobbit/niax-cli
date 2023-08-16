@@ -1,15 +1,4 @@
-<app-resource-table-settings
-  (columnsChange)="updateResourceTableColumns()"
-  [resourceTable]="resourceTable"
-  #resourceTableSettingsComponent
-></app-resource-table-settings>
-<button mat-icon-button (click)="resourceTableSettingsComponent.toggle()">
-  <mat-icon>
-    unfold{{ resourceTableSettingsComponent.isVisible ? "_less" : "_more" }}
-  </mat-icon>
-</button>
 <table
-  *ngIf="paths"
   (cdkDropListDropped)="onPathDropped($event)"
   [cdkDropListData]="paths"
   [dataSource]="dataSource"
@@ -44,6 +33,14 @@
           Required pattern: {{ patternError.requiredPattern }}
         </mat-error>
       </mat-form-field>
+      <button [matMenuTriggerFor]="menu" mat-icon-button>
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu>
+        <button (click)="openColumnToggleDialog()" mat-menu-item>
+          Toggle...
+        </button>
+      </mat-menu>
     </th>
     <td *matCellDef="let row" mat-cell>
       {{ row.fields[column.path].value }}

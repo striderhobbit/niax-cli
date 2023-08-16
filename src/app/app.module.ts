@@ -3,11 +3,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
   ErrorStateMatcher,
   ShowOnDirtyErrorStateMatcher,
 } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
 import {
   MAT_FORM_FIELD_DEFAULT_OPTIONS,
   MatFormFieldModule,
@@ -15,16 +15,16 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ColumnToggleDialogComponent } from './column-toggle-dialog/column-toggle-dialog.component';
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
-import { ResourceTableSettingsComponent } from './resource-table-settings/resource-table-settings.component';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
 
@@ -35,23 +35,23 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     IntersectionObserverDirective,
     RegExpValidatorDirective,
     ResourceTableComponent,
-    ResourceTableSettingsComponent,
     ViewInitObserverDirective,
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
+    ColumnToggleDialogComponent,
     DragDropModule,
     FormsModule,
     HttpClientModule,
     MatButtonModule,
-    MatCheckboxModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatListModule,
+    MatMenuModule,
     MatTableModule,
-    MatTabsModule,
     NoopAnimationsModule,
   ],
   providers: [

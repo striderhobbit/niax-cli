@@ -4,13 +4,15 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { find, keyBy, pick, pull, zipWith } from 'lodash';
+import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
 import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
+import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
 
 class ResourceTableRowsPlaceholder {
   constructor(public readonly pageToken: string) {}
@@ -36,12 +38,17 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected readonly dataSource = new MatTableDataSource<Row<I>>();
 
-  protected paths?: PropertyPath<I>[];
+  protected get paths(): PropertyPath<I>[] {
+    const { primaryPaths, secondaryPaths } = this.resourceTable;
+
+    return primaryPaths.concat(secondaryPaths);
+  }
 
   protected resourceTable!: Resource.Table<I>;
 
   constructor(
     private readonly apiService: ApiService<I>,
+    private readonly dialog: MatDialog,
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {
@@ -68,14 +75,10 @@ export class ResourceTableComponent<I extends Resource.Item>
         )
       )
       .subscribe({
-        next: (resourceTable) => {
-          const { primaryPaths, secondaryPaths, rowsPages } =
-            (this.resourceTable = resourceTable);
-
-          this.paths = primaryPaths.concat(secondaryPaths);
-
-          this.resourceTableRowsPagesChangeSubject.next(rowsPages);
-        },
+        next: (resourceTable) =>
+          this.resourceTableRowsPagesChangeSubject.next(
+            (this.resourceTable = resourceTable).rowsPages
+          ),
       });
   }
 
@@ -172,6 +175,18 @@ export class ResourceTableComponent<I extends Resource.Item>
     this.syncPaths();
   }
 
+  protected openColumnToggleDialog(): void {
+    this.dialog
+      .open(ColumnToggleDialogComponent, {
+        data: cloneDeep(this.resourceTable.columns),
+      })
+      .afterClosed()
+      .subscribe({
+        next: (resourceTableColumns) =>
+          this.updateResourceTableColumns(resourceTableColumns),
+      });
+  }
+
   protected patchResourceItem(
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
@@ -233,10 +248,12 @@ export class ResourceTableComponent<I extends Resource.Item>
     return this.syncPaths();
   }
 
-  protected updateResourceTableColumns(): Promise<boolean> {
+  protected updateResourceTableColumns(
+    resourceTableColumns: Resource.TableColumn<I>[] = this.resourceTable.columns
+  ): Promise<boolean> {
     return this.setQueryParams(
       {
-        paths: this.resourceTable.columns
+        paths: resourceTableColumns
           .filter((column) => column.include)
           .map((column) =>
             [
