@@ -59,7 +59,7 @@
     </td>
   </ng-container>
 
-  <tr *matHeaderRowDef="paths" mat-header-row></tr>
+  <tr *matHeaderRowDef="paths; sticky: true" mat-header-row></tr>
 
   <tr *matRowDef="let row; columns: paths" mat-row></tr>
   <tr
