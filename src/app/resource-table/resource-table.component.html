@@ -7,6 +7,11 @@
   cdkDropListOrientation="horizontal"
   mat-table
 >
+  <ng-container matColumnDef="index">
+    <th *matHeaderCellDef mat-header-cell>#</th>
+    <td *matCellDef="let row" mat-cell>{{ row.index + 1 }}</td>
+  </ng-container>
+
   <ng-container
     *ngFor="let column of resourceTable.columns | filter : 'include'"
     [matColumnDef]="column.path"
@@ -95,23 +100,25 @@
     </td>
   </ng-container>
 
-  <ng-container matColumnDef="placeholder">
-    <td
-      *matCellDef="let placeholder"
-      (intersection)="fetchResourceTableRows(placeholder.pageToken)"
-      [colSpan]="resourceTable.paths.length"
-      mat-cell
-      observeIntersection
-    >
-      <mat-icon>more_horiz</mat-icon>
-    </td>
+  <ng-container *ngIf="['index'].concat(resourceTable.paths) as columns">
+    <ng-container matColumnDef="placeholder">
+      <td
+        *matCellDef="let placeholder"
+        (intersection)="fetchResourceTableRows(placeholder.pageToken)"
+        [colSpan]="columns.length"
+        mat-cell
+        observeIntersection
+      >
+        <mat-icon>more_horiz</mat-icon>
+      </td>
+    </ng-container>
+
+    <tr *matHeaderRowDef="columns; sticky: true" mat-header-row></tr>
+
+    <tr *matRowDef="let row; columns: columns" mat-row></tr>
+    <tr
+      *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
+      mat-row
+    ></tr>
   </ng-container>
-
-  <tr *matHeaderRowDef="resourceTable.paths; sticky: true" mat-header-row></tr>
-
-  <tr *matRowDef="let row; columns: resourceTable.paths" mat-row></tr>
-  <tr
-    *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
-    mat-row
-  ></tr>
 </table>
