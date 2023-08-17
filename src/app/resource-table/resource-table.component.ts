@@ -1,3 +1,4 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -44,6 +45,8 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected readonly pull = pull;
 
+  protected readonly selection = new SelectionModel<Row<I>>(false, []);
+
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
   ] as Resource.Table<I>;
@@ -63,7 +66,26 @@ export class ResourceTableComponent<I extends Resource.Item>
               : rowsPage.items
           )
         ),
-        tap((rows) => (this.dataSource.data = rows))
+        map((rows) => (this.dataSource.data = rows)),
+        map(async (rows) => {
+          if (this.selection.hasValue()) {
+            return;
+          }
+
+          const { resourceId } = this.resourceTable.params;
+
+          const activeRow = rows.find(
+            (row) =>
+              !(row instanceof ResourceTableRowsPlaceholder) &&
+              row.resource.id === resourceId
+          );
+
+          if (activeRow == null) {
+            return;
+          }
+
+          return this.toggleRowSelection(activeRow, true);
+        })
       )
       .subscribe();
   }
@@ -86,6 +108,8 @@ export class ResourceTableComponent<I extends Resource.Item>
           if (this.headerRowDef != null) {
             this.table?.removeHeaderRowDef(this.headerRowDef);
           }
+
+          this.selection.clear();
 
           this.resourceTableRowsPagesChangeSubject.next(rowsPages);
         },
@@ -217,7 +241,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  private setQueryParams(
+  protected setQueryParams(
     queryParams: Params,
     { runResolvers }: { runResolvers?: boolean } = {}
   ): Promise<boolean> {
@@ -241,6 +265,25 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
 
     return this.updateResourceTableColumns();
+  }
+
+  protected async toggleRowSelection(
+    row: Row<I>,
+    forceState: boolean = !this.selection.isSelected(row)
+  ): Promise<boolean | void> {
+    if (forceState) {
+      this.selection.select(row);
+    } else {
+      this.selection.deselect(row);
+    }
+
+    if (row instanceof ResourceTableRowsPlaceholder) {
+      return;
+    }
+
+    return this.setQueryParams({
+      resourceId: this.selection.isSelected(row) ? row.resource.id : null,
+    });
   }
 
   protected updateResourceTableColumns(
