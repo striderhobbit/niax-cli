@@ -12,7 +12,14 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
-import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
+import {
+  Subject,
+  Subscription,
+  firstValueFrom,
+  map,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { ApiService } from '../api.service';
 import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
 
@@ -67,24 +74,20 @@ export class ResourceTableComponent<I extends Resource.Item>
           )
         ),
         map((rows) => (this.dataSource.data = rows)),
-        map(async (rows) => {
-          if (this.selection.hasValue()) {
-            return;
+        mergeMap(async (rows) => {
+          if (!this.selection.hasValue()) {
+            const { resourceId } = this.resourceTable.params;
+
+            const activeRow = rows.find(
+              (row) =>
+                !(row instanceof ResourceTableRowsPlaceholder) &&
+                row.resource.id === resourceId
+            );
+
+            if (activeRow != null) {
+              await this.toggleRowSelection(activeRow, true);
+            }
           }
-
-          const { resourceId } = this.resourceTable.params;
-
-          const activeRow = rows.find(
-            (row) =>
-              !(row instanceof ResourceTableRowsPlaceholder) &&
-              row.resource.id === resourceId
-          );
-
-          if (activeRow == null) {
-            return;
-          }
-
-          return this.toggleRowSelection(activeRow, true);
         })
       )
       .subscribe();
@@ -179,7 +182,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     container: {
       data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
     },
-  }: CdkDragDrop<PropertyPath<I>[]>): Promise<boolean> {
+  }: CdkDragDrop<PropertyPath<I>[]>): Promise<void> {
     const [previousArray, currentArray] = [previousItem, currentItem].map(
       (path) =>
         this.resourceTable.primaryPaths.includes(path)
@@ -241,11 +244,11 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected setQueryParams(
+  protected async setQueryParams(
     queryParams: Params,
     { runResolvers }: { runResolvers?: boolean } = {}
-  ): Promise<boolean> {
-    return this.router.navigate([], {
+  ): Promise<void> {
+    await this.router.navigate([], {
       queryParams: {
         ...queryParams,
         ...(runResolvers ? { snapshotId: Date.now() } : {}),
@@ -254,7 +257,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
-  protected syncResourceTableColumns(): Promise<boolean> {
+  protected syncResourceTableColumns(): Promise<void> {
     this.resourceTable.columns.forEach((column) => {
       column.sortIndex = this.resourceTable.primaryPaths.indexOf(column.path);
 
@@ -270,25 +273,23 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected async toggleRowSelection(
     row: Row<I>,
     forceState: boolean = !this.selection.isSelected(row)
-  ): Promise<boolean | void> {
+  ): Promise<void> {
     if (forceState) {
       this.selection.select(row);
     } else {
       this.selection.deselect(row);
     }
 
-    if (row instanceof ResourceTableRowsPlaceholder) {
-      return;
+    if (!(row instanceof ResourceTableRowsPlaceholder)) {
+      await this.setQueryParams({
+        resourceId: this.selection.isSelected(row) ? row.resource.id : null,
+      });
     }
-
-    return this.setQueryParams({
-      resourceId: this.selection.isSelected(row) ? row.resource.id : null,
-    });
   }
 
   protected updateResourceTableColumns(
     resourceTableColumns: Resource.TableColumn<I>[] = this.resourceTable.columns
-  ): Promise<boolean> {
+  ): Promise<void> {
     return this.setQueryParams(
       {
         paths: resourceTableColumns
