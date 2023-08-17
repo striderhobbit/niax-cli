@@ -180,17 +180,7 @@ export class ResourceTableComponent<I extends Resource.Item>
           currentIndexInArray
         );
 
-    this.resourceTable.columns.forEach((column) => {
-      if (
-        (column.sortIndex = this.resourceTable.primaryPaths.indexOf(
-          column.path
-        )) === -1
-      ) {
-        delete column.sortIndex;
-      }
-    });
-
-    return this.updateResourceTableColumns();
+    return this.syncPaths();
   }
 
   protected openColumnToggleDialog(): void {
@@ -236,6 +226,20 @@ export class ResourceTableComponent<I extends Resource.Item>
       },
       queryParamsHandling: 'merge',
     });
+  }
+
+  protected syncPaths(): Promise<boolean> {
+    this.resourceTable.columns.forEach((column) => {
+      if (
+        (column.sortIndex = this.resourceTable.primaryPaths.indexOf(
+          column.path
+        )) === -1
+      ) {
+        delete column.sortIndex;
+      }
+    });
+
+    return this.updateResourceTableColumns();
   }
 
   protected updateResourceTableColumns(
