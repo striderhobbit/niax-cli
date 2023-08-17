@@ -3,13 +3,14 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CdkHeaderRowDef } from '@angular/cdk/table';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
+import { cloneDeep, find, keyBy, pick, zipWith } from 'lodash';
 import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
@@ -30,6 +31,9 @@ type Row<I extends Resource.Item> =
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
 {
+  @ViewChild(CdkHeaderRowDef) headerRowDef?: CdkHeaderRowDef;
+  @ViewChild(MatTable) table?: MatTable<Row<I>>;
+
   private readonly resourceTableRowsPagesChangeSubject = new Subject<
     Resource.TableRowsPage<I>[]
   >();
@@ -44,7 +48,9 @@ export class ResourceTableComponent<I extends Resource.Item>
     return primaryPaths.concat(secondaryPaths);
   }
 
-  protected resourceTable!: Resource.Table<I>;
+  protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
+    'resourceTable'
+  ] as Resource.Table<I>;
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -75,10 +81,18 @@ export class ResourceTableComponent<I extends Resource.Item>
         )
       )
       .subscribe({
-        next: (resourceTable) =>
-          this.resourceTableRowsPagesChangeSubject.next(
-            (this.resourceTable = resourceTable).rowsPages
-          ),
+        next: (resourceTable) => {
+          const { rowsPages } = (this.resourceTable = resourceTable);
+
+          /**
+           * FIXME https://github.com/angular/components/issues/22022
+           */
+          if (this.headerRowDef != null) {
+            this.table?.removeHeaderRowDef(this.headerRowDef);
+          }
+
+          this.resourceTableRowsPagesChangeSubject.next(rowsPages);
+        },
       });
   }
 
@@ -145,7 +159,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     container: {
       data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
     },
-  }: CdkDragDrop<PropertyPath<I>[]>): void {
+  }: CdkDragDrop<PropertyPath<I>[]>): Promise<boolean> {
     const [previousArray, currentArray] = [previousItem, currentItem].map(
       (path) =>
         this.resourceTable.primaryPaths.includes(path)
@@ -172,7 +186,17 @@ export class ResourceTableComponent<I extends Resource.Item>
           currentIndexInArray
         );
 
-    this.syncPaths();
+    this.resourceTable.columns.forEach((column) => {
+      if (
+        (column.sortIndex = this.resourceTable.primaryPaths.indexOf(
+          column.path
+        )) === -1
+      ) {
+        delete column.sortIndex;
+      }
+    });
+
+    return this.updateResourceTableColumns();
   }
 
   protected openColumnToggleDialog(): void {
@@ -218,34 +242,6 @@ export class ResourceTableComponent<I extends Resource.Item>
       },
       queryParamsHandling: 'merge',
     });
-  }
-
-  protected syncPaths(): Promise<boolean> {
-    this.resourceTable.columns.forEach((resourceTableColumn) => {
-      if (
-        (resourceTableColumn.sortIndex =
-          this.resourceTable.primaryPaths.indexOf(resourceTableColumn.path)) ===
-        -1
-      ) {
-        delete resourceTableColumn.sortIndex;
-      }
-    });
-
-    return this.updateResourceTableColumns();
-  }
-
-  protected togglePath(column: Resource.TableColumn<I>): Promise<boolean> {
-    if (!this.resourceTable.primaryPaths.includes(column.path)) {
-      this.resourceTable.primaryPaths.push(column.path);
-    } else if (column.order === 'desc') {
-      pull(this.resourceTable.primaryPaths, column.path);
-    } else {
-      column.order = 'desc';
-
-      return this.updateResourceTableColumns();
-    }
-
-    return this.syncPaths();
   }
 
   protected updateResourceTableColumns(

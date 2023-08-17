@@ -33,6 +33,16 @@
           Required pattern: {{ patternError.requiredPattern }}
         </mat-error>
       </mat-form-field>
+      <button
+        *ngIf="column.sortIndex != null"
+        (click)="
+          column.order = column.order === 'desc' ? '' : 'desc';
+          updateResourceTableColumns()
+        "
+        mat-icon-button
+      >
+        <mat-icon>{{ column.order === "desc" ? "north" : "south" }}</mat-icon>
+      </button>
       <button [matMenuTriggerFor]="menu" mat-icon-button>
         <mat-icon>more_vert</mat-icon>
       </button>
