@@ -42,12 +42,6 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected readonly dataSource = new MatTableDataSource<Row<I>>();
 
-  protected get paths(): PropertyPath<I>[] {
-    const { primaryPaths, secondaryPaths } = this.resourceTable;
-
-    return primaryPaths.concat(secondaryPaths);
-  }
-
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
   ] as Resource.Table<I>;
