@@ -47,6 +47,37 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu>
+        <button
+          *ngIf="column.sortIndex != null"
+          (click)="
+            pull(resourceTable.primaryPaths, column.path);
+            syncResourceTableColumns()
+          "
+          mat-menu-item
+        >
+          Disable sort
+        </button>
+        <button
+          *ngIf="column.sortIndex == null"
+          (click)="
+            resourceTable.primaryPaths.push(column.path);
+            syncResourceTableColumns()
+          "
+          mat-menu-item
+        >
+          Sort ascending
+        </button>
+        <button
+          *ngIf="column.sortIndex == null"
+          (click)="
+            column.order = 'desc';
+            resourceTable.primaryPaths.push(column.path);
+            syncResourceTableColumns()
+          "
+          mat-menu-item
+        >
+          Sort descending
+        </button>
         <button (click)="openColumnToggleDialog()" mat-menu-item>
           Toggle...
         </button>

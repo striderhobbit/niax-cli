@@ -10,7 +10,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { cloneDeep, find, keyBy, pick, zipWith } from 'lodash';
+import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
 import { Subject, Subscription, firstValueFrom, map, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
@@ -41,6 +41,8 @@ export class ResourceTableComponent<I extends Resource.Item>
   private routeDataSubscription?: Subscription;
 
   protected readonly dataSource = new MatTableDataSource<Row<I>>();
+
+  protected readonly pull = pull;
 
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
@@ -180,7 +182,7 @@ export class ResourceTableComponent<I extends Resource.Item>
           currentIndexInArray
         );
 
-    return this.syncPaths();
+    return this.syncResourceTableColumns();
   }
 
   protected openColumnToggleDialog(): void {
@@ -228,14 +230,13 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
-  protected syncPaths(): Promise<boolean> {
+  protected syncResourceTableColumns(): Promise<boolean> {
     this.resourceTable.columns.forEach((column) => {
-      if (
-        (column.sortIndex = this.resourceTable.primaryPaths.indexOf(
-          column.path
-        )) === -1
-      ) {
+      column.sortIndex = this.resourceTable.primaryPaths.indexOf(column.path);
+
+      if (column.sortIndex === -1) {
         delete column.sortIndex;
+        delete column.order;
       }
     });
 
