@@ -1,3 +1,10 @@
+table::after {
+    content: "";
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
 td:not(:hover) > mat-checkbox:not(.mat-mdc-checkbox-checked) {
     visibility: hidden;
 }

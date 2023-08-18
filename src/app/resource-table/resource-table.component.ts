@@ -58,6 +58,8 @@ export class ResourceTableComponent<I extends Resource.Item>
     'resourceTable'
   ] as Resource.Table<I>;
 
+  protected scrollMarginTop?: number;
+
   constructor(
     private readonly apiService: ApiService<I>,
     private readonly dialog: MatDialog,

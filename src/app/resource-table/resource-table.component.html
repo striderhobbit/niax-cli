@@ -123,9 +123,21 @@
       </td>
     </ng-container>
 
-    <tr *matHeaderRowDef="columns; sticky: true" mat-header-row></tr>
+    <tr
+      *matHeaderRowDef="columns; sticky: true"
+      (viewInit)="scrollMarginTop = $event.offsetHeight"
+      mat-header-row
+      observeViewInit
+    ></tr>
 
-    <tr *matRowDef="let row; columns: columns" mat-row></tr>
+    <tr
+      *matRowDef="let row; columns: columns"
+      (viewInit)="$event.scrollIntoView({ block: 'start' })"
+      [style.scrollMarginTop.px]="scrollMarginTop"
+      [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
+      mat-row
+      observeViewInit
+    ></tr>
     <tr
       *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
       mat-row
