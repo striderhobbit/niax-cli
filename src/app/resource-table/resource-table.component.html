@@ -138,9 +138,14 @@
       mat-row
       observeViewInit
     ></tr>
-    <tr
-      *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
-      mat-row
-    ></tr>
+
+    <tr *matNoDataRow>
+      <td [attr.colspan]="columns.length">No data</td>
+    </tr>
   </ng-container>
+
+  <tr
+    *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
+    mat-row
+  ></tr>
 </table>
