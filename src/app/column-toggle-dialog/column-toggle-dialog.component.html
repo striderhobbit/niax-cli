@@ -6,5 +6,7 @@
 </mat-selection-list>
 <div mat-dialog-actions>
   <button (click)="dialogRef.close()" mat-button>Cancel</button>
-  <button [mat-dialog-close]="columns" mat-button>Submit</button>
+  <button [disabled]="!hasChanges()" [mat-dialog-close]="columns" mat-button>
+    Submit
+  </button>
 </div>
