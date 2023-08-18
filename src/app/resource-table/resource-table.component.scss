@@ -10,7 +10,9 @@ td {
         text-align: center;
     }
 
-    &.mat-column-select:not(:hover) > mat-checkbox:not(.mat-mdc-checkbox-checked) {
-        visibility: hidden;
+    &.mat-column-select:not(:hover) {
+        mat-checkbox:not(.mat-mdc-checkbox-checked) {
+            visibility: hidden;
+        }
     }
 }
