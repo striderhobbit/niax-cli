@@ -5,6 +5,10 @@ table::after {
     width: 100%;
 }
 
-td:not(:hover) > mat-checkbox:not(.mat-mdc-checkbox-checked) {
-    visibility: hidden;
+td.mat-column-index {
+    white-space: nowrap;
+
+    &:not(:hover) > mat-checkbox:not(.mat-mdc-checkbox-checked) {
+        visibility: hidden;
+    }
 }
