@@ -19,7 +19,6 @@ import { ResourceTableComponent } from './resource-table/resource-table.componen
             inject(ApiService<I>).getResourceTable(
               pick(
                 route.queryParams,
-                'hash',
                 'limit',
                 'paths',
                 'resourceId',

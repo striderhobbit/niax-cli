@@ -11,7 +11,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
+import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
 import {
   Subject,
   Subscription,
@@ -97,12 +97,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   ngOnInit(): void {
     this.routeDataSubscription = this.route.data
-      .pipe(
-        map((data) => data['resourceTable'] as Resource.Table<I>),
-        tap((resourceTable) =>
-          this.setQueryParams(pick(resourceTable.params, 'hash'))
-        )
-      )
+      .pipe(map((data) => data['resourceTable'] as Resource.Table<I>))
       .subscribe({
         next: (resourceTable) => {
           const { rowsPages } = (this.resourceTable = resourceTable);
@@ -132,7 +127,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       this.apiService
         .getResourceTableRowsPage({
           pageToken,
-          resourceName: this.resourceTable.params.resourceName,
+          tableToken: this.resourceTable.params.token,
         })
         .pipe(
           map(({ items }) => {
@@ -232,15 +227,16 @@ export class ResourceTableComponent<I extends Resource.Item>
     return firstValueFrom(
       this.apiService
         .patchResourceItem(
-          pick(this.resourceTable.params, 'resourceName'),
+          { tableToken: this.resourceTable.params.token },
           resourceTableField
         )
         .pipe(
-          tap(() =>
+          // TODO mergeTap? https://github.com/ReactiveX/rxjs/discussions/7320
+          mergeMap((resourceItem) =>
             this.setQueryParams(
-              { resourceId: resourceTableField.resource.id },
+              { resourceId: resourceTableField.resource.id }, // TODO needs adaptation
               { runResolvers: true }
-            )
+            ).then(() => resourceItem)
           )
         )
     );

@@ -6,6 +6,10 @@ table::after {
 }
 
 td {
+    &.mat-column-placeholder {
+        text-align: center;
+    }
+    
     &.mat-column-index {
         text-align: center;
     }
