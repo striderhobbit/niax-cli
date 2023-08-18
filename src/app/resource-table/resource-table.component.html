@@ -1,6 +1,9 @@
 <table
+  *ngIf="
+    resourceTable.primaryPaths.concat(resourceTable.secondaryPaths) as paths
+  "
   (cdkDropListDropped)="onPathDropped($event)"
-  [cdkDropListData]="resourceTable.paths"
+  [cdkDropListData]="paths"
   [dataSource]="dataSource"
   cdkDropList
   cdkDropListLockAxis="x"
@@ -107,7 +110,7 @@
     </td>
   </ng-container>
 
-  <ng-container *ngIf="['index'].concat(resourceTable.paths) as columns">
+  <ng-container *ngIf="['index'].concat(paths) as columns">
     <ng-container matColumnDef="placeholder">
       <td
         *matCellDef="let placeholder"
