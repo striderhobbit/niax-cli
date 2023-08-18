@@ -149,3 +149,9 @@
     mat-row
   ></tr>
 </table>
+
+<mat-paginator
+  (page)="setQueryParams({ limit: $event.pageSize }, { runResolvers: true })"
+  [pageSize]="resourceTable.params.limit"
+  [pageSizeOptions]="[10, 25, 50]"
+></mat-paginator>

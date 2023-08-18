@@ -10,3 +10,7 @@ mat-hint {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+mat-paginator .mat-mdc-paginator-range-actions {
+    display: none !important;
+}
