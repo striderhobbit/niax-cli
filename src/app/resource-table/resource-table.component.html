@@ -10,7 +10,7 @@
   cdkDropListOrientation="horizontal"
   mat-table
 >
-  <ng-container matColumnDef="index" sticky>
+  <ng-container matColumnDef="select" sticky>
     <th *matHeaderCellDef mat-header-cell></th>
     <td *matCellDef="let row" mat-cell>
       <mat-checkbox
@@ -18,6 +18,12 @@
         [checked]="selection.isSelected(row)"
       >
       </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="index" sticky>
+    <th *matHeaderCellDef mat-header-cell></th>
+    <td *matCellDef="let row" mat-cell>
       {{ row.index + 1 }}
     </td>
   </ng-container>
@@ -110,7 +116,7 @@
     </td>
   </ng-container>
 
-  <ng-container *ngIf="['index'].concat(paths) as columns">
+  <ng-container *ngIf="['select', 'index'].concat(paths) as columns">
     <ng-container matColumnDef="placeholder">
       <td
         *matCellDef="let placeholder"
