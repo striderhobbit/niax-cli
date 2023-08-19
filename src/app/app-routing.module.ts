@@ -20,7 +20,7 @@ import { ResourceTableComponent } from './resource-table/resource-table.componen
               pick(
                 route.queryParams,
                 'limit',
-                'paths',
+                'cols',
                 'resourceId',
                 'resourceName'
               )

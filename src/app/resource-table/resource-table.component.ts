@@ -290,7 +290,7 @@ export class ResourceTableComponent<I extends Resource.Item>
   ): Promise<void> {
     return this.setQueryParams(
       {
-        paths: resourceTableColumns
+        cols: resourceTableColumns
           .filter((column) => column.include)
           .map((column) =>
             [
