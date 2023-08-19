@@ -132,8 +132,8 @@
     <ng-container matColumnDef="params">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
         <div>
-          <div>resource = {{ resourceTable.params.resourceName }}</div>
-          <div>token = {{ resourceTable.params.token }}</div>
+          <div>Resource = {{ resourceTable.params.resourceName }}</div>
+          <div>Token = {{ resourceTable.params.token }}</div>
           <div *ngIf="resourceTable.params.cacheRestored">
             Restored from cache
           </div>
