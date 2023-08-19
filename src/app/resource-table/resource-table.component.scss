@@ -6,17 +6,14 @@ table::after {
 }
 
 td {
-    &.mat-column-placeholder {
-        text-align: center;
-    }
-    
-    &.mat-column-index {
-        text-align: center;
-    }
-
     &.mat-column-select:not(:hover) {
         mat-checkbox:not(.mat-mdc-checkbox-checked) {
             visibility: hidden;
         }
+    }
+
+    &.mat-column-index,
+    &.mat-column-placeholder {
+        text-align: center;
     }
 }

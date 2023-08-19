@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -54,7 +54,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatPaginatorModule,
+    MatSelectModule,
     MatTableModule,
     NoopAnimationsModule,
   ],

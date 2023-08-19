@@ -10,13 +10,3 @@ mat-hint {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
-mat-paginator {
-    bottom: 0;
-    position: sticky;
-    z-index: 10;
-
-    .mat-mdc-paginator-range-actions {
-        display: none !important;
-    }
-}

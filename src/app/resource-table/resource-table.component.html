@@ -10,113 +10,113 @@
   cdkDropListOrientation="horizontal"
   mat-table
 >
-  <ng-container matColumnDef="select" sticky>
-    <th *matHeaderCellDef mat-header-cell></th>
-    <td *matCellDef="let row" mat-cell>
-      <mat-checkbox
-        (change)="toggleRowSelection(row)"
-        [checked]="selection.isSelected(row)"
-      >
-      </mat-checkbox>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="index" sticky>
-    <th *matHeaderCellDef mat-header-cell></th>
-    <td *matCellDef="let row" mat-cell>
-      {{ row.index + 1 }}
-    </td>
-  </ng-container>
-
-  <ng-container
-    *ngFor="let column of resourceTable.columns | filter : 'include'"
-    [matColumnDef]="column.path"
-  >
-    <th *matHeaderCellDef [cdkDragData]="column.path" cdkDrag mat-header-cell>
-      <mat-form-field>
-        <input
-          (change)="updateResourceTableColumns()"
-          (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
-          [ngModel]="column.filter"
-          #columnFilter="ngModel"
-          matInput
-          pattern="[^,]*"
-          placeholder="/(?:)/"
-          type="text"
-          validateRegExp
-        />
-        <mat-label>{{ column.path }}</mat-label>
-        <button
-          (click)="column.filter = ''; updateResourceTableColumns()"
-          [disabled]="!column.filter"
-          mat-icon-button
-          matSuffix
+  <ng-container *ngIf="['select', 'index'].concat(paths) as columns">
+    <ng-container matColumnDef="select" sticky>
+      <th *matHeaderCellDef mat-header-cell></th>
+      <td *matCellDef="let row" mat-cell>
+        <mat-checkbox
+          (change)="toggleRowSelection(row)"
+          [checked]="selection.isSelected(row)"
         >
-          <mat-icon>filter_alt{{ column.filter && "_off" }}</mat-icon>
-        </button>
-        <mat-error *ngIf="columnFilter.errors?.['syntax'] as syntaxError">
-          {{ syntaxError }}
-        </mat-error>
-        <mat-error *ngIf="columnFilter.errors?.['pattern'] as patternError">
-          Required pattern: {{ patternError.requiredPattern }}
-        </mat-error>
-      </mat-form-field>
-      <button
-        *ngIf="column.sortIndex != null"
-        (click)="
-          column.order = column.order === 'desc' ? '' : 'desc';
-          updateResourceTableColumns()
-        "
-        mat-icon-button
-      >
-        <mat-icon>{{ column.order === "desc" ? "north" : "south" }}</mat-icon>
-      </button>
-      <button [matMenuTriggerFor]="menu" mat-icon-button>
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu>
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="index" sticky>
+      <th *matHeaderCellDef mat-header-cell></th>
+      <td *matCellDef="let row" mat-cell>
+        {{ row.index + 1 }}
+      </td>
+    </ng-container>
+
+    <ng-container
+      *ngFor="let column of resourceTable.columns | filter : 'include'"
+      [matColumnDef]="column.path"
+    >
+      <th *matHeaderCellDef [cdkDragData]="column.path" cdkDrag mat-header-cell>
+        <mat-form-field>
+          <input
+            (change)="updateResourceTableColumns()"
+            (ngModelChange)="columnFilter.invalid || (column.filter = $event)"
+            [ngModel]="column.filter"
+            #columnFilter="ngModel"
+            matInput
+            pattern="[^,]*"
+            placeholder="/(?:)/"
+            type="text"
+            validateRegExp
+          />
+          <mat-label>{{ column.path }}</mat-label>
+          <button
+            (click)="column.filter = ''; updateResourceTableColumns()"
+            [disabled]="!column.filter"
+            mat-icon-button
+            matSuffix
+          >
+            <mat-icon>filter_alt{{ column.filter && "_off" }}</mat-icon>
+          </button>
+          <mat-error *ngIf="columnFilter.errors?.['syntax'] as syntaxError">
+            {{ syntaxError }}
+          </mat-error>
+          <mat-error *ngIf="columnFilter.errors?.['pattern'] as patternError">
+            Required pattern: {{ patternError.requiredPattern }}
+          </mat-error>
+        </mat-form-field>
         <button
           *ngIf="column.sortIndex != null"
           (click)="
-            pull(resourceTable.primaryPaths, column.path);
-            syncResourceTableColumns()
+            column.order = column.order === 'desc' ? '' : 'desc';
+            updateResourceTableColumns()
           "
-          mat-menu-item
+          mat-icon-button
         >
-          Disable sort
+          <mat-icon>{{ column.order === "desc" ? "north" : "south" }}</mat-icon>
         </button>
-        <button
-          *ngIf="column.sortIndex == null"
-          (click)="
-            resourceTable.primaryPaths.push(column.path);
-            syncResourceTableColumns()
-          "
-          mat-menu-item
-        >
-          Sort ascending
+        <button [matMenuTriggerFor]="menu" mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
         </button>
-        <button
-          *ngIf="column.sortIndex == null"
-          (click)="
-            column.order = 'desc';
-            resourceTable.primaryPaths.push(column.path);
-            syncResourceTableColumns()
-          "
-          mat-menu-item
-        >
-          Sort descending
-        </button>
-        <button (click)="openColumnToggleDialog()" mat-menu-item>
-          Toggle...
-        </button>
-      </mat-menu>
-    </th>
-    <td *matCellDef="let row" mat-cell>
-      {{ row.fields[column.path].value }}
-    </td>
-  </ng-container>
+        <mat-menu #menu>
+          <button
+            *ngIf="column.sortIndex != null"
+            (click)="
+              pull(resourceTable.primaryPaths, column.path);
+              syncResourceTableColumns()
+            "
+            mat-menu-item
+          >
+            Disable sort
+          </button>
+          <button
+            *ngIf="column.sortIndex == null"
+            (click)="
+              resourceTable.primaryPaths.push(column.path);
+              syncResourceTableColumns()
+            "
+            mat-menu-item
+          >
+            Sort ascending
+          </button>
+          <button
+            *ngIf="column.sortIndex == null"
+            (click)="
+              column.order = 'desc';
+              resourceTable.primaryPaths.push(column.path);
+              syncResourceTableColumns()
+            "
+            mat-menu-item
+          >
+            Sort descending
+          </button>
+          <button (click)="openColumnToggleDialog()" mat-menu-item>
+            Toggle...
+          </button>
+        </mat-menu>
+      </th>
+      <td *matCellDef="let row" mat-cell>
+        {{ row.fields[column.path].value }}
+      </td>
+    </ng-container>
 
-  <ng-container *ngIf="['select', 'index'].concat(paths) as columns">
     <ng-container matColumnDef="placeholder">
       <td
         *matCellDef="let placeholder"
@@ -126,6 +126,34 @@
         observeIntersection
       >
         <mat-icon>more_horiz</mat-icon>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="params" sticky>
+      <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
+        <div>
+          <div>resource = {{ resourceTable.params.resourceName }}</div>
+          <div>token = {{ resourceTable.params.token }}</div>
+          <div *ngIf="resourceTable.params.cacheRestored">
+            Restored from cache
+          </div>
+        </div>
+        <mat-form-field>
+          <mat-label>Page size</mat-label>
+          <mat-select
+            (ngModelChange)="
+              setQueryParams({ limit: $event }, { runResolvers: true })
+            "
+            [ngModel]="resourceTable.params.limit"
+          >
+            <mat-option
+              *ngFor="let pageSize of [10, 25, 50]"
+              [value]="pageSize"
+            >
+              {{ pageSize }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </td>
     </ng-container>
 
@@ -145,19 +173,15 @@
       observeViewInit
     ></tr>
 
+    <tr
+      *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
+      mat-row
+    ></tr>
+
     <tr *matNoDataRow>
       <td [attr.colspan]="columns.length">No data</td>
     </tr>
+
+    <tr *matFooterRowDef="['params']; sticky: true" mat-footer-row></tr>
   </ng-container>
-
-  <tr
-    *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
-    mat-row
-  ></tr>
 </table>
-
-<mat-paginator
-  (page)="setQueryParams({ limit: $event.pageSize }, { runResolvers: true })"
-  [pageSize]="resourceTable.params.limit"
-  [pageSizeOptions]="[10, 25, 50]"
-></mat-paginator>
