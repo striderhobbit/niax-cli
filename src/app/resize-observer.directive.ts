@@ -21,7 +21,7 @@ interface ResizeEvent {
 export class ResizeObserverDirective
   implements OnInit, AfterViewInit, OnDestroy
 {
-  @Input('resizeDelay') delay = 100;
+  @Input('resizeDelay') delay: number = 100;
 
   @Output() resize = new EventEmitter<ResizeObserverSize>();
 
