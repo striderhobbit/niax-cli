@@ -242,6 +242,12 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
+  protected scrollIntoView(element: HTMLElement): void {
+    requestAnimationFrame(() => {
+      element.scrollIntoView({ block: 'start' });
+    });
+  }
+
   protected async setQueryParams(
     queryParams: Params,
     { runResolvers }: { runResolvers?: boolean } = {}

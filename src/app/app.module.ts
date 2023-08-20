@@ -27,6 +27,7 @@ import { ColumnToggleDialogComponent } from './column-toggle-dialog/column-toggl
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
+import { ResizeObserverDirective } from './resize-observer.directive';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
 
@@ -36,6 +37,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     FilterPipe,
     IntersectionObserverDirective,
     RegExpValidatorDirective,
+    ResizeObserverDirective,
     ResourceTableComponent,
     ViewInitObserverDirective,
   ],
