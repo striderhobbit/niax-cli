@@ -3,9 +3,7 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
-  Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import { Subject, debounceTime, filter } from 'rxjs';
@@ -18,33 +16,30 @@ interface ResizeEvent {
 @Directive({
   selector: '[observeResize]',
 })
-export class ResizeObserverDirective
-  implements OnInit, AfterViewInit, OnDestroy
-{
-  @Input('resizeDelay') delay: number = 100;
-
+export class ResizeObserverDirective implements AfterViewInit, OnDestroy {
   @Output() resize = new EventEmitter<ResizeObserverSize>();
 
+  private readonly delay: number = 100;
   private readonly resizeEventSubject = new Subject<ResizeEvent>();
 
   private observer?: ResizeObserver;
 
   constructor(private readonly host: ElementRef) {}
 
-  ngOnInit(): void {
-    this.createObserver();
-  }
-
   ngAfterViewInit(): void {
+    this.createObserver();
+
     this.observe(this.host.nativeElement);
   }
 
   ngOnDestroy(): void {
-    this.observer!.disconnect();
-
-    delete this.observer;
-
     this.resizeEventSubject.complete();
+
+    if (this.observer != null) {
+      this.observer.disconnect();
+
+      delete this.observer;
+    }
   }
 
   private createObserver(): void {
@@ -56,7 +51,9 @@ export class ResizeObserverDirective
   }
 
   private observe(element: Element): void {
-    this.observer!.observe(element);
+    if (this.observer == null) {
+      throw new Error('ResizeObserver not initialized');
+    }
 
     this.resizeEventSubject
       .pipe(
@@ -64,5 +61,7 @@ export class ResizeObserverDirective
         debounceTime(this.delay)
       )
       .subscribe(({ entry }) => this.resize.emit(entry.borderBoxSize[0]));
+
+    this.observer.observe(element);
   }
 }

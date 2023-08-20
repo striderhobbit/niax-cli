@@ -122,6 +122,7 @@
         *matCellDef="let placeholder"
         (intersection)="fetchResourceTableRows(placeholder.pageToken)"
         [colSpan]="2"
+        [intersectionRootMargin]="rootMarginSubject"
         mat-cell
         observeIntersection
       >
@@ -159,17 +160,14 @@
 
     <tr
       *matHeaderRowDef="columns; sticky: true"
-      (resize)="scrollMarginTop = $event.blockSize"
-      (viewInit)="scrollMarginTop = $event.offsetHeight"
+      (resize)="rootMarginSubject.next({ top: -$event.blockSize })"
       mat-header-row
       observeResize
-      observeViewInit
     ></tr>
 
     <tr
       *matRowDef="let row; columns: columns"
-      (viewInit)="$event.scrollIntoView({ block: 'start' })"
-      [style.scrollMarginTop.px]="scrollMarginTop"
+      (viewInit)="scrollIntoView($event)"
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       mat-row
       observeViewInit

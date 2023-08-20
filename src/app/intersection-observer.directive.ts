@@ -4,97 +4,101 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
-  OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
-import { Subject, debounceTime, filter } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, filter } from 'rxjs';
+import { CSSBoxMargin } from './resource-table/resource-table.component';
 
 interface IntersectionEvent {
   entry: IntersectionObserverEntry;
   observer: IntersectionObserver;
 }
 
+interface IntersectionObserverInstance {
+  subject: Subject<IntersectionEvent>;
+  observer: IntersectionObserver;
+}
+
 @Directive({
   selector: '[observeIntersection]',
 })
-export class IntersectionObserverDirective
-  implements OnInit, AfterViewInit, OnChanges, OnDestroy
-{
-  @Input('intersectionDelay') delay?: number;
-  @Input('intersectionRootMargin') intersectionRootMargin?: number[];
-  @Input('intersectionThreshold') threshold?: number;
+export class IntersectionObserverDirective implements AfterViewInit, OnDestroy {
+  @Input({ alias: 'intersectionRootMargin', required: true })
+  rootMarginSubject!: BehaviorSubject<CSSBoxMargin>;
 
   @Output() intersection = new EventEmitter<void>();
 
-  private intersectionEventSubject?: Subject<IntersectionEvent>;
+  private readonly delay: number = 100;
+  private readonly threshold?: number;
 
-  private observer?: IntersectionObserver;
+  private instance?: IntersectionObserverInstance;
 
   constructor(private readonly host: ElementRef) {}
 
-  ngOnInit(): void {
-    this.createObserver();
-  }
-
   ngAfterViewInit(): void {
-    this.observe(this.host.nativeElement);
-  }
+    this.rootMarginSubject.subscribe({
+      next: (margin) => {
+        this.createInstance({
+          threshold: this.threshold,
+          rootMargin: [margin.top, margin.right, margin.bottom, margin.left]
+            .map((px = 0) => `${px}px`)
+            .join(' '),
+        });
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.createObserver();
-
-    this.observe(this.host.nativeElement);
+        this.observe(this.host.nativeElement);
+      },
+    });
   }
 
   ngOnDestroy(): void {
-    this.destroyObserver();
-
-    this.intersectionEventSubject?.complete();
+    this.destroyInstance();
   }
 
-  private createObserver(): void {
-    this.destroyObserver();
+  private createInstance(options: IntersectionObserverInit): void {
+    this.destroyInstance();
 
-    const intersectionEventSubject = (this.intersectionEventSubject =
-      new Subject<IntersectionEvent>());
+    const subject = new Subject<IntersectionEvent>();
 
-    this.observer = new IntersectionObserver(
-      (entries, observer) =>
-        entries.forEach((entry) =>
-          intersectionEventSubject.next({ entry, observer })
-        ),
-      {
-        threshold: this.threshold,
-        rootMargin:
-          this.intersectionRootMargin &&
-          this.intersectionRootMargin.map((px) => `${px}px`).join(' '),
-      }
-    );
+    this.instance = {
+      subject,
+      observer: new IntersectionObserver(
+        (entries, observer) =>
+          entries.forEach((entry) => subject.next({ entry, observer })),
+        options
+      ),
+    };
   }
 
-  private destroyObserver(): void {
-    if (this.observer != null) {
-      this.observer.disconnect();
+  private destroyInstance(): void {
+    if (this.instance != null) {
+      this.instance.subject.complete();
+      this.instance.observer.disconnect();
 
-      delete this.observer;
+      delete this.instance;
     }
   }
 
   private observe(element: Element): void {
-    this.intersectionEventSubject!.pipe(
-      filter(({ entry: { target } }) => target === element),
-      debounceTime(this.delay ?? 100)
-    ).subscribe(({ entry, observer }) => {
-      if (entry.isIntersecting) {
-        this.intersection.emit();
+    const { instance } = this;
 
-        observer.unobserve(entry.target);
-      }
-    });
+    if (instance == null) {
+      throw new Error('IntersectionObserver not instantiated');
+    }
 
-    this.observer!.observe(element);
+    instance.subject
+      .pipe(
+        filter(({ entry: { target } }) => target === element),
+        debounceTime(this.delay)
+      )
+      .subscribe(({ entry, observer }) => {
+        if (entry.isIntersecting && !instance.subject.isStopped) {
+          this.intersection.emit();
+
+          observer.unobserve(entry.target);
+        }
+      });
+
+    instance.observer.observe(element);
   }
 }

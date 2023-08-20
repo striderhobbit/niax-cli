@@ -13,6 +13,7 @@ import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
 import {
+  BehaviorSubject,
   Subject,
   Subscription,
   firstValueFrom,
@@ -22,6 +23,13 @@ import {
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
+
+export interface CSSBoxMargin {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
 
 class ResourceTableRowsPlaceholder {
   constructor(public readonly pageToken: string) {}
@@ -52,13 +60,13 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected readonly pull = pull;
 
+  protected readonly rootMarginSubject = new BehaviorSubject<CSSBoxMargin>({});
+
   protected readonly selection = new SelectionModel<Row<I>>(false, []);
 
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
   ] as Resource.Table<I>;
-
-  protected scrollMarginTop?: number;
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -240,6 +248,14 @@ export class ResourceTableComponent<I extends Resource.Item>
           )
         )
     );
+  }
+
+  protected scrollIntoView(element: HTMLElement): Promise<void> {
+    return firstValueFrom(this.rootMarginSubject).then(({ top = 0 }) => {
+      element.style.scrollMarginTop = `${-top}px`;
+
+      element.scrollIntoView({ block: 'start' });
+    });
   }
 
   protected async setQueryParams(
