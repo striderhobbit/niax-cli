@@ -12,8 +12,11 @@ td {
         }
     }
 
-    &.mat-column-index,
-    &.mat-column-placeholder {
+    &.mat-column-index {
         text-align: center;
+    }
+
+    &.mat-column-placeholder {
+        text-align: right;
     }
 }
