@@ -26,9 +26,9 @@ export class IntersectionObserverDirective
 
   @Output() intersection = new EventEmitter<void>();
 
-  private observer?: IntersectionObserver;
-
   private readonly intersectionEventSubject = new Subject<IntersectionEvent>();
+
+  private observer?: IntersectionObserver;
 
   constructor(private readonly host: ElementRef) {}
 
