@@ -21,8 +21,9 @@ interface IntersectionEvent {
 export class IntersectionObserverDirective
   implements OnInit, AfterViewInit, OnDestroy
 {
-  @Input('intersectionDelay') delay = 100;
-  @Input('intersectionThreshold') threshold = 0;
+  @Input('intersectionDelay') delay: number = 100;
+
+  @Input('intersectionThreshold') threshold: number = 0;
 
   @Output() intersection = new EventEmitter<void>();
 
