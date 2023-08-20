@@ -168,7 +168,7 @@
 
     <tr
       *matRowDef="let row; columns: columns"
-      (viewInit)="scrollIntoView($event)"
+      (viewInit)="$event.scrollIntoView({ block: 'start' })"
       [style.scrollMarginTop.px]="scrollMarginTop"
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       mat-row
