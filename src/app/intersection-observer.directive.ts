@@ -8,10 +8,10 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Subject, delay } from 'rxjs';
+import { Subject, debounceTime, filter } from 'rxjs';
 
 interface IntersectionEvent {
-  target: HTMLElement;
+  entry: IntersectionObserverEntry;
   observer: IntersectionObserver;
 }
 
@@ -24,31 +24,28 @@ export class IntersectionObserverDirective
   @Input() delay = 100;
   @Input() threshold = 0;
 
-  @Output() intersection = new EventEmitter<HTMLElement>();
+  @Output() intersection = new EventEmitter<void>();
 
   private observer?: IntersectionObserver;
-  
+
   private readonly intersectionEventSubject = new Subject<IntersectionEvent>();
 
   constructor(private readonly host: ElementRef) {}
 
   ngOnInit(): void {
     this.createObserver({
-      rootMargin: '0px',
       threshold: this.threshold,
     });
   }
 
   ngAfterViewInit(): void {
-    this.startObservingElements();
+    this.observe(this.host.nativeElement);
   }
 
   ngOnDestroy(): void {
-    if (this.observer) {
-      this.observer.disconnect();
+    this.observer!.disconnect();
 
-      delete this.observer;
-    }
+    delete this.observer;
 
     this.intersectionEventSubject.complete();
   }
@@ -56,41 +53,27 @@ export class IntersectionObserverDirective
   private createObserver(options: IntersectionObserverInit): void {
     this.observer = new IntersectionObserver(
       (entries, observer) =>
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            this.intersectionEventSubject.next({
-              target: entry.target as HTMLElement,
-              observer,
-            });
-          }
-        }),
+        entries.forEach((entry) =>
+          this.intersectionEventSubject.next({ entry, observer })
+        ),
       options
     );
   }
 
-  private isVisible(element: HTMLElement): Promise<boolean> {
-    return new Promise((resolve) => {
-      new IntersectionObserver(([entry], observer) => {
-        resolve(entry.isIntersecting);
+  private observe(element: Element): void {
+    this.observer!.observe(element);
 
-        observer.disconnect();
-      }).observe(element);
-    });
-  }
+    this.intersectionEventSubject
+      .pipe(
+        filter(({ entry: { target } }) => target === element),
+        debounceTime(this.delay)
+      )
+      .subscribe(async ({ entry: { isIntersecting, target }, observer }) => {
+        if (isIntersecting) {
+          this.intersection.emit();
 
-  private startObservingElements(): void {
-    if (this.observer) {
-      this.observer.observe(this.host.nativeElement);
-
-      this.intersectionEventSubject
-        .pipe(delay(this.delay))
-        .subscribe(async ({ target, observer }) => {
-          if (await this.isVisible(target)) {
-            this.intersection.emit(target);
-
-            observer.unobserve(target);
-          }
-        });
-    }
+          observer.unobserve(target);
+        }
+      });
   }
 }
