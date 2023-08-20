@@ -11,14 +11,14 @@ import {
   selector: '[observeViewInit]',
 })
 export class ViewInitObserverDirective implements AfterViewInit {
-  @Input() viewInitIgnored?: boolean;
+  @Input('viewInitIgnored') ignored?: boolean;
 
   @Output() viewInit = new EventEmitter<HTMLElement>();
 
   constructor(private readonly host: ElementRef) {}
 
   ngAfterViewInit(): void {
-    if (!this.viewInitIgnored) {
+    if (!this.ignored) {
       this.viewInit.emit(this.host.nativeElement);
     }
   }
