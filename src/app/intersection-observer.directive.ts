@@ -68,7 +68,7 @@ export class IntersectionObserverDirective
         filter(({ entry: { target } }) => target === element),
         debounceTime(this.delay)
       )
-      .subscribe(async ({ entry: { isIntersecting, target }, observer }) => {
+      .subscribe(({ entry: { isIntersecting, target }, observer }) => {
         if (isIntersecting) {
           this.intersection.emit();
 
