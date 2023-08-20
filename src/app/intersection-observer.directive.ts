@@ -4,9 +4,11 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { Subject, debounceTime, filter } from 'rxjs';
 
@@ -19,62 +21,80 @@ interface IntersectionEvent {
   selector: '[observeIntersection]',
 })
 export class IntersectionObserverDirective
-  implements OnInit, AfterViewInit, OnDestroy
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
 {
-  @Input('intersectionDelay') delay: number = 100;
-
-  @Input('intersectionThreshold') threshold: number = 0;
+  @Input('intersectionDelay') delay?: number;
+  @Input('intersectionRootMargin') intersectionRootMargin?: number[];
+  @Input('intersectionThreshold') threshold?: number;
 
   @Output() intersection = new EventEmitter<void>();
 
-  private readonly intersectionEventSubject = new Subject<IntersectionEvent>();
+  private intersectionEventSubject?: Subject<IntersectionEvent>;
 
   private observer?: IntersectionObserver;
 
   constructor(private readonly host: ElementRef) {}
 
   ngOnInit(): void {
-    this.createObserver({
-      threshold: this.threshold,
-    });
+    this.createObserver();
   }
 
   ngAfterViewInit(): void {
     this.observe(this.host.nativeElement);
   }
 
-  ngOnDestroy(): void {
-    this.observer!.disconnect();
+  ngOnChanges(changes: SimpleChanges): void {
+    this.createObserver();
 
-    delete this.observer;
-
-    this.intersectionEventSubject.complete();
+    this.observe(this.host.nativeElement);
   }
 
-  private createObserver(options: IntersectionObserverInit): void {
+  ngOnDestroy(): void {
+    this.destroyObserver();
+
+    this.intersectionEventSubject?.complete();
+  }
+
+  private createObserver(): void {
+    this.destroyObserver();
+
+    const intersectionEventSubject = (this.intersectionEventSubject =
+      new Subject<IntersectionEvent>());
+
     this.observer = new IntersectionObserver(
       (entries, observer) =>
         entries.forEach((entry) =>
-          this.intersectionEventSubject.next({ entry, observer })
+          intersectionEventSubject.next({ entry, observer })
         ),
-      options
+      {
+        threshold: this.threshold,
+        rootMargin:
+          this.intersectionRootMargin &&
+          this.intersectionRootMargin.map((px) => `${px}px`).join(' '),
+      }
     );
   }
 
+  private destroyObserver(): void {
+    if (this.observer != null) {
+      this.observer.disconnect();
+
+      delete this.observer;
+    }
+  }
+
   private observe(element: Element): void {
+    this.intersectionEventSubject!.pipe(
+      filter(({ entry: { target } }) => target === element),
+      debounceTime(this.delay ?? 100)
+    ).subscribe(({ entry, observer }) => {
+      if (entry.isIntersecting) {
+        this.intersection.emit();
+
+        observer.unobserve(entry.target);
+      }
+    });
+
     this.observer!.observe(element);
-
-    this.intersectionEventSubject
-      .pipe(
-        filter(({ entry: { target } }) => target === element),
-        debounceTime(this.delay)
-      )
-      .subscribe(({ entry: { isIntersecting, target }, observer }) => {
-        if (isIntersecting) {
-          this.intersection.emit();
-
-          observer.unobserve(target);
-        }
-      });
   }
 }
