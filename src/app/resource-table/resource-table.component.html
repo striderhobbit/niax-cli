@@ -157,19 +157,11 @@
       </td>
     </ng-container>
 
-    <tr
-      *matHeaderRowDef="columns; sticky: true"
-      (resize)="scrollMarginTop = $event.blockSize"
-      (viewInit)="scrollMarginTop = $event.offsetHeight"
-      mat-header-row
-      observeResize
-      observeViewInit
-    ></tr>
+    <tr *matHeaderRowDef="columns" mat-header-row></tr>
 
     <tr
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
-      [style.scrollMarginTop.px]="scrollMarginTop"
       [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
       mat-row
       observeViewInit
