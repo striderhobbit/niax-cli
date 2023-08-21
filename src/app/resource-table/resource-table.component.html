@@ -25,7 +25,7 @@
         <ng-container *ngIf="selection.selected[0] as selection">
           <button
             *ngIf="asResourceTableRow(selection) as row"
-            (click)="viewportScroller.scrollToAnchor(row.resource.id)"
+            (click)="scrollToAnchor(row.resource.id)"
             mat-icon-button
           >
             <mat-icon>north</mat-icon>

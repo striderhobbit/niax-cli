@@ -4,7 +4,6 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { ViewportScroller } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -61,8 +60,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly apiService: ApiService<I>,
     private readonly dialog: MatDialog,
     private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    protected readonly viewportScroller: ViewportScroller
+    private readonly router: Router
   ) {
     this.resourceTableRowsPagesChanges
       .pipe(
@@ -254,6 +252,13 @@ export class ResourceTableComponent<I extends Resource.Item>
           )
         )
     );
+  }
+
+  protected async scrollToAnchor(fragment: string): Promise<void> {
+    await this.router.navigate([], {
+      fragment,
+      queryParamsHandling: 'preserve',
+    });
   }
 
   protected async setQueryParams(
