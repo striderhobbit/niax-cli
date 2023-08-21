@@ -28,6 +28,7 @@
         >
         </mat-checkbox>
       </td>
+      <td *matFooterCellDef mat-footer-cell></td>
     </ng-container>
 
     <ng-container matColumnDef="index" sticky>
@@ -35,6 +36,9 @@
       <td *matCellDef="let row" mat-cell>
         <a [name]="row.resource.id"></a>
         {{ row.index + 1 }}
+      </td>
+      <td *matFooterCellDef mat-footer-cell>
+        <b>{{ resourceTable.totalRows }}</b>
       </td>
     </ng-container>
 
@@ -124,6 +128,9 @@
       <td *matCellDef="let row" mat-cell>
         {{ row.fields[column.path].value }}
       </td>
+      <td *matFooterCellDef mat-footer-cell>
+        <b>{{ column.path }}</b>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="placeholder" sticky>
@@ -138,7 +145,7 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="params">
+    <ng-container matColumnDef="query">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
         <mat-form-field>
           <mat-label>Page size</mat-label>
@@ -146,7 +153,7 @@
             (ngModelChange)="
               setQueryParams({ limit: $event }, { runResolvers: true })
             "
-            [ngModel]="resourceTable.params.limit"
+            [ngModel]="resourceTable.query.limit"
           >
             <mat-option
               *ngFor="let pageSize of [10, 25, 50]"
@@ -156,9 +163,9 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        {{ resourceTable.params.token }} ({{
-          resourceTable.params.resourceName
-        }}){{ resourceTable.restoredFromCache ? " - restored from cache" : "" }}
+        {{ resourceTable.token }} ({{ resourceTable.query.resourceName }}){{
+          resourceTable.restoredFromCache ? " - restored from cache" : ""
+        }}
       </td>
     </ng-container>
 
@@ -167,7 +174,7 @@
     <tr
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
-      [viewInitIgnored]="row.resource.id !== resourceTable.params.resourceId"
+      [viewInitIgnored]="row.resource.id !== resourceTable.query.resourceId"
       mat-row
       observeViewInit
     ></tr>
@@ -181,6 +188,7 @@
       <td [attr.colspan]="columns.length">No data</td>
     </tr>
 
-    <tr *matFooterRowDef="['params']; sticky: true" mat-footer-row></tr>
+    <tr *matFooterRowDef="columns; sticky: true" mat-footer-row></tr>
+    <tr *matFooterRowDef="['query']; sticky: true" mat-footer-row></tr>
   </ng-container>
 </table>

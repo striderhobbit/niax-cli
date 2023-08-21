@@ -72,7 +72,7 @@ export class ResourceTableComponent<I extends Resource.Item>
         map((rows) => (this.dataSource.data = rows)),
         mergeMap(async (rows) => {
           if (!this.selection.hasValue()) {
-            const { resourceId } = this.resourceTable.params;
+            const { resourceId } = this.resourceTable.query;
 
             const activeRow = rows.find(
               (row) =>
@@ -114,7 +114,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       this.apiService
         .getResourceTableRowsPage({
           pageToken,
-          tableToken: this.resourceTable.params.token,
+          tableToken: this.resourceTable.token,
         })
         .pipe(
           map(({ items }) => {
@@ -234,7 +234,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     return firstValueFrom(
       this.apiService
         .patchResourceItem(
-          { tableToken: this.resourceTable.params.token },
+          { tableToken: this.resourceTable.token },
           resourceTableField
         )
         .pipe(
