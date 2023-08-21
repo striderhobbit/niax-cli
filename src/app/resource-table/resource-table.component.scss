@@ -24,9 +24,18 @@ td {
     }
 
     &.mat-column-placeholder {
-        hr {
-            border: none;
-            border-bottom: 1px dashed grey;
+        position: relative;
+
+        svg {
+            height: 100%;
+            inset: 0;
+            position: absolute;
+            width: 100%;
+
+            line {
+                stroke-dasharray: 10 10;
+                stroke: black;
+            }
         }
     }
 }
