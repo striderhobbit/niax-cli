@@ -182,9 +182,9 @@
 
     <ng-container matColumnDef="query">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
-        {{ resourceTable.token }} ({{ resourceTable.query.resourceName }}){{
-          resourceTable.restoredFromCache ? " - restored from cache" : ""
-        }}
+        <div *ngFor="let entry of resourceTable.signature | keyvalue">
+          {{ entry.key }}: {{ entry.value }}
+        </div>
       </td>
     </ng-container>
 
