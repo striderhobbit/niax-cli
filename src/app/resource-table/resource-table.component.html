@@ -12,17 +12,7 @@
 >
   <ng-container *ngIf="['select', 'index'].concat(paths) as columns">
     <ng-container matColumnDef="select" sticky>
-      <th *matHeaderCellDef mat-header-cell>
-        <ng-container *ngIf="selection.selected[0] as selection">
-          <button
-            *ngIf="asResourceTableRow(selection) as row"
-            (click)="viewportScroller.scrollToAnchor(row.resource.id)"
-            mat-icon-button
-          >
-            <mat-icon>south</mat-icon>
-          </button>
-        </ng-container>
-      </th>
+      <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
         <mat-checkbox
           *ngIf="asResourceTableRow(row) as row"
@@ -31,7 +21,17 @@
         >
         </mat-checkbox>
       </td>
-      <td *matFooterCellDef mat-footer-cell></td>
+      <td *matFooterCellDef mat-footer-cell>
+        <ng-container *ngIf="selection.selected[0] as selection">
+          <button
+            *ngIf="asResourceTableRow(selection) as row"
+            (click)="viewportScroller.scrollToAnchor(row.resource.id)"
+            mat-icon-button
+          >
+            <mat-icon>north</mat-icon>
+          </button>
+        </ng-container>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="index" sticky>
@@ -43,7 +43,22 @@
         </ng-container>
       </td>
       <td *matFooterCellDef mat-footer-cell>
-        <b>{{ resourceTable.totalRows }}</b>
+        <mat-form-field>
+          <mat-label>Page size</mat-label>
+          <mat-select
+            (ngModelChange)="
+              setQueryParams({ limit: $event }, { runResolvers: true })
+            "
+            [ngModel]="resourceTable.query.limit"
+          >
+            <mat-option
+              *ngFor="let pageSize of [10, 25, 50]"
+              [value]="pageSize"
+            >
+              {{ pageSize }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </td>
     </ng-container>
 
@@ -51,7 +66,15 @@
       *ngFor="let column of resourceTable.columns | filter : 'include'"
       [matColumnDef]="column.path"
     >
-      <th *matHeaderCellDef [cdkDragData]="column.path" cdkDrag mat-header-cell>
+      <th *matHeaderCellDef mat-header-cell>
+        <b>{{ column.path }}</b>
+      </th>
+      <td *matCellDef="let row" mat-cell>
+        <ng-container *ngIf="asResourceTableRow(row) as row">
+          {{ row.fields[column.path].value }}
+        </ng-container>
+      </td>
+      <td *matFooterCellDef [cdkDragData]="column.path" cdkDrag mat-footer-cell>
         <mat-form-field>
           <input
             (change)="updateResourceTableColumns()"
@@ -129,14 +152,6 @@
             Toggle...
           </button>
         </mat-menu>
-      </th>
-      <td *matCellDef="let row" mat-cell>
-        <ng-container *ngIf="asResourceTableRow(row) as row">
-          {{ row.fields[column.path].value }}
-        </ng-container>
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <b>{{ column.path }}</b>
       </td>
     </ng-container>
 
@@ -154,22 +169,6 @@
 
     <ng-container matColumnDef="query">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
-        <mat-form-field>
-          <mat-label>Page size</mat-label>
-          <mat-select
-            (ngModelChange)="
-              setQueryParams({ limit: $event }, { runResolvers: true })
-            "
-            [ngModel]="resourceTable.query.limit"
-          >
-            <mat-option
-              *ngFor="let pageSize of [10, 25, 50]"
-              [value]="pageSize"
-            >
-              {{ pageSize }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
         {{ resourceTable.token }} ({{ resourceTable.query.resourceName }}){{
           resourceTable.restoredFromCache ? " - restored from cache" : ""
         }}
@@ -197,11 +196,7 @@
       <td [attr.colspan]="columns.length">No data</td>
     </tr>
 
-    <tr
-      *matFooterRowDef="columns; sticky: true"
-      (click)="viewportScroller.scrollToPosition([0, 0])"
-      mat-footer-row
-    ></tr>
+    <tr *matFooterRowDef="columns; sticky: true" mat-footer-row></tr>
     <tr *matFooterRowDef="['query']; sticky: true" mat-footer-row></tr>
   </ng-container>
 </table>
