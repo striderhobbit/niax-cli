@@ -39,7 +39,7 @@ type Row<I extends Resource.Item> =
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
 {
-  private readonly resourceTableRowsPagesChangeSubject = new Subject<
+  private readonly resourceTableRowsPagesChanges = new Subject<
     Resource.TableRowsPage<I>[]
   >();
 
@@ -50,6 +50,8 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected readonly pull = pull;
 
   protected readonly selection = new SelectionModel<Row<I>>(false, []);
+
+  protected intersectionIgnored?: boolean;
 
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
@@ -62,7 +64,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly router: Router,
     protected readonly viewportScroller: ViewportScroller
   ) {
-    this.resourceTableRowsPagesChangeSubject
+    this.resourceTableRowsPagesChanges
       .pipe(
         map((resourceTableRowsPages) =>
           resourceTableRowsPages.flatMap<Row<I>>((rowsPage) =>
@@ -100,7 +102,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
           this.selection.clear();
 
-          this.resourceTableRowsPagesChangeSubject.next(rowsPages);
+          this.resourceTableRowsPagesChanges.next(rowsPages);
         },
       });
   }
@@ -145,9 +147,7 @@ export class ResourceTableComponent<I extends Resource.Item>
             return this.resourceTable.rowsPages;
           }),
           tap((resourceTableRowsPages) =>
-            this.resourceTableRowsPagesChangeSubject.next(
-              resourceTableRowsPages
-            )
+            this.resourceTableRowsPagesChanges.next(resourceTableRowsPages)
           )
         )
     );

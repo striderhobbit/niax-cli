@@ -4,11 +4,13 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
-import { Subject, debounceTime, filter } from 'rxjs';
+import { ReplaySubject, Subject, debounceTime, filter, first } from 'rxjs';
 
 interface IntersectionEvent {
   entry: IntersectionObserverEntry;
@@ -24,22 +26,49 @@ interface IntersectionObserverInstance {
   selector: '[observeIntersection]',
 })
 export class IntersectionObserverDirective
-  implements OnInit, AfterViewInit, OnDestroy
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
 {
   @Input('intersectionDelay') delay?: number;
+  @Input('intersectionIgnored') ignored?: boolean;
 
   @Output() intersection = new EventEmitter<void>();
+
+  private readonly emissions = new ReplaySubject<
+    IntersectionEvent | undefined
+  >();
+
+  private currentEvent?: IntersectionEvent;
 
   private instance?: IntersectionObserverInstance;
 
   constructor(private readonly host: ElementRef) {}
 
   ngOnInit(): void {
+    this.emissions
+      .pipe(
+        filter((event): event is IntersectionEvent => event != null),
+        filter(({ entry }) => entry.isIntersecting),
+        first()
+      )
+      .subscribe({
+        next: ({ entry, observer }) => {
+          this.intersection.emit();
+
+          observer.unobserve(entry.target);
+        },
+      });
+
     this.createInstance();
   }
 
   ngAfterViewInit(): void {
     this.observe(this.host.nativeElement);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['ignored']?.previousValue) {
+      this.emissions.next(this.currentEvent);
+    }
   }
 
   ngOnDestroy(): void {
@@ -74,19 +103,19 @@ export class IntersectionObserverDirective
     const { instance } = this;
 
     if (instance == null) {
-      throw new Error('IntersectionObserver not instantiated');
+      throw new Error(`${IntersectionObserver.name} not instantiated`);
     }
 
     instance.events
       .pipe(
         filter(({ entry: { target } }) => target === element),
-        debounceTime(this.delay ?? 100)
+        debounceTime(this.delay ?? 200)
       )
-      .subscribe(({ entry, observer }) => {
-        if (entry.isIntersecting) {
-          this.intersection.emit();
+      .subscribe((event) => {
+        this.currentEvent = event;
 
-          observer.unobserve(entry.target);
+        if (!this.ignored) {
+          this.emissions.next(event);
         }
       });
 

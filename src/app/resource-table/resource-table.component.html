@@ -31,6 +31,12 @@
             <mat-icon>north</mat-icon>
           </button>
         </ng-container>
+        <button
+          (click)="intersectionIgnored = !intersectionIgnored"
+          mat-icon-button
+        >
+          <mat-icon>timer{{ intersectionIgnored ? "_off" : "" }}</mat-icon>
+        </button>
       </td>
     </ng-container>
 
@@ -160,6 +166,7 @@
         *matCellDef="let placeholder"
         (intersection)="fetchResourceTableRows(placeholder.pageToken)"
         [colSpan]="2"
+        [intersectionIgnored]="intersectionIgnored"
         mat-cell
         observeIntersection
       >
