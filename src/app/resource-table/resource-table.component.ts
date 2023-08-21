@@ -16,6 +16,7 @@ import {
   BehaviorSubject,
   Subject,
   Subscription,
+  debounceTime,
   firstValueFrom,
   map,
   mergeMap,
@@ -74,6 +75,9 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {
+    this.rootMarginSubject.subscribe({
+      next: (r) => console.warn(performance.now(), r),
+    });
     this.resourceTableRowsPagesChangeSubject
       .pipe(
         map((resourceTableRowsPages) =>
@@ -251,7 +255,14 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected scrollIntoView(element: HTMLElement): Promise<void> {
-    return firstValueFrom(this.rootMarginSubject).then(({ top = 0 }) => {
+    return firstValueFrom(
+      this.rootMarginSubject.pipe(
+        tap((result) =>
+          console.log(performance.now(), 'scrollIntoView', result)
+        ),
+        debounceTime(500)
+      )
+    ).then(({ top = 0 }) => {
       element.style.scrollMarginTop = `${-top}px`;
 
       element.scrollIntoView({ block: 'start' });

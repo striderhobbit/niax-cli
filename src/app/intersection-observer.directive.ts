@@ -7,7 +7,15 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import { BehaviorSubject, Subject, debounceTime, filter } from 'rxjs';
+import { isEqual } from 'lodash';
+import {
+  Observable,
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  tap,
+} from 'rxjs';
 import { CSSBoxMargin } from './resource-table/resource-table.component';
 
 interface IntersectionEvent {
@@ -25,30 +33,41 @@ interface IntersectionObserverInstance {
 })
 export class IntersectionObserverDirective implements AfterViewInit, OnDestroy {
   @Input({ alias: 'intersectionRootMargin', required: true })
-  rootMarginSubject!: BehaviorSubject<CSSBoxMargin>;
+  rootMargin!: Observable<CSSBoxMargin>;
 
   @Output() intersection = new EventEmitter<void>();
 
   private readonly delay: number = 100;
   private readonly threshold?: number;
 
+  private hasEmitted?: boolean;
+
   private instance?: IntersectionObserverInstance;
 
   constructor(private readonly host: ElementRef) {}
 
   ngAfterViewInit(): void {
-    this.rootMarginSubject.subscribe({
-      next: (margin) => {
-        this.createInstance({
-          threshold: this.threshold,
-          rootMargin: [margin.top, margin.right, margin.bottom, margin.left]
-            .map((px = 0) => `${px}px`)
-            .join(' '),
-        });
+    this.rootMargin
+      .pipe(
+        distinctUntilChanged((a, b) => (console.log(a, b), isEqual(a, b))),
+        tap((r) => console.log(performance.now(), 'observeIntersection', r)),
+        debounceTime(500),
+        tap((r) => console.log('coming through', r))
+      )
+      .subscribe({
+        next: (margin) => {
+          if (!this.hasEmitted) {
+            this.createInstance({
+              threshold: this.threshold,
+              rootMargin: [margin.top, margin.right, margin.bottom, margin.left]
+                .map((px = 0) => `${px}px`)
+                .join(' '),
+            });
 
-        this.observe(this.host.nativeElement);
-      },
-    });
+            this.observe(this.host.nativeElement);
+          }
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -56,6 +75,7 @@ export class IntersectionObserverDirective implements AfterViewInit, OnDestroy {
   }
 
   private createInstance(options: IntersectionObserverInit): void {
+    console.log(performance.now(), 'createInstance');
     this.destroyInstance();
 
     const subject = new Subject<IntersectionEvent>();
@@ -89,10 +109,20 @@ export class IntersectionObserverDirective implements AfterViewInit, OnDestroy {
     instance.subject
       .pipe(
         filter(({ entry: { target } }) => target === element),
+        tap((entry) =>
+          console.log(performance.now(), 'intersectionEntry', entry)
+        ),
         debounceTime(this.delay)
       )
       .subscribe(({ entry, observer }) => {
-        if (entry.isIntersecting && !instance.subject.isStopped) {
+        if (
+          entry.isIntersecting &&
+          !instance.subject.isStopped &&
+          !this.hasEmitted
+        ) {
+          console.log(performance.now(), 'emitting');
+          this.hasEmitted = true;
+
           this.intersection.emit();
 
           observer.unobserve(entry.target);
