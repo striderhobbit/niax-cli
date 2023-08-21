@@ -213,16 +213,19 @@ export class ResourceTableComponent<I extends Resource.Item>
     await this.syncResourceTableColumns();
   }
 
-  protected openColumnToggleDialog(): void {
-    this.dialog
-      .open(ColumnToggleDialogComponent, {
-        data: cloneDeep(this.resourceTable.columns),
-      })
-      .afterClosed()
-      .subscribe({
-        next: (resourceTableColumns) =>
-          this.updateResourceTableColumns(resourceTableColumns),
-      });
+  protected openColumnToggleDialog(): Promise<void> {
+    return firstValueFrom(
+      this.dialog
+        .open(ColumnToggleDialogComponent, {
+          data: cloneDeep(this.resourceTable.columns),
+        })
+        .afterClosed()
+        .pipe(
+          mergeMap((resourceTableColumns) =>
+            this.updateResourceTableColumns(resourceTableColumns)
+          )
+        )
+    );
   }
 
   protected patchResourceItem(
