@@ -171,6 +171,17 @@ export class ResourceTableComponent<I extends Resource.Item>
     return item instanceof ResourceTableRowsPlaceholder;
   }
 
+  protected async jumpToRow(row: Row<I>): Promise<void> {
+    if (row instanceof ResourceTableRowsPlaceholder) {
+      return;
+    }
+
+    await this.router.navigate([], {
+      fragment: row.resource.id,
+      queryParamsHandling: 'preserve',
+    });
+  }
+
   protected onPathDropped({
     previousIndex,
     currentIndex,

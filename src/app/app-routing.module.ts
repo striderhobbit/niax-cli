@@ -8,28 +8,33 @@ import { ResourceTableComponent } from './resource-table/resource-table.componen
 
 @NgModule({
   imports: [
-    RouterModule.forRoot([
-      {
-        component: ResourceTableComponent,
-        path: 'resource/table',
-        resolve: {
-          resourceTable: <I extends Resource.Item>(
-            route: ActivatedRouteSnapshot
-          ): Observable<Resource.Table<I>> =>
-            inject(ApiService<I>).getResourceTable(
-              pick(
-                route.queryParams,
-                'limit',
-                'cols',
-                'resourceId',
-                'resourceName'
-              )
-            ),
+    RouterModule.forRoot(
+      [
+        {
+          component: ResourceTableComponent,
+          path: 'resource/table',
+          resolve: {
+            resourceTable: <I extends Resource.Item>(
+              route: ActivatedRouteSnapshot
+            ): Observable<Resource.Table<I>> =>
+              inject(ApiService<I>).getResourceTable(
+                pick(
+                  route.queryParams,
+                  'limit',
+                  'cols',
+                  'resourceId',
+                  'resourceName'
+                )
+              ),
+          },
+          runGuardsAndResolvers: (from, to) =>
+            from.queryParams['snapshotId'] !== to.queryParams['snapshotId'],
         },
-        runGuardsAndResolvers: (from, to) =>
-          from.queryParams['snapshotId'] !== to.queryParams['snapshotId'],
-      },
-    ]),
+      ],
+      {
+        anchorScrolling: 'enabled',
+      }
+    ),
   ],
   exports: [RouterModule],
 })
