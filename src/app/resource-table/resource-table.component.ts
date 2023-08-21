@@ -120,11 +120,11 @@ export class ResourceTableComponent<I extends Resource.Item>
           map(({ items }) => {
             const resourceTableRowsPage = find(this.resourceTable.rowsPages, {
               pageToken,
-            })!;
+            });
 
-            delete resourceTableRowsPage.pending;
+            delete resourceTableRowsPage!.pending;
 
-            resourceTableRowsPage.items = items;
+            resourceTableRowsPage!.items = items;
 
             return this.resourceTable.rowsPages;
           }),
