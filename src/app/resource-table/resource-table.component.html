@@ -13,16 +13,19 @@
   <ng-container *ngIf="['select', 'index'].concat(paths) as columns">
     <ng-container matColumnDef="select" sticky>
       <th *matHeaderCellDef mat-header-cell>
-        <button
-          *ngIf="asResourceTableRow(selection.selected[0]) as row"
-          (click)="viewportScroller.scrollToAnchor(row.resource.id)"
-          mat-icon-button
-        >
-          <mat-icon>south</mat-icon>
-        </button>
+        <ng-container *ngIf="selection.selected[0] as selection">
+          <button
+            *ngIf="asResourceTableRow(selection) as row"
+            (click)="viewportScroller.scrollToAnchor(row.resource.id)"
+            mat-icon-button
+          >
+            <mat-icon>south</mat-icon>
+          </button>
+        </ng-container>
       </th>
       <td *matCellDef="let row" mat-cell>
         <mat-checkbox
+          *ngIf="asResourceTableRow(row) as row"
           (change)="toggleRowSelection(row)"
           [checked]="selection.isSelected(row)"
         >
@@ -34,8 +37,10 @@
     <ng-container matColumnDef="index" sticky>
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
-        <a [name]="row.resource.id"></a>
-        {{ row.index + 1 }}
+        <ng-container *ngIf="asResourceTableRow(row) as row">
+          <a [name]="row.resource.id"></a>
+          {{ row.index + 1 }}
+        </ng-container>
       </td>
       <td *matFooterCellDef mat-footer-cell>
         <b>{{ resourceTable.totalRows }}</b>
@@ -126,7 +131,9 @@
         </mat-menu>
       </th>
       <td *matCellDef="let row" mat-cell>
-        {{ row.fields[column.path].value }}
+        <ng-container *ngIf="asResourceTableRow(row) as row">
+          {{ row.fields[column.path].value }}
+        </ng-container>
       </td>
       <td *matFooterCellDef mat-footer-cell>
         <b>{{ column.path }}</b>
@@ -174,7 +181,9 @@
     <tr
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
-      [viewInitIgnored]="row.resource.id !== resourceTable.query.resourceId"
+      [viewInitIgnored]="
+        asResourceTableRow(row).resource.id !== resourceTable.query.resourceId
+      "
       mat-row
       observeViewInit
     ></tr>

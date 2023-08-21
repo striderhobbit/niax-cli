@@ -109,10 +109,8 @@ export class ResourceTableComponent<I extends Resource.Item>
     this.routeDataSubscription?.unsubscribe();
   }
 
-  protected asResourceTableRow(row?: Row<I>): Resource.TableRow<I> | undefined {
-    if (row instanceof ResourceTableRowsPlaceholder) {
-      throw new TypeError();
-    }
+  protected asResourceTableRow(row: Row<I>): Resource.TableRow<I> {
+    this.assertIsResourceTableRow(row);
 
     return row;
   }
@@ -120,7 +118,9 @@ export class ResourceTableComponent<I extends Resource.Item>
   private assertIsResourceTableRow(
     row: Row<I>
   ): asserts row is Resource.TableRow<I> {
-    this.asResourceTableRow(row);
+    if (row instanceof ResourceTableRowsPlaceholder) {
+      throw new TypeError();
+    }
   }
 
   protected fetchResourceTableRows(
