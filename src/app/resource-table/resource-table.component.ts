@@ -4,6 +4,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { ViewportScroller } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -58,7 +59,8 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly apiService: ApiService<I>,
     private readonly dialog: MatDialog,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    protected readonly viewportScroller: ViewportScroller
   ) {
     this.resourceTableRowsPagesChangeSubject
       .pipe(
@@ -105,6 +107,20 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   ngOnDestroy(): void {
     this.routeDataSubscription?.unsubscribe();
+  }
+
+  protected asResourceTableRow(row?: Row<I>): Resource.TableRow<I> | undefined {
+    if (row instanceof ResourceTableRowsPlaceholder) {
+      throw new TypeError();
+    }
+
+    return row;
+  }
+
+  private assertIsResourceTableRow(
+    row: Row<I>
+  ): asserts row is Resource.TableRow<I> {
+    this.asResourceTableRow(row);
   }
 
   protected fetchResourceTableRows(
@@ -158,15 +174,6 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected isPlaceholder(index: number, item: Row<I>): boolean {
     return item instanceof ResourceTableRowsPlaceholder;
-  }
-
-  protected async jumpToRow(row: Row<I>): Promise<void> {
-    if (!(row instanceof ResourceTableRowsPlaceholder)) {
-      await this.router.navigate([], {
-        fragment: row.resource.id,
-        queryParamsHandling: 'preserve',
-      });
-    }
   }
 
   protected async onPathDropped({
@@ -279,17 +286,17 @@ export class ResourceTableComponent<I extends Resource.Item>
     row: Row<I>,
     forceState: boolean = !this.selection.isSelected(row)
   ): Promise<void> {
+    this.assertIsResourceTableRow(row);
+
     if (forceState) {
       this.selection.select(row);
     } else {
       this.selection.deselect(row);
     }
 
-    if (!(row instanceof ResourceTableRowsPlaceholder)) {
-      await this.setQueryParams({
-        resourceId: this.selection.isSelected(row) ? row.resource.id : null,
-      });
-    }
+    await this.setQueryParams({
+      resourceId: this.selection.isSelected(row) ? row.resource.id : null,
+    });
   }
 
   protected updateResourceTableColumns(
