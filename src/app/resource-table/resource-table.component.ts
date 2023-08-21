@@ -4,10 +4,9 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { CdkHeaderRowDef } from '@angular/cdk/table';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
@@ -39,9 +38,6 @@ type Row<I extends Resource.Item> =
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
 {
-  @ViewChild(CdkHeaderRowDef) headerRowDef?: CdkHeaderRowDef;
-  @ViewChild(MatTable) table?: MatTable<Row<I>>;
-
   private readonly resourceTableRowsPagesChangeSubject = new Subject<
     Resource.TableRowsPage<I>[]
   >();
@@ -99,13 +95,6 @@ export class ResourceTableComponent<I extends Resource.Item>
       .subscribe({
         next: (resourceTable) => {
           const { rowsPages } = (this.resourceTable = resourceTable);
-
-          /**
-           * FIXME https://github.com/angular/components/issues/22022
-           */
-          if (this.headerRowDef != null) {
-            // this.table?.removeHeaderRowDef(this.headerRowDef);
-          }
 
           this.selection.clear();
 
