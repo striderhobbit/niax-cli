@@ -22,4 +22,11 @@ td {
             position: absolute;
         }
     }
+
+    &.mat-column-placeholder {
+        hr {
+            border: none;
+            border-bottom: 1px dashed grey;
+        }
+    }
 }

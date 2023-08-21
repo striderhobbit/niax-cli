@@ -161,16 +161,16 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="placeholder" sticky>
+    <ng-container matColumnDef="placeholder">
       <td
         *matCellDef="let placeholder"
         (intersection)="fetchResourceTableRows(placeholder.pageToken)"
-        [colSpan]="2"
+        [colSpan]="columns.length"
         [intersectionIgnored]="intersectionIgnored"
         mat-cell
         observeIntersection
       >
-        <mat-icon>more_horiz</mat-icon>
+        <hr />
       </td>
     </ng-container>
 
