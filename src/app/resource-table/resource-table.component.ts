@@ -161,14 +161,12 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected async jumpToRow(row: Row<I>): Promise<void> {
-    if (row instanceof ResourceTableRowsPlaceholder) {
-      return;
+    if (!(row instanceof ResourceTableRowsPlaceholder)) {
+      await this.router.navigate([], {
+        fragment: row.resource.id,
+        queryParamsHandling: 'preserve',
+      });
     }
-
-    await this.router.navigate([], {
-      fragment: row.resource.id,
-      queryParamsHandling: 'preserve',
-    });
   }
 
   protected async onPathDropped({
@@ -176,41 +174,39 @@ export class ResourceTableComponent<I extends Resource.Item>
     currentIndex,
     container,
   }: CdkDragDrop<PropertyPath<I>[]>): Promise<void> {
-    if (previousIndex === currentIndex) {
-      return;
+    if (previousIndex !== currentIndex) {
+      const {
+        data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
+      } = container;
+
+      const [previousArray, currentArray] = [previousItem, currentItem].map(
+        (path) =>
+          this.resourceTable.primaryPaths.includes(path)
+            ? this.resourceTable.primaryPaths
+            : this.resourceTable.secondaryPaths
+      );
+
+      const [previousIndexInArray, currentIndexInArray] = zipWith(
+        [previousArray, currentArray],
+        [previousItem, currentItem],
+        (array, item) => array.indexOf(item)
+      );
+
+      previousArray === currentArray
+        ? moveItemInArray(
+            previousArray,
+            previousIndexInArray,
+            currentIndexInArray
+          )
+        : transferArrayItem(
+            previousArray,
+            currentArray,
+            previousIndexInArray,
+            currentIndexInArray
+          );
+
+      await this.syncResourceTableColumns();
     }
-
-    const {
-      data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
-    } = container;
-
-    const [previousArray, currentArray] = [previousItem, currentItem].map(
-      (path) =>
-        this.resourceTable.primaryPaths.includes(path)
-          ? this.resourceTable.primaryPaths
-          : this.resourceTable.secondaryPaths
-    );
-
-    const [previousIndexInArray, currentIndexInArray] = zipWith(
-      [previousArray, currentArray],
-      [previousItem, currentItem],
-      (array, item) => array.indexOf(item)
-    );
-
-    previousArray === currentArray
-      ? moveItemInArray(
-          previousArray,
-          previousIndexInArray,
-          currentIndexInArray
-        )
-      : transferArrayItem(
-          previousArray,
-          currentArray,
-          previousIndexInArray,
-          currentIndexInArray
-        );
-
-    await this.syncResourceTableColumns();
   }
 
   protected openColumnToggleDialog(): Promise<void> {
