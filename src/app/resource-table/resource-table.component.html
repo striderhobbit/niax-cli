@@ -131,13 +131,6 @@
 
     <ng-container matColumnDef="params">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
-        <div>
-          <div>Resource = {{ resourceTable.params.resourceName }}</div>
-          <div>Token = {{ resourceTable.params.token }}</div>
-          <div *ngIf="resourceTable.params.cacheRestored">
-            Restored from cache
-          </div>
-        </div>
         <mat-form-field>
           <mat-label>Page size</mat-label>
           <mat-select
@@ -154,6 +147,9 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        {{ resourceTable.params.token }} ({{
+          resourceTable.params.resourceName
+        }})
       </td>
     </ng-container>
 

@@ -104,7 +104,7 @@ export class ResourceTableComponent<I extends Resource.Item>
            * FIXME https://github.com/angular/components/issues/22022
            */
           if (this.headerRowDef != null) {
-            this.table?.removeHeaderRowDef(this.headerRowDef);
+            // this.table?.removeHeaderRowDef(this.headerRowDef);
           }
 
           this.selection.clear();
