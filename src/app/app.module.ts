@@ -24,6 +24,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ColumnToggleDialogComponent } from './column-toggle-dialog/column-toggle-dialog.component';
+import { CustomIconModule } from './custom-icon.module';
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
@@ -43,6 +44,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     AppRoutingModule,
     BrowserModule,
     ColumnToggleDialogComponent,
+    CustomIconModule,
     DragDropModule,
     FormsModule,
     HttpClientModule,

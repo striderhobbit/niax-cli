@@ -109,7 +109,7 @@ export class IntersectionObserverDirective
     instance.events
       .pipe(
         filter(({ entry: { target } }) => target === element),
-        debounceTime(this.delay ?? 200)
+        debounceTime(this.delay ?? 5e2)
       )
       .subscribe((event) => {
         this.currentEvent = event;

@@ -138,8 +138,7 @@ export class ResourceTableComponent<I extends Resource.Item>
               pageToken,
             });
 
-            delete resourceTableRowsPage!.pending;
-
+            resourceTableRowsPage!.pending = false;
             resourceTableRowsPage!.items = items;
 
             return this.resourceTable.rowsPages;

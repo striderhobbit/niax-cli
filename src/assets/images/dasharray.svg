@@ -1,0 +1,11 @@
+<svg>
+  <line
+    stroke-dasharray="10 10"
+    stroke-dashoffset="10"
+    stroke="grey"
+    x1="0"
+    x2="100%"
+    y1="50%"
+    y2="50%"
+  ></line>
+</svg>

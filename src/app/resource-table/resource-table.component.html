@@ -170,7 +170,13 @@
         mat-cell
         observeIntersection
       >
-        <svg><line x1="0" y1="50%" x2="100%" y2="50%"></line></svg>
+        <button
+          (click)="fetchResourceTableRows(placeholder.pageToken)"
+          [disabled]="!intersectionIgnored"
+          mat-button
+        >
+          <mat-icon svgIcon="dashArray"></mat-icon>
+        </button>
       </td>
     </ng-container>
 
