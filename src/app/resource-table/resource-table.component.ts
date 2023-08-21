@@ -182,13 +182,19 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
-  protected onPathDropped({
+  protected async onPathDropped({
     previousIndex,
     currentIndex,
-    container: {
-      data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
-    },
+    container,
   }: CdkDragDrop<PropertyPath<I>[]>): Promise<void> {
+    if (previousIndex === currentIndex) {
+      return;
+    }
+
+    const {
+      data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
+    } = container;
+
     const [previousArray, currentArray] = [previousItem, currentItem].map(
       (path) =>
         this.resourceTable.primaryPaths.includes(path)
@@ -215,7 +221,7 @@ export class ResourceTableComponent<I extends Resource.Item>
           currentIndexInArray
         );
 
-    return this.syncResourceTableColumns();
+    await this.syncResourceTableColumns();
   }
 
   protected openColumnToggleDialog(): void {

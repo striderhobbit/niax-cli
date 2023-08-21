@@ -5,13 +5,15 @@ table::after {
     width: 100%;
 }
 
-td {
-    &.mat-column-select:not(:hover) {
+tr:not(:hover) {
+    td.mat-column-select {
         mat-checkbox:not(.mat-mdc-checkbox-checked) {
             visibility: hidden;
         }
     }
+}
 
+td {
     &.mat-column-index {
         text-align: center;
 
