@@ -2,6 +2,7 @@
   <line
     stroke-dasharray="10 10"
     stroke-dashoffset="10"
+    stroke-width="0.7"
     stroke="grey"
     x1="0"
     x2="100%"
