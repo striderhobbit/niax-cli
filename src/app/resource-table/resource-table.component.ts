@@ -11,6 +11,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
+import { CookieService } from 'ngx-cookie-service';
 import {
   Subject,
   Subscription,
@@ -34,6 +35,7 @@ type Row<I extends Resource.Item> =
   selector: 'app-resource-table',
   templateUrl: './resource-table.component.html',
   styleUrls: ['./resource-table.component.scss'],
+  providers: [CookieService],
 })
 export class ResourceTableComponent<I extends Resource.Item>
   implements OnInit, OnDestroy
@@ -41,6 +43,8 @@ export class ResourceTableComponent<I extends Resource.Item>
   private readonly resourceTableRowsPagesChanges = new Subject<
     Resource.TableRowsPage<I>[]
   >();
+
+  #intersectionIgnored?: boolean;
 
   private routeDataSubscription?: Subscription;
 
@@ -50,7 +54,16 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   protected readonly selection = new SelectionModel<Row<I>>(false, []);
 
-  protected intersectionIgnored?: boolean;
+  protected get intersectionIgnored(): boolean | undefined {
+    return this.#intersectionIgnored;
+  }
+
+  protected set intersectionIgnored(intersectionIgnored: boolean) {
+    this.cookieService.set(
+      'intersectionIgnored',
+      JSON.stringify((this.#intersectionIgnored = intersectionIgnored))
+    );
+  }
 
   protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
     'resourceTable'
@@ -58,6 +71,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
   constructor(
     private readonly apiService: ApiService<I>,
+    private readonly cookieService: CookieService,
     private readonly dialog: MatDialog,
     private readonly route: ActivatedRoute,
     private readonly router: Router
@@ -92,6 +106,9 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   ngOnInit(): void {
+    this.#intersectionIgnored =
+      this.cookieService.get('intersectionIgnored') === 'true';
+
     this.routeDataSubscription = this.route.data
       .pipe(map((data) => data['resourceTable'] as Resource.Table<I>))
       .subscribe({
