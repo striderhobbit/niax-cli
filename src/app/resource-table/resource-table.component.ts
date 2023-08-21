@@ -5,7 +5,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
@@ -210,11 +210,15 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected openColumnToggleDialog(): Promise<void> {
+    const dialogRef: MatDialogRef<
+      ColumnToggleDialogComponent<Resource.Item>,
+      Resource.TableColumn<I>[]
+    > = this.dialog.open(ColumnToggleDialogComponent, {
+      data: cloneDeep(this.resourceTable.columns),
+    });
+
     return firstValueFrom(
-      this.dialog
-        .open(ColumnToggleDialogComponent, {
-          data: cloneDeep(this.resourceTable.columns),
-        })
+      dialogRef
         .afterClosed()
         .pipe(
           mergeMap((resourceTableColumns) =>
