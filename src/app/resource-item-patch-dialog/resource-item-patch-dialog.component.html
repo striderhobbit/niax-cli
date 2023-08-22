@@ -1,14 +1,16 @@
-<h1 mat-dialog-title>Patch resource item<br />{{ field.resource.id }}</h1>
+<h1 mat-dialog-title>Patch resource item {{ field.resource.id }}</h1>
 <div mat-dialog-content>
   <ng-container [ngSwitch]="field.type">
-    <mat-form-field *ngSwitchDefault [ngSwitch]="field.type">
+    <mat-form-field
+      *ngSwitchDefault
+      [ngSwitch]="field.type"
+      [style.width.%]="100"
+    >
       <textarea
         *ngSwitchDefault
         [(ngModel)]="field.value"
-        cdkAutosizeMaxRows="6"
-        cdkAutosizeMinRows="1"
-        cdkTextareaAutosize
         matInput
+        rows="5"
       ></textarea>
       <!-- FIXME https://github.com/angular/angular/issues/13243 -->
       <input
