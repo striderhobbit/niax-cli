@@ -16,7 +16,7 @@ import { cloneDeep, isEqual, set } from 'lodash';
 @Component({
   selector: 'app-resource-item-patch-dialog',
   templateUrl: './resource-item-patch-dialog.component.html',
-  styleUrls: [],
+  styleUrls: ['./resource-item-patch-dialog.component.scss'],
   standalone: true,
   imports: [
     FormsModule,

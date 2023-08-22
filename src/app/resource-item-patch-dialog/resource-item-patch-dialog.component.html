@@ -1,11 +1,7 @@
 <h1 mat-dialog-title>Patch resource item {{ field.resource.id }}</h1>
 <div mat-dialog-content>
   <ng-container [ngSwitch]="field.type">
-    <mat-form-field
-      *ngSwitchDefault
-      [ngSwitch]="field.type"
-      [style.width.%]="100"
-    >
+    <mat-form-field *ngSwitchDefault [ngSwitch]="field.type">
       <textarea
         *ngSwitchDefault
         [(ngModel)]="field.value"
