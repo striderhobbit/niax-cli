@@ -11,7 +11,9 @@
   </ng-container>
 </div>
 <div mat-dialog-actions>
-  <button (click)="dialogRef.close()" mat-button>Cancel</button>
+  <button (click)="dialogRef.close()" mat-button>
+    {{ hasChanges() ? "Discard" : "Cancel" }}
+  </button>
   <button [disabled]="!hasChanges()" [mat-dialog-close]="field" mat-button>
     Save
   </button>
