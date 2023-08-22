@@ -46,4 +46,14 @@ export class ResourceItemPatchDialogComponent<I extends Resource.Item> {
   protected hasChanges(): boolean {
     return !isEqual(this.fieldBackup, this.field);
   }
+
+  protected mapFieldType(
+    type: Resource.TableField<I>['type']
+  ): 'checkbox' | 'number' | 'text' {
+    return {
+      boolean: 'checkbox' as const,
+      number: 'number' as const,
+      string: 'text' as const,
+    }[type];
+  }
 }

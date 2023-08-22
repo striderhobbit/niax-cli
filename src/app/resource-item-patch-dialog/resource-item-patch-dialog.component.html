@@ -2,7 +2,11 @@
 <div mat-dialog-content>
   <ng-container [ngSwitch]="field.type">
     <mat-form-field *ngSwitchDefault>
-      <input [(ngModel)]="field.value" [type]="field.type" matInput />
+      <input
+        [(ngModel)]="field.value"
+        [type]="mapFieldType(field.type)"
+        matInput
+      />
       <mat-label>{{ field.path }}</mat-label>
     </mat-form-field>
     <mat-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="field.value">
