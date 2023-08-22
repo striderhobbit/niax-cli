@@ -281,10 +281,9 @@ export class ResourceTableComponent<I extends Resource.Item>
           resourceTableField
         )
         .pipe(
-          // TODO mergeTap? https://github.com/ReactiveX/rxjs/discussions/7320
           mergeMap((resourceItem) =>
             this.setQueryParams(
-              { resourceId: resourceTableField.resource.id }, // TODO needs adaptation
+              { resourceId: resourceTableField.resource.id },
               { runResolvers: true }
             ).then(() => resourceItem)
           )
@@ -345,6 +344,7 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected updateResourceTableColumns(
     resourceTableColumns: Resource.TableColumn<I>[] = this.resourceTable.columns
   ): Promise<void> {
+    console.log(resourceTableColumns);
     return this.setQueryParams(
       {
         cols: resourceTableColumns
