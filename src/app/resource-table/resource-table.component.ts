@@ -239,13 +239,13 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
 
     return firstValueFrom(
-      dialogRef
-        .afterClosed()
-        .pipe(
-          mergeMap((resourceTableColumns) =>
-            this.updateResourceTableColumns(resourceTableColumns)
-          )
-        )
+      dialogRef.afterClosed().pipe(
+        mergeMap(async (resourceTableColumns) => {
+          if (resourceTableColumns != null) {
+            return this.updateResourceTableColumns(resourceTableColumns);
+          }
+        })
+      )
     );
   }
 
