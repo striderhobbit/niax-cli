@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Patch resource item</h1>
+<ng-container mat-dialog-content></ng-container>
+<div mat-dialog-actions>
+  <button (click)="dialogRef.close()" mat-button>Cancel</button>
+  <button [disabled]="!hasChanges()" [mat-dialog-close]="field" mat-button>
+    Save
+  </button>
+</div>

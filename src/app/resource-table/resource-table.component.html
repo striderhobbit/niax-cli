@@ -77,7 +77,11 @@
       </th>
       <td *matCellDef="let row" mat-cell>
         <ng-container *ngIf="asResourceTableRow(row) as row">
-          {{ row.fields[column.path].value }}
+          <ng-container *ngIf="row.fields[column.path] as field">
+            <button (click)="openResourceItemPatchDialog(field)" mat-button>
+              {{ field.value }}
+            </button>
+          </ng-container>
         </ng-container>
       </td>
       <td *matFooterCellDef [cdkDragData]="column.path" cdkDrag mat-footer-cell>

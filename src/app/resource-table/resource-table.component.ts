@@ -22,6 +22,7 @@ import {
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
+import { ResourceItemPatchDialogComponent } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class ResourceTableRowsPlaceholder {
   constructor(public readonly pageToken: string) {}
@@ -242,7 +243,28 @@ export class ResourceTableComponent<I extends Resource.Item>
       dialogRef.afterClosed().pipe(
         mergeMap(async (resourceTableColumns) => {
           if (resourceTableColumns != null) {
-            return this.updateResourceTableColumns(resourceTableColumns);
+            await this.updateResourceTableColumns(resourceTableColumns);
+          }
+        })
+      )
+    );
+  }
+
+  protected openResourceItemPatchDialog(
+    resourceTableField: Resource.TableField<I>
+  ): Promise<void> {
+    const dialogRef: MatDialogRef<
+      ResourceItemPatchDialogComponent<Resource.Item>,
+      Resource.TableField<I>
+    > = this.dialog.open(ResourceItemPatchDialogComponent, {
+      data: cloneDeep(resourceTableField),
+    });
+
+    return firstValueFrom(
+      dialogRef.afterClosed().pipe(
+        mergeMap(async (resourceTableField) => {
+          if (resourceTableField != null) {
+            await this.patchResourceItem(resourceTableField);
           }
         })
       )
