@@ -77,9 +77,23 @@
       </th>
       <td *matCellDef="let row" mat-cell>
         <ng-container *ngIf="asResourceTableRow(row) as row">
-          <ng-container *ngIf="row.fields[column.path] as field">
-            <button (click)="openResourceItemPatchDialog(field)" mat-button>
+          <ng-container
+            *ngIf="row.fields[column.path] as field"
+            [ngSwitch]="field.value == null"
+          >
+            <button
+              *ngSwitchDefault
+              (click)="openResourceItemPatchDialog(field)"
+              mat-button
+            >
               {{ field.value }}
+            </button>
+            <button
+              *ngSwitchCase="true"
+              (click)="openResourceItemPatchDialog(field)"
+              mat-icon-button
+            >
+              <mat-icon>edit</mat-icon>
             </button>
           </ng-container>
         </ng-container>
