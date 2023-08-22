@@ -2,7 +2,14 @@
 <div mat-dialog-content>
   <ng-container [ngSwitch]="field.type">
     <mat-form-field *ngSwitchDefault [ngSwitch]="field.type">
-      <input *ngSwitchDefault [(ngModel)]="field.value" matInput type="text" />
+      <textarea
+        *ngSwitchDefault
+        [(ngModel)]="field.value"
+        cdkAutosizeMaxRows="6"
+        cdkAutosizeMinRows="1"
+        cdkTextareaAutosize
+        matInput
+      ></textarea>
       <!-- FIXME https://github.com/angular/angular/issues/13243 -->
       <input
         *ngSwitchCase="'number'"
