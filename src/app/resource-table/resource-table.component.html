@@ -2,7 +2,7 @@
   *ngIf="
     resourceTable.primaryPaths.concat(resourceTable.secondaryPaths) as paths
   "
-  (cdkDropListDropped)="onPathDropped($event)"
+  (cdkDropListDropped)="moveResourceTableColumns($event)"
   [cdkDropListData]="paths"
   [dataSource]="dataSource"
   cdkDropList
@@ -15,8 +15,8 @@
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
         <mat-checkbox
-          *ngIf="asResourceTableRow(row) as row"
-          (change)="toggleRowSelection(row)"
+          *ngIf="assertIsResourceTableRow(row) as row"
+          (change)="toggleRowIsSelected(row)"
           [checked]="selection.isSelected(row)"
         >
         </mat-checkbox>
@@ -24,7 +24,7 @@
       <td *matFooterCellDef mat-footer-cell>
         <ng-container *ngIf="selection.selected[0] as selection">
           <button
-            *ngIf="asResourceTableRow(selection) as row"
+            *ngIf="assertIsResourceTableRow(selection) as row"
             (click)="scrollToAnchor(row.resource.id)"
             mat-icon-button
           >
@@ -43,7 +43,7 @@
     <ng-container matColumnDef="index" sticky>
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
-        <ng-container *ngIf="asResourceTableRow(row) as row">
+        <ng-container *ngIf="assertIsResourceTableRow(row) as row">
           <a [name]="row.resource.id"></a>
           {{ row.index + 1 }}
         </ng-container>
@@ -76,24 +76,14 @@
         <b>{{ column.path }}</b>
       </th>
       <td *matCellDef="let row" mat-cell>
-        <ng-container *ngIf="asResourceTableRow(row) as row">
-          <ng-container
-            *ngIf="row.fields[column.path] as field"
-            [ngSwitch]="field.value == null"
-          >
+        <ng-container *ngIf="assertIsResourceTableRow(row) as row">
+          <ng-container *ngIf="row.fields[column.path] as field">
+            <div>{{ field.value }}</div>
             <button
-              *ngSwitchDefault
-              (click)="openResourceItemPatchDialog(field)"
-              mat-button
-            >
-              {{ field.value }}
-            </button>
-            <button
-              *ngSwitchCase="true"
               (click)="openResourceItemPatchDialog(field)"
               mat-icon-button
             >
-              <mat-icon>edit</mat-icon>
+              <mat-icon>edit_note</mat-icon>
             </button>
           </ng-container>
         </ng-container>
@@ -212,7 +202,8 @@
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
       [viewInitIgnored]="
-        asResourceTableRow(row).resource.id !== resourceTable.query.resourceId
+        assertIsResourceTableRow(row).resource.id !==
+        resourceTable.query.resourceId
       "
       mat-row
       observeViewInit

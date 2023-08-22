@@ -102,7 +102,7 @@ export class ResourceTableComponent<I extends Resource.Item>
             );
 
             if (activeRow != null) {
-              await this.toggleRowSelection(activeRow, true);
+              await this.toggleRowIsSelected(activeRow, true);
             }
           }
         })
@@ -138,18 +138,16 @@ export class ResourceTableComponent<I extends Resource.Item>
     this.routeDataSubscription?.unsubscribe();
   }
 
-  protected asResourceTableRow(row: Row<I>): Resource.TableRow<I> {
-    this.assertIsResourceTableRow(row);
-
-    return row;
-  }
-
-  private assertIsResourceTableRow(
-    row: Row<I>
-  ): asserts row is Resource.TableRow<I> {
+  #assertIsResourceTableRow(row: Row<I>): asserts row is Resource.TableRow<I> {
     if (row instanceof ResourceTableRowsPlaceholder) {
       throw new TypeError();
     }
+  }
+
+  protected assertIsResourceTableRow(row: Row<I>): Resource.TableRow<I> {
+    this.#assertIsResourceTableRow(row);
+
+    return row;
   }
 
   protected fetchResourceTableRows(
@@ -202,7 +200,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     return item instanceof ResourceTableRowsPlaceholder;
   }
 
-  protected async onPathDropped({
+  protected async moveResourceTableColumns({
     previousIndex,
     currentIndex,
     container,
@@ -335,11 +333,11 @@ export class ResourceTableComponent<I extends Resource.Item>
     return this.updateResourceTableColumns();
   }
 
-  protected async toggleRowSelection(
+  protected async toggleRowIsSelected(
     row: Row<I>,
     forceState: boolean = !this.selection.isSelected(row)
   ): Promise<void> {
-    this.assertIsResourceTableRow(row);
+    this.#assertIsResourceTableRow(row);
 
     if (forceState) {
       this.selection.select(row);
