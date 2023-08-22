@@ -1,5 +1,15 @@
 <h1 mat-dialog-title>Patch resource item</h1>
-<ng-container mat-dialog-content></ng-container>
+<div mat-dialog-content>
+  <ng-container [ngSwitch]="field.type">
+    <mat-form-field *ngSwitchDefault>
+      <input [(ngModel)]="field.value" [type]="field.type" matInput />
+      <mat-label>{{ field.path }}</mat-label>
+    </mat-form-field>
+    <mat-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="field.value">
+      {{ field.path }}
+    </mat-checkbox>
+  </ng-container>
+</div>
 <div mat-dialog-actions>
   <button (click)="dialogRef.close()" mat-button>Cancel</button>
   <button [disabled]="!hasChanges()" [mat-dialog-close]="field" mat-button>
