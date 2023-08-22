@@ -355,7 +355,6 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected updateResourceTableColumns(
     resourceTableColumns: Resource.TableColumn<I>[] = this.resourceTable.columns
   ): Promise<void> {
-    console.log(resourceTableColumns);
     return this.setQueryParams(
       {
         cols: resourceTableColumns

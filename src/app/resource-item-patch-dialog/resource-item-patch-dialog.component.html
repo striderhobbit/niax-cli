@@ -1,11 +1,15 @@
 <h1 mat-dialog-title>Patch resource item<br />{{ field.resource.id }}</h1>
 <div mat-dialog-content>
   <ng-container [ngSwitch]="field.type">
-    <mat-form-field *ngSwitchDefault>
+    <mat-form-field *ngSwitchDefault [ngSwitch]="field.type">
+      <input *ngSwitchDefault [(ngModel)]="field.value" matInput type="text" />
+      <!-- FIXME https://github.com/angular/angular/issues/13243 -->
       <input
-        [(ngModel)]="field.value"
-        [type]="mapFieldType(field.type)"
+        *ngSwitchCase="'number'"
+        (ngModelChange)="set(field, 'value', +$event)"
+        [ngModel]="field.value"
         matInput
+        type="number"
       />
       <mat-label>{{ field.path }}</mat-label>
     </mat-form-field>
@@ -17,6 +21,15 @@
 <div mat-dialog-actions>
   <button (click)="dialogRef.close()" mat-button>
     {{ hasChanges() ? "Discard" : "Cancel" }}
+  </button>
+  <button
+    (click)="set(field, 'value', null)"
+    [disabled]="!field.nullable || fieldBackup.value == null"
+    [mat-dialog-close]="field"
+    color="warn"
+    mat-button
+  >
+    Delete
   </button>
   <button [disabled]="!hasChanges()" [mat-dialog-close]="field" mat-button>
     Save

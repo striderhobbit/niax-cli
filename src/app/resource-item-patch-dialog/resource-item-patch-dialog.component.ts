@@ -11,7 +11,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Resource } from '@shared/schema/resource';
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep, isEqual, set } from 'lodash';
 
 @Component({
   selector: 'app-resource-item-patch-dialog',
@@ -31,7 +31,9 @@ import { cloneDeep, isEqual } from 'lodash';
   ],
 })
 export class ResourceItemPatchDialogComponent<I extends Resource.Item> {
-  private readonly fieldBackup: Resource.TableField<I>;
+  protected readonly fieldBackup: Resource.TableField<I>;
+
+  protected readonly set = set;
 
   constructor(
     protected readonly dialogRef: MatDialogRef<
@@ -45,15 +47,5 @@ export class ResourceItemPatchDialogComponent<I extends Resource.Item> {
 
   protected hasChanges(): boolean {
     return !isEqual(this.fieldBackup, this.field);
-  }
-
-  protected mapFieldType(
-    type: Resource.TableField<I>['type']
-  ): 'checkbox' | 'number' | 'text' {
-    return {
-      boolean: 'checkbox' as const,
-      number: 'number' as const,
-      string: 'text' as const,
-    }[type];
   }
 }
