@@ -138,13 +138,17 @@ export class ResourceTableComponent<I extends Resource.Item>
     this.routeDataSubscription?.unsubscribe();
   }
 
-  #assertIsResourceTableRow(row: Row<I>): asserts row is Resource.TableRow<I> {
+  #assertIsResourceTableRow(
+    row?: Row<I>
+  ): asserts row is Resource.TableRow<I> | undefined {
     if (row instanceof ResourceTableRowsPlaceholder) {
       throw new TypeError();
     }
   }
 
-  protected assertIsResourceTableRow(row: Row<I>): Resource.TableRow<I> {
+  protected assertIsResourceTableRow(
+    row?: Row<I>
+  ): Resource.TableRow<I> | undefined {
     this.#assertIsResourceTableRow(row);
 
     return row;

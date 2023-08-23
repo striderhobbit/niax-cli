@@ -205,7 +205,7 @@
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
       [viewInitIgnored]="
-        assertIsResourceTableRow(row).resource.id !==
+        assertIsResourceTableRow(row)?.resource?.id !==
         resourceTable.query.resourceId
       "
       mat-row
