@@ -77,15 +77,18 @@
       </th>
       <td *matCellDef="let row" mat-cell>
         <ng-container *ngIf="assertIsResourceTableRow(row) as row">
-          <ng-container *ngIf="row.fields[column.path] as field">
-            <div>{{ field.value }}</div>
-            <button
-              (click)="openResourceItemPatchDialog(field)"
-              mat-icon-button
+          <div
+            *ngIf="row.fields[column.path] as field"
+            (click)="openResourceItemPatchDialog(field)"
+            class="table-field"
+          >
+            <div
+              [attr.data-type]="getType(field.value)"
+              class="table-field__label"
             >
-              <mat-icon>edit_note</mat-icon>
-            </button>
-          </ng-container>
+              {{ field.value }}
+            </div>
+          </div>
         </ng-container>
       </td>
       <td *matFooterCellDef [cdkDragData]="column.path" cdkDrag mat-footer-cell>
