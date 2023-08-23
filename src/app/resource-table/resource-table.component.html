@@ -22,15 +22,16 @@
         </mat-checkbox>
       </td>
       <td *matFooterCellDef mat-footer-cell>
-        <ng-container *ngIf="selection.selected[0] as selection">
-          <button
-            *ngIf="assertIsResourceTableRow(selection) as row"
-            (click)="scrollToAnchor(row.resource.id)"
-            mat-icon-button
-          >
-            <mat-icon>north</mat-icon>
-          </button>
-        </ng-container>
+        <button
+          (click)="
+            scrollToAnchor(
+              assertIsResourceTableRow(selection.selected[0])?.resource?.id
+            )
+          "
+          mat-icon-button
+        >
+          <mat-icon>north</mat-icon>
+        </button>
         <button
           (click)="intersectionIgnored = !intersectionIgnored"
           mat-icon-button

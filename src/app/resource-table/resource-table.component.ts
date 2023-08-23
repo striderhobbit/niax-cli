@@ -308,7 +308,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected async scrollToAnchor(fragment: string): Promise<void> {
+  protected async scrollToAnchor(fragment?: string): Promise<void> {
     await this.router.navigate([], {
       fragment,
       queryParamsHandling: 'preserve',
