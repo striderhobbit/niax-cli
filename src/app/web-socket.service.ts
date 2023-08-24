@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { WebSocket } from '@shared/schema/ws';
 import { firstValueFrom } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
-import { ErrorMessageDialogComponent } from './error-message-dialog/error-message-dialog.component';
+import {
+  ErrorMessageDialogComponent,
+  ErrorMessageDialogRef,
+} from './error-message-dialog/error-message-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -20,10 +23,12 @@ export class WebSocketService {
         switch (message.type) {
           case 'error':
             if (message.body) {
-              const dialogRef: MatDialogRef<ErrorMessageDialogComponent, void> =
-                this.dialog.open(ErrorMessageDialogComponent, {
+              const dialogRef: ErrorMessageDialogRef = this.dialog.open(
+                ErrorMessageDialogComponent,
+                {
                   data: message.body,
-                });
+                }
+              );
 
               await firstValueFrom(dialogRef.afterClosed());
             }

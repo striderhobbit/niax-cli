@@ -13,6 +13,11 @@ import { MatInputModule } from '@angular/material/input';
 import { Resource } from '@shared/schema/resource';
 import { cloneDeep, isEqual, set } from 'lodash';
 
+export type ResourceItemPatchDialogRef<I extends Resource.Item> = MatDialogRef<
+  ResourceItemPatchDialogComponent<I>,
+  Resource.TableField<I>
+>;
+
 @Component({
   selector: 'app-resource-item-patch-dialog',
   templateUrl: './resource-item-patch-dialog.component.html',
@@ -36,9 +41,8 @@ export class ResourceItemPatchDialogComponent<I extends Resource.Item> {
   protected readonly set = set;
 
   constructor(
-    protected readonly dialogRef: MatDialogRef<
-      ResourceItemPatchDialogComponent<I>
-    >,
+    @Inject(MatDialogRef)
+    protected readonly dialogRef: ResourceItemPatchDialogRef<I>,
     @Inject(MAT_DIALOG_DATA)
     protected readonly field: Resource.TableField<I>
   ) {

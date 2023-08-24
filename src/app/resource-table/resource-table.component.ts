@@ -6,7 +6,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
@@ -22,8 +22,14 @@ import {
   tap,
 } from 'rxjs';
 import { ApiService } from '../api.service';
-import { ColumnToggleDialogComponent } from '../column-toggle-dialog/column-toggle-dialog.component';
-import { ResourceItemPatchDialogComponent } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
+import {
+  ColumnToggleDialogComponent,
+  ColumnToggleDialogRef,
+} from '../column-toggle-dialog/column-toggle-dialog.component';
+import {
+  ResourceItemPatchDialogComponent,
+  ResourceItemPatchDialogRef,
+} from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class ResourceTableRowsPlaceholder {
   constructor(public readonly pageToken: string) {}
@@ -249,12 +255,12 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected openColumnToggleDialog(): Promise<void> {
-    const dialogRef: MatDialogRef<
-      ColumnToggleDialogComponent<Resource.Item>,
-      Resource.TableColumn<I>[]
-    > = this.dialog.open(ColumnToggleDialogComponent, {
-      data: cloneDeep(this.resourceTable.columns),
-    });
+    const dialogRef: ColumnToggleDialogRef<I> = this.dialog.open(
+      ColumnToggleDialogComponent<I>,
+      {
+        data: cloneDeep(this.resourceTable.columns),
+      }
+    );
 
     return firstValueFrom(
       dialogRef.afterClosed().pipe(
@@ -270,12 +276,12 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected openResourceItemPatchDialog(
     resourceTableField: Resource.TableField<I>
   ): Promise<void> {
-    const dialogRef: MatDialogRef<
-      ResourceItemPatchDialogComponent<Resource.Item>,
-      Resource.TableField<I>
-    > = this.dialog.open(ResourceItemPatchDialogComponent, {
-      data: cloneDeep(resourceTableField),
-    });
+    const dialogRef: ResourceItemPatchDialogRef<I> = this.dialog.open(
+      ResourceItemPatchDialogComponent<I>,
+      {
+        data: cloneDeep(resourceTableField),
+      }
+    );
 
     return firstValueFrom(
       dialogRef.afterClosed().pipe(

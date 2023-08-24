@@ -8,7 +8,11 @@
   <button (click)="dialogRef.close()" mat-button>
     {{ hasChanges() ? "Discard" : "Cancel" }}
   </button>
-  <button [disabled]="!hasChanges()" [mat-dialog-close]="columns" mat-button>
+  <button
+    (click)="dialogRef.close(columns)"
+    [disabled]="!hasChanges()"
+    mat-button
+  >
     Submit
   </button>
 </div>

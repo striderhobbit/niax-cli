@@ -6,6 +6,11 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 
+export type ErrorMessageDialogRef = MatDialogRef<
+  ErrorMessageDialogComponent,
+  void
+>;
+
 @Component({
   selector: 'app-error-message-dialog',
   templateUrl: './error-message-dialog.component.html',
@@ -15,7 +20,8 @@ import {
 })
 export class ErrorMessageDialogComponent {
   constructor(
-    protected readonly dialogRef: MatDialogRef<ErrorMessageDialogComponent>,
+    @Inject(MatDialogRef)
+    protected readonly dialogRef: ErrorMessageDialogRef,
     @Inject(MAT_DIALOG_DATA)
     protected readonly message: string
   ) {}

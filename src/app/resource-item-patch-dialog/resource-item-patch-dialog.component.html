@@ -26,15 +26,18 @@
     {{ hasChanges() ? "Discard" : "Cancel" }}
   </button>
   <button
-    (click)="set(field, 'value', null)"
+    (click)="dialogRef.close(set(field, 'value', null))"
     [disabled]="!field.nullable || fieldBackup.value == null"
-    [mat-dialog-close]="field"
     color="warn"
     mat-button
   >
     Delete
   </button>
-  <button [disabled]="!hasChanges()" [mat-dialog-close]="field" mat-button>
+  <button
+    (click)="dialogRef.close(field)"
+    [disabled]="!hasChanges()"
+    mat-button
+  >
     Save
   </button>
 </div>
