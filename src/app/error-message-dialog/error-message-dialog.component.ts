@@ -5,11 +5,12 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { WebSocket } from '@shared/schema/ws';
 
-export type ErrorMessageDialogRef = MatDialogRef<
-  ErrorMessageDialogComponent,
-  void
->;
+export interface ErrorMessageDialog {
+  ref: MatDialogRef<ErrorMessageDialogComponent, void>;
+  data: WebSocket.ErrorMessage;
+}
 
 @Component({
   selector: 'app-error-message-dialog',
@@ -21,8 +22,8 @@ export type ErrorMessageDialogRef = MatDialogRef<
 export class ErrorMessageDialogComponent {
   constructor(
     @Inject(MatDialogRef)
-    protected readonly dialogRef: ErrorMessageDialogRef,
+    protected readonly dialogRef: ErrorMessageDialog['ref'],
     @Inject(MAT_DIALOG_DATA)
-    protected readonly message: string
+    protected readonly message: ErrorMessageDialog['data']
   ) {}
 }

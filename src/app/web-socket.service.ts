@@ -4,8 +4,8 @@ import { WebSocket } from '@shared/schema/ws';
 import { firstValueFrom } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import {
+  ErrorMessageDialog,
   ErrorMessageDialogComponent,
-  ErrorMessageDialogRef,
 } from './error-message-dialog/error-message-dialog.component';
 
 @Injectable({
@@ -23,12 +23,12 @@ export class WebSocketService {
         switch (message.type) {
           case 'error':
             if (message.body) {
-              const dialogRef: ErrorMessageDialogRef = this.dialog.open(
+              const dialogRef: ErrorMessageDialog['ref'] = this.dialog.open<
                 ErrorMessageDialogComponent,
-                {
-                  data: message.body,
-                }
-              );
+                ErrorMessageDialog['data']
+              >(ErrorMessageDialogComponent, {
+                data: message,
+              });
 
               await firstValueFrom(dialogRef.afterClosed());
             }
