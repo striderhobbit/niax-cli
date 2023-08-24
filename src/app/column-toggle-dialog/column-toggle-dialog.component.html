@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Toggle table columns</h1>
 <mat-selection-list mat-dialog-content>
-  <mat-list-option *ngFor="let column of columns" [(selected)]="column.include">
+  <mat-list-option *ngFor="let column of data" [(selected)]="column.include">
     {{ column.path }}
   </mat-list-option>
 </mat-selection-list>
@@ -8,11 +8,7 @@
   <button (click)="dialogRef.close()" mat-button>
     {{ hasChanges() ? "Discard" : "Cancel" }}
   </button>
-  <button
-    (click)="dialogRef.close(columns)"
-    [disabled]="!hasChanges()"
-    mat-button
-  >
+  <button (click)="dialogRef.close(data)" [disabled]="!hasChanges()" mat-button>
     Submit
   </button>
 </div>

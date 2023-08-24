@@ -8,7 +8,8 @@ import {
 } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { Resource } from '@shared/schema/resource';
-import { cloneDeep, zipWith } from 'lodash';
+import { zipWith } from 'lodash';
+import { ChangeDetector } from '../change-detector';
 
 export interface ColumnToggleDialog<I extends Resource.Item> {
   ref: MatDialogRef<ColumnToggleDialogComponent<I>, Resource.TableColumn<I>[]>;
@@ -22,23 +23,26 @@ export interface ColumnToggleDialog<I extends Resource.Item> {
   standalone: true,
   imports: [MatButtonModule, MatDialogModule, MatListModule, NgFor],
 })
-export class ColumnToggleDialogComponent<I extends Resource.Item> {
-  private readonly columnsBackup: Resource.TableColumn<I>[];
-
+export class ColumnToggleDialogComponent<
+  I extends Resource.Item
+> extends ChangeDetector<Resource.TableColumn<I>[]> {
   constructor(
     @Inject(MatDialogRef)
     protected readonly dialogRef: ColumnToggleDialog<I>['ref'],
     @Inject(MAT_DIALOG_DATA)
-    protected readonly columns: ColumnToggleDialog<I>['data']
+    data: ColumnToggleDialog<I>['data']
   ) {
-    this.columnsBackup = cloneDeep(columns);
+    super(data);
   }
 
-  protected hasChanges(): boolean {
+  protected override isEqual(
+    columnsA: Resource.TableColumn<I>[],
+    columnsB: Resource.TableColumn<I>[]
+  ): boolean {
     return zipWith(
-      this.columnsBackup,
-      this.columns,
-      (columnA, columnB) => !columnA.include != !columnB.include
-    ).some(Boolean);
+      columnsA,
+      columnsB,
+      (columnA, columnB) => !columnA.include === !columnB.include
+    ).every(Boolean);
   }
 }

@@ -259,7 +259,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       ColumnToggleDialogComponent<I>,
       ColumnToggleDialog<I>['data']
     >(ColumnToggleDialogComponent<I>, {
-      data: cloneDeep(this.resourceTable.columns),
+      data: this.resourceTable.columns,
     });
 
     return firstValueFrom(
