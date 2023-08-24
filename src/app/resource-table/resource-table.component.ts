@@ -23,8 +23,8 @@ import {
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import {
+  ColumnToggleDialog,
   ColumnToggleDialogComponent,
-  ColumnToggleDialogRef,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
   ResourceItemPatchDialog,
@@ -255,12 +255,12 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected openColumnToggleDialog(): Promise<void> {
-    const dialogRef: ColumnToggleDialogRef<I> = this.dialog.open(
+    const dialogRef: ColumnToggleDialog<I>['ref'] = this.dialog.open<
       ColumnToggleDialogComponent<I>,
-      {
-        data: cloneDeep(this.resourceTable.columns),
-      }
-    );
+      ColumnToggleDialog<I>['data']
+    >(ColumnToggleDialogComponent<I>, {
+      data: cloneDeep(this.resourceTable.columns),
+    });
 
     return firstValueFrom(
       dialogRef.afterClosed().pipe(

@@ -10,10 +10,10 @@ import { MatListModule } from '@angular/material/list';
 import { Resource } from '@shared/schema/resource';
 import { cloneDeep, zipWith } from 'lodash';
 
-export type ColumnToggleDialogRef<I extends Resource.Item> = MatDialogRef<
-  ColumnToggleDialogComponent<I>,
-  Resource.TableColumn<I>[]
->;
+export interface ColumnToggleDialog<I extends Resource.Item> {
+  ref: MatDialogRef<ColumnToggleDialogComponent<I>, Resource.TableColumn<I>[]>;
+  data: Resource.TableColumn<I>[];
+}
 
 @Component({
   selector: 'app-column-toggle-dialog',
@@ -27,9 +27,9 @@ export class ColumnToggleDialogComponent<I extends Resource.Item> {
 
   constructor(
     @Inject(MatDialogRef)
-    protected readonly dialogRef: ColumnToggleDialogRef<I>,
+    protected readonly dialogRef: ColumnToggleDialog<I>['ref'],
     @Inject(MAT_DIALOG_DATA)
-    protected readonly columns: Resource.TableColumn<I>[]
+    protected readonly columns: ColumnToggleDialog<I>['data']
   ) {
     this.columnsBackup = cloneDeep(columns);
   }
