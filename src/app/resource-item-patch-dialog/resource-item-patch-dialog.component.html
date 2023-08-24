@@ -8,11 +8,9 @@
         matInput
         rows="5"
       ></textarea>
-      <!-- FIXME https://github.com/angular/angular/issues/13243 -->
       <input
         *ngSwitchCase="'number'"
-        (ngModelChange)="set(field, 'value', +$event)"
-        [ngModel]="field.value"
+        [(ngModel)]="field.value"
         matInput
         type="number"
       />
