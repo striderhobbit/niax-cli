@@ -27,8 +27,8 @@ import {
   ColumnToggleDialogRef,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
+  ResourceItemPatchDialog,
   ResourceItemPatchDialogComponent,
-  ResourceItemPatchDialogRef,
 } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class ResourceTableRowsPlaceholder {
@@ -276,12 +276,12 @@ export class ResourceTableComponent<I extends Resource.Item>
   protected openResourceItemPatchDialog(
     resourceTableField: Resource.TableField<I>
   ): Promise<void> {
-    const dialogRef: ResourceItemPatchDialogRef<I> = this.dialog.open(
+    const dialogRef: ResourceItemPatchDialog<I>['ref'] = this.dialog.open<
       ResourceItemPatchDialogComponent<I>,
-      {
-        data: cloneDeep(resourceTableField),
-      }
-    );
+      ResourceItemPatchDialog<I>['data']
+    >(ResourceItemPatchDialogComponent<I>, {
+      data: cloneDeep(resourceTableField),
+    });
 
     return firstValueFrom(
       dialogRef.afterClosed().pipe(
