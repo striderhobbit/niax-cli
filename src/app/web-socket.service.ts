@@ -1,20 +1,34 @@
 import { Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { WebSocket } from '@shared/schema/ws';
+import { firstValueFrom } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
+import { ErrorMessageDialogComponent } from './error-message-dialog/error-message-dialog.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebSocketService {
-  constructor() {
+  constructor(private readonly dialog: MatDialog) {
     webSocket<WebSocket.Message>({
       url: 'ws://localhost:8080',
       openObserver: {
         next: () => console.info('[web-socket-server] Connected.'),
       },
     }).subscribe({
-      next: (message) => {
+      next: async (message) => {
         switch (message.type) {
+          case 'error':
+            if (message.body) {
+              const dialogRef: MatDialogRef<ErrorMessageDialogComponent, void> =
+                this.dialog.open(ErrorMessageDialogComponent, {
+                  data: message.body,
+                });
+
+              await firstValueFrom(dialogRef.afterClosed());
+            }
+
+            break;
           case 'text':
             console.info(
               `[web-socket-server] %c${message.body}`,

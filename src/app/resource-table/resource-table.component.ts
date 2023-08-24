@@ -45,7 +45,7 @@ export class ResourceTableComponent<I extends Resource.Item>
   @ViewChild(CdkHeaderRowDef) headerRowDef?: CdkHeaderRowDef;
   @ViewChild(MatTable) table?: MatTable<Row<I>>;
 
-  private readonly resourceTableRowsPagesChanges = new Subject<
+  private readonly resourceTableRowsPageChanges = new Subject<
     Resource.TableRowsPage<I>[]
   >();
 
@@ -81,7 +81,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {
-    this.resourceTableRowsPagesChanges
+    this.resourceTableRowsPageChanges
       .pipe(
         map((resourceTableRowsPages) =>
           resourceTableRowsPages.flatMap<Row<I>>((rowsPage) =>
@@ -129,7 +129,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
           this.selection.clear();
 
-          this.resourceTableRowsPagesChanges.next(rowsPages);
+          this.resourceTableRowsPageChanges.next(rowsPages);
         },
       });
   }
@@ -175,7 +175,7 @@ export class ResourceTableComponent<I extends Resource.Item>
             return this.resourceTable.rowsPages;
           }),
           tap((resourceTableRowsPages) =>
-            this.resourceTableRowsPagesChanges.next(resourceTableRowsPages)
+            this.resourceTableRowsPageChanges.next(resourceTableRowsPages)
           )
         )
     );
