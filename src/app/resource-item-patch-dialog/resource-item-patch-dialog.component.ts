@@ -11,7 +11,8 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Resource } from '@shared/schema/resource';
-import { cloneDeep, isEqual, set } from 'lodash';
+import { isEqual, set } from 'lodash';
+import { ChangeDetector } from '../change-detector';
 
 export interface ResourceItemPatchDialog<I extends Resource.Item> {
   ref: MatDialogRef<
@@ -38,21 +39,27 @@ export interface ResourceItemPatchDialog<I extends Resource.Item> {
     NgSwitchDefault,
   ],
 })
-export class ResourceItemPatchDialogComponent<I extends Resource.Item> {
-  protected readonly fieldBackup: Resource.TableField<I>;
-
+export class ResourceItemPatchDialogComponent<
+  I extends Resource.Item
+> extends ChangeDetector<Resource.TableField<I>> {
+  protected readonly field: Resource.TableField<I>;
   protected readonly set = set;
 
   constructor(
     @Inject(MatDialogRef)
     protected readonly dialogRef: ResourceItemPatchDialog<I>['ref'],
     @Inject(MAT_DIALOG_DATA)
-    protected readonly field: ResourceItemPatchDialog<I>['data']
+    data: ResourceItemPatchDialog<I>['data']
   ) {
-    this.fieldBackup = cloneDeep(field);
+    super(data);
+
+    this.field = this.data;
   }
 
-  protected hasChanges(): boolean {
-    return !isEqual(this.fieldBackup, this.field);
+  protected override isEqual(
+    fieldA: Resource.TableField<I>,
+    fieldB: Resource.TableField<I>
+  ): boolean {
+    return isEqual(fieldA, fieldB);
   }
 }

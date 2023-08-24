@@ -27,7 +27,7 @@
   </button>
   <button
     (click)="dialogRef.close(set(field, 'value', null))"
-    [disabled]="!field.nullable || fieldBackup.value == null"
+    [disabled]="!field.nullable || dataBackup.value == null"
     color="warn"
     mat-button
   >

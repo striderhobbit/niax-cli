@@ -1,9 +1,8 @@
 import { cloneDeep } from 'lodash';
 
 export abstract class ChangeDetector<T> {
-  private readonly dataBackup: T;
-
   public readonly data: T;
+  public readonly dataBackup: T;
 
   constructor(data: T) {
     this.dataBackup = cloneDeep((this.data = cloneDeep(data)));

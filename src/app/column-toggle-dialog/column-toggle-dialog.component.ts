@@ -26,6 +26,8 @@ export interface ColumnToggleDialog<I extends Resource.Item> {
 export class ColumnToggleDialogComponent<
   I extends Resource.Item
 > extends ChangeDetector<Resource.TableColumn<I>[]> {
+  protected readonly columns: Resource.TableColumn<I>[];
+
   constructor(
     @Inject(MatDialogRef)
     protected readonly dialogRef: ColumnToggleDialog<I>['ref'],
@@ -33,6 +35,8 @@ export class ColumnToggleDialogComponent<
     data: ColumnToggleDialog<I>['data']
   ) {
     super(data);
+
+    this.columns = this.data;
   }
 
   protected override isEqual(
