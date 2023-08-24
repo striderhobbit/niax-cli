@@ -43,6 +43,7 @@ export class ResourceItemPatchDialogComponent<
   I extends Resource.Item
 > extends ChangeDetector<Resource.TableField<I>> {
   protected readonly field: Resource.TableField<I>;
+
   protected readonly set = set;
 
   constructor(
