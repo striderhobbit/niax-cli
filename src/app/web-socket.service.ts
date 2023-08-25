@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { WebSocket } from '@shared/schema/ws';
-import { concatMap, lastValueFrom } from 'rxjs';
+import { concatMap, lastValueFrom, retry } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import {
   TextMessageDialog,
@@ -20,6 +20,7 @@ export class WebSocketService {
       },
     })
       .pipe(
+        retry(),
         concatMap(async (message) => {
           switch (message.type) {
             case 'text':
