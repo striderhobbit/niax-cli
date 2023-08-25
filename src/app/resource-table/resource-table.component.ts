@@ -11,7 +11,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
+import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
 import {
   Subject,
@@ -102,7 +102,7 @@ export class ResourceTableComponent<I extends Resource.Item>
             const activeRow = rows.find(
               (row) =>
                 !(row instanceof RowsPlaceholder) &&
-                row.resource.id === resourceId
+                row.resourceId === resourceId
             );
 
             if (activeRow != null) {
@@ -317,10 +317,9 @@ export class ResourceTableComponent<I extends Resource.Item>
         )
         .pipe(
           mergeMap((resourceItem) =>
-            this.setQueryParams(
-              { resourceId: resourceTableField.resource.id },
-              { runResolvers: true }
-            ).then(() => resourceItem)
+            this.setQueryParams(pick(resourceTableField, 'resourceId'), {
+              runResolvers: true,
+            }).then(() => resourceItem)
           )
         )
     );
@@ -372,7 +371,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     }
 
     await this.setQueryParams({
-      resourceId: this.selection.isSelected(row) ? row.resource.id : null,
+      resourceId: this.selection.isSelected(row) ? row.resourceId : null,
     });
   }
 

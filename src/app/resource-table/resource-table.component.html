@@ -25,7 +25,7 @@
         <button
           (click)="
             scrollToAnchor(
-              assertIsResourceTableRow(selection.selected[0])?.resource?.id
+              assertIsResourceTableRow(selection.selected[0])?.resourceId
             )
           "
           mat-icon-button
@@ -45,7 +45,7 @@
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
         <ng-container *ngIf="assertIsResourceTableRow(row) as resourceTableRow">
-          <a [name]="resourceTableRow.resource.id"></a>
+          <a [name]="resourceTableRow.resourceId"></a>
           {{ resourceTableRow.index + 1 }}
         </ng-container>
       </td>
@@ -204,7 +204,7 @@
       *matRowDef="let row; columns: columns"
       (viewInit)="$event.scrollIntoView({ block: 'start' })"
       [viewInitIgnored]="
-        assertIsResourceTableRow(row)?.resource?.id !==
+        assertIsResourceTableRow(row)?.resourceId !==
         resourceTable.query.resourceId
       "
       mat-row
