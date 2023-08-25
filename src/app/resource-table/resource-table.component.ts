@@ -1,8 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
-  CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem,
+    CdkDragDrop,
+    moveItemInArray,
+    transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -14,30 +14,28 @@ import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
 import {
-  Subject,
-  Subscription,
-  firstValueFrom,
-  map,
-  mergeMap,
-  tap,
+    Subject,
+    Subscription,
+    firstValueFrom,
+    map,
+    mergeMap,
+    tap,
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import {
-  ColumnToggleDialog,
-  ColumnToggleDialogComponent,
+    ColumnToggleDialog,
+    ColumnToggleDialogComponent,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
-  ResourceItemPatchDialog,
-  ResourceItemPatchDialogComponent,
+    ResourceItemPatchDialog,
+    ResourceItemPatchDialogComponent,
 } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
-class ResourceTableRowsPlaceholder {
+class RowsPlaceholder {
   constructor(public readonly pageToken: string) {}
 }
 
-type Row<I extends Resource.Item> =
-  | Resource.TableRow<I>
-  | ResourceTableRowsPlaceholder;
+type Row<I extends Resource.Item> = Resource.TableRow<I> | RowsPlaceholder;
 
 @Component({
   selector: 'app-resource-table',
@@ -92,7 +90,7 @@ export class ResourceTableComponent<I extends Resource.Item>
         map((resourceTableRowsPages) =>
           resourceTableRowsPages.flatMap<Row<I>>((rowsPage) =>
             rowsPage.pending && this.isConnected(rowsPage)
-              ? new ResourceTableRowsPlaceholder(rowsPage.pageToken)
+              ? new RowsPlaceholder(rowsPage.pageToken)
               : rowsPage.items
           )
         ),
@@ -103,7 +101,7 @@ export class ResourceTableComponent<I extends Resource.Item>
 
             const activeRow = rows.find(
               (row) =>
-                !(row instanceof ResourceTableRowsPlaceholder) &&
+                !(row instanceof RowsPlaceholder) &&
                 row.resource.id === resourceId
             );
 
@@ -144,10 +142,24 @@ export class ResourceTableComponent<I extends Resource.Item>
     this.routeDataSubscription?.unsubscribe();
   }
 
+  #assertIsRowsPlaceholder(
+    row?: Row<I>
+  ): asserts row is RowsPlaceholder | undefined {
+    if (!(row instanceof RowsPlaceholder)) {
+      throw new TypeError();
+    }
+  }
+
+  protected assertIsRowsPlaceholder(row?: Row<I>): RowsPlaceholder | undefined {
+    this.#assertIsRowsPlaceholder(row);
+
+    return row;
+  }
+
   #assertIsResourceTableRow(
     row?: Row<I>
   ): asserts row is Resource.TableRow<I> | undefined {
-    if (row instanceof ResourceTableRowsPlaceholder) {
+    if (row instanceof RowsPlaceholder) {
       throw new TypeError();
     }
   }
@@ -211,7 +223,7 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected isPlaceholder(index: number, item: Row<I>): boolean {
-    return item instanceof ResourceTableRowsPlaceholder;
+    return item instanceof RowsPlaceholder;
   }
 
   protected async moveResourceTableColumns({
