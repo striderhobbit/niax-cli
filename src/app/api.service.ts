@@ -3,16 +3,12 @@ import { Injectable } from '@angular/core';
 import { Request } from '@shared/schema/request';
 import { Resource } from '@shared/schema/resource';
 import { Observable, OperatorFunction, catchError } from 'rxjs';
-import { WebSocketService } from './web-socket.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService<I extends Resource.Item> {
-  constructor(
-    private readonly httpClient: HttpClient,
-    private readonly webSocketService: WebSocketService
-  ) {}
+  constructor(private readonly httpClient: HttpClient) {}
 
   public getResourceTable<T extends Request.GetResourceTable<I>['ResBody']>(
     query: Request.GetResourceTable<I>['ReqQuery']
@@ -21,7 +17,7 @@ export class ApiService<I extends Resource.Item> {
       .get<T>(`http://localhost:3000/api/resource/table`, {
         params: query,
       })
-      .pipe(this.pipeError());
+      .pipe(this.tapError());
   }
 
   public getResourceTableRowsPage<
@@ -31,7 +27,7 @@ export class ApiService<I extends Resource.Item> {
       .get<T>(`http://localhost:3000/api/resource/table/rows/page`, {
         params: query,
       })
-      .pipe(this.pipeError());
+      .pipe(this.tapError());
   }
 
   public patchResourceItem<T extends Request.PatchResourceItem<I>['ResBody']>(
@@ -42,10 +38,10 @@ export class ApiService<I extends Resource.Item> {
       .patch<T>(`http://localhost:3000/api/resource/item`, body, {
         params: query,
       })
-      .pipe(this.pipeError());
+      .pipe(this.tapError());
   }
 
-  private pipeError<T>(): OperatorFunction<T, T> {
+  private tapError<T>(): OperatorFunction<T, T> {
     return catchError((error) => {
       alert(error.message);
 
