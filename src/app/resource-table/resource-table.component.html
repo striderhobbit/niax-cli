@@ -15,9 +15,9 @@
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
         <mat-checkbox
-          *ngIf="assertIsResourceTableRow(row) as row"
-          (change)="toggleRowIsSelected(row)"
-          [checked]="selection.isSelected(row)"
+          *ngIf="assertIsResourceTableRow(row) as resourceTableRow"
+          (change)="toggleRowIsSelected(resourceTableRow)"
+          [checked]="selection.isSelected(resourceTableRow)"
         >
         </mat-checkbox>
       </td>
@@ -44,9 +44,9 @@
     <ng-container matColumnDef="index" sticky>
       <th *matHeaderCellDef mat-header-cell></th>
       <td *matCellDef="let row" mat-cell>
-        <ng-container *ngIf="assertIsResourceTableRow(row) as row">
-          <a [name]="row.resource.id"></a>
-          {{ row.index + 1 }}
+        <ng-container *ngIf="assertIsResourceTableRow(row) as resourceTableRow">
+          <a [name]="resourceTableRow.resource.id"></a>
+          {{ resourceTableRow.index + 1 }}
         </ng-container>
       </td>
       <td *matFooterCellDef mat-footer-cell>
@@ -77,9 +77,9 @@
         <b>{{ column.path }}</b>
       </th>
       <td *matCellDef="let row" mat-cell>
-        <ng-container *ngIf="assertIsResourceTableRow(row) as row">
+        <ng-container *ngIf="assertIsResourceTableRow(row) as resourceTableRow">
           <div
-            *ngIf="row.fields[column.path] as field"
+            *ngIf="resourceTableRow.fields[column.path] as field"
             (click)="openResourceItemPatchDialog(field)"
             class="table-field"
           >
@@ -174,24 +174,26 @@
     </ng-container>
 
     <ng-container matColumnDef="placeholder">
-      <td *matCellDef="let placeholder" [colSpan]="columns.length" mat-cell>
-        <button
-          (click)="fetchResourceTableRows(placeholder.pageToken)"
-          (intersection)="fetchResourceTableRows(placeholder.pageToken)"
-          [disabled]="!intersectionIgnored"
-          [intersectionIgnored]="intersectionIgnored"
-          mat-button
-          observeIntersection
-        >
-          <mat-icon svgIcon="dashArray"></mat-icon>
-        </button>
+      <td *matCellDef="let row" [colSpan]="columns.length" mat-cell>
+        <ng-container *ngIf="assertIsRowsPlaceholder(row) as rowsPlaceholder">
+          <button
+            (click)="fetchResourceTableRows(rowsPlaceholder.pageToken)"
+            (intersection)="fetchResourceTableRows(rowsPlaceholder.pageToken)"
+            [disabled]="!intersectionIgnored"
+            [intersectionIgnored]="intersectionIgnored"
+            mat-button
+            observeIntersection
+          >
+            <mat-icon svgIcon="dashArray"></mat-icon>
+          </button>
+        </ng-container>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="query">
       <td *matFooterCellDef [colSpan]="columns.length" mat-footer-cell>
-        <div *ngFor="let entry of resourceTable.signature | keyvalue">
-          {{ entry.key }}: {{ entry.value }}
+        <div *ngFor="let signature of resourceTable.signature | keyvalue">
+          {{ signature.key }}: {{ signature.value }}
         </div>
       </td>
     </ng-container>
