@@ -4,9 +4,9 @@ import { WebSocket } from '@shared/schema/ws';
 import { firstValueFrom } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import {
-  ErrorMessageDialog,
-  ErrorMessageDialogComponent,
-} from './error-message-dialog/error-message-dialog.component';
+  TextMessageDialog,
+  TextMessageDialogComponent,
+} from './text-message-dialog/text-message-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +23,10 @@ export class WebSocketService {
         switch (message.type) {
           case 'error':
             if (message.body) {
-              const dialogRef: ErrorMessageDialog['ref'] = this.dialog.open<
-                ErrorMessageDialogComponent,
-                ErrorMessageDialog['data']
-              >(ErrorMessageDialogComponent, {
+              const dialogRef: TextMessageDialog['ref'] = this.dialog.open<
+                TextMessageDialogComponent,
+                TextMessageDialog['data']
+              >(TextMessageDialogComponent, {
                 data: message,
               });
 
@@ -34,7 +34,7 @@ export class WebSocketService {
             }
 
             break;
-          case 'text':
+          case 'info':
             console.info(
               `[web-socket-server] %c${message.body}`,
               'color: lime'

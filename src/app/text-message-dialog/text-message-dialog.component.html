@@ -1,4 +1,8 @@
-<h1 mat-dialog-title>Error</h1>
+<h1 mat-dialog-title>
+  <mat-icon [color]="message.type === 'error' ? 'warn' : 'accent'">
+    {{ message.type }}
+  </mat-icon>
+</h1>
 <pre mat-dialog-content>{{ message.body }}</pre>
 <div mat-dialog-actions>
   <button (click)="dialogRef.close()" mat-button>Ok</button>

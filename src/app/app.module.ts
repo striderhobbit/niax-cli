@@ -24,12 +24,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ColumnToggleDialogComponent } from './column-toggle-dialog/column-toggle-dialog.component';
-import { ErrorMessageDialogComponent } from './error-message-dialog/error-message-dialog.component';
 import { FilterPipe } from './filter.pipe';
 import { IntersectionObserverDirective } from './intersection-observer.directive';
 import { CustomIconModule } from './modules/custom-icon.module';
 import { RegExpValidatorDirective } from './reg-exp-validator.directive';
 import { ResourceTableComponent } from './resource-table/resource-table.component';
+import { TextMessageDialogComponent } from './text-message-dialog/text-message-dialog.component';
 import { ViewInitObserverDirective } from './view-init-observer.directive';
 
 @NgModule({
@@ -47,7 +47,6 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     ColumnToggleDialogComponent,
     CustomIconModule,
     DragDropModule,
-    ErrorMessageDialogComponent,
     FormsModule,
     HttpClientModule,
     MatButtonModule,
@@ -61,6 +60,7 @@ import { ViewInitObserverDirective } from './view-init-observer.directive';
     MatSelectModule,
     MatTableModule,
     NoopAnimationsModule,
+    TextMessageDialogComponent,
   ],
   providers: [
     {
