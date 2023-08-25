@@ -21,10 +21,16 @@ export interface TextMessageDialog {
   imports: [MatButtonModule, MatDialogModule, MatIconModule],
 })
 export class TextMessageDialogComponent {
+  protected color: string = 'accent';
+
   constructor(
     @Inject(MatDialogRef)
     protected readonly dialogRef: TextMessageDialog['ref'],
     @Inject(MAT_DIALOG_DATA)
     protected readonly message: TextMessageDialog['data']
-  ) {}
+  ) {
+    if (message.subType === 'error' || message.subType === 'warning') {
+      this.color = 'warn';
+    }
+  }
 }
