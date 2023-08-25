@@ -174,18 +174,14 @@
     </ng-container>
 
     <ng-container matColumnDef="placeholder">
-      <td
-        *matCellDef="let placeholder"
-        (intersection)="fetchResourceTableRows(placeholder.pageToken)"
-        [colSpan]="columns.length"
-        [intersectionIgnored]="intersectionIgnored"
-        mat-cell
-        observeIntersection
-      >
+      <td *matCellDef="let placeholder" [colSpan]="columns.length" mat-cell>
         <button
           (click)="fetchResourceTableRows(placeholder.pageToken)"
+          (intersection)="fetchResourceTableRows(placeholder.pageToken)"
           [disabled]="!intersectionIgnored"
+          [intersectionIgnored]="intersectionIgnored"
           mat-button
+          observeIntersection
         >
           <mat-icon svgIcon="dashArray"></mat-icon>
         </button>
