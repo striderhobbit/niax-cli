@@ -1,8 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
-    CdkDragDrop,
-    moveItemInArray,
-    transferArrayItem,
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -13,22 +13,15 @@ import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, keyBy, pick, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
-import {
-    Subject,
-    Subscription,
-    firstValueFrom,
-    map,
-    mergeMap,
-    tap,
-} from 'rxjs';
+import { Subject, Subscription, lastValueFrom, map, mergeMap, tap } from 'rxjs';
 import { ApiService } from '../api.service';
 import {
-    ColumnToggleDialog,
-    ColumnToggleDialogComponent,
+  ColumnToggleDialog,
+  ColumnToggleDialogComponent,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
-    ResourceItemPatchDialog,
-    ResourceItemPatchDialogComponent,
+  ResourceItemPatchDialog,
+  ResourceItemPatchDialogComponent,
 } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class RowsPlaceholder {
@@ -48,10 +41,6 @@ export class ResourceTableComponent<I extends Resource.Item>
 {
   @ViewChild(CdkHeaderRowDef) headerRowDef?: CdkHeaderRowDef;
   @ViewChild(MatTable) table?: MatTable<Row<I>>;
-
-  private readonly resourceTableRowsPageChanges = new Subject<
-    Resource.TableRowsPage<I>[]
-  >();
 
   #intersectionIgnored?: boolean;
 
@@ -74,9 +63,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected resourceTable: Resource.Table<I> = this.route.snapshot.data[
-    'resourceTable'
-  ] as Resource.Table<I>;
+  protected resourceTable?: Resource.Table<I>;
 
   constructor(
     private readonly apiService: ApiService<I>,
@@ -84,56 +71,51 @@ export class ResourceTableComponent<I extends Resource.Item>
     private readonly dialog: MatDialog,
     private readonly route: ActivatedRoute,
     private readonly router: Router
-  ) {
-    this.resourceTableRowsPageChanges
-      .pipe(
-        map((resourceTableRowsPages) =>
-          resourceTableRowsPages.flatMap<Row<I>>((rowsPage) =>
-            rowsPage.pending && this.isConnected(rowsPage)
-              ? new RowsPlaceholder(rowsPage.pageToken)
-              : rowsPage.items
-          )
-        ),
-        map((rows) => (this.dataSource.data = rows)),
-        mergeMap(async (rows) => {
-          if (!this.selection.hasValue()) {
-            const { resourceId } = this.resourceTable.query;
-
-            const activeRow = rows.find(
-              (row) =>
-                !(row instanceof RowsPlaceholder) &&
-                row.resourceId === resourceId
-            );
-
-            if (activeRow != null) {
-              await this.toggleRowIsSelected(activeRow, true);
-            }
-          }
-        })
-      )
-      .subscribe();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.#intersectionIgnored =
       this.cookieService.get('intersectionIgnored') === 'true';
 
     this.routeDataSubscription = this.route.data
-      .pipe(map((data) => data['resourceTable'] as Resource.Table<I>))
+      .pipe(
+        tap(() => this.resourceTable?.rowsPagesUpdates?.complete()),
+        map((data) => data['resourceTable'] as Resource.Table<I>)
+      )
       .subscribe({
         next: (resourceTable) => {
-          const { rowsPages } = (this.resourceTable = resourceTable);
+          (resourceTable.rowsPagesUpdates = new Subject<void>())
+            .pipe(
+              map(() =>
+                resourceTable.rowsPages.flatMap<Row<I>>((rowsPage) =>
+                  rowsPage.pending && this.isConnected(resourceTable, rowsPage)
+                    ? new RowsPlaceholder(rowsPage.pageToken)
+                    : rowsPage.items
+                )
+              ),
+              mergeMap(async (rows) => {
+                if (!this.selection.hasValue()) {
+                  const activeRow = rows.find(
+                    (row) =>
+                      !(row instanceof RowsPlaceholder) &&
+                      row.resourceId === resourceTable.query.resourceId
+                  );
 
-          /**
-           * FIXME https://github.com/angular/components/issues/22022
-           */
-          if (this.headerRowDef != null) {
-            // this.table?.removeHeaderRowDef(this.headerRowDef);
-          }
+                  if (activeRow != null) {
+                    await this.toggleRowIsSelected(activeRow, true);
+                  }
+                }
+
+                return rows;
+              })
+            )
+            .subscribe({
+              next: (rows) => (this.dataSource.data = rows),
+            });
 
           this.selection.clear();
 
-          this.resourceTableRowsPageChanges.next(rowsPages);
+          (this.resourceTable = resourceTable).rowsPagesUpdates?.next();
         },
       });
   }
@@ -173,30 +155,24 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected fetchResourceTableRows(
+    resourceTable: Resource.Table<I>,
     pageToken: string
-  ): Promise<Resource.TableRowsPage<I>[]> {
-    return firstValueFrom(
-      this.apiService
-        .getResourceTableRowsPage({
-          pageToken,
-          tableToken: this.resourceTable.token,
-        })
-        .pipe(
-          map(({ items }) => {
-            const resourceTableRowsPage = this.resourceTable.rowsPages.find(
-              (rowsPage) => rowsPage.pageToken === pageToken
-            );
+  ): Promise<void> {
+    return lastValueFrom(
+      this.apiService.getResourceTableRowsPage({
+        pageToken,
+        tableToken: resourceTable.token,
+      })
+    ).then(({ items }) => {
+      const rowsPage = resourceTable.rowsPages.find(
+        (rowsPage) => rowsPage.pageToken === pageToken
+      );
 
-            resourceTableRowsPage!.pending = false;
-            resourceTableRowsPage!.items = items;
+      rowsPage!.pending = false;
+      rowsPage!.items = items;
 
-            return this.resourceTable.rowsPages;
-          }),
-          tap((resourceTableRowsPages) =>
-            this.resourceTableRowsPageChanges.next(resourceTableRowsPages)
-          )
-        )
-    );
+      resourceTable.rowsPagesUpdates?.next();
+    });
   }
 
   protected getType(value: any): string {
@@ -204,10 +180,11 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   private isConnected(
+    resourceTable: Resource.Table<I>,
     resourceTableRowsPage: Resource.TableRowsPage<I>
   ): boolean {
     const resourceTableRowsPagesDictionary = keyBy(
-      this.resourceTable.rowsPages,
+      resourceTable.rowsPages,
       'pageToken'
     );
 
@@ -226,11 +203,10 @@ export class ResourceTableComponent<I extends Resource.Item>
     return item instanceof RowsPlaceholder;
   }
 
-  protected async moveResourceTableColumns({
-    previousIndex,
-    currentIndex,
-    container,
-  }: CdkDragDrop<PropertyPath<I>[]>): Promise<void> {
+  protected async moveResourceTableColumns(
+    resourceTable: Resource.Table<I>,
+    { previousIndex, currentIndex, container }: CdkDragDrop<PropertyPath<I>[]>
+  ): Promise<void> {
     if (previousIndex !== currentIndex) {
       const {
         data: { [previousIndex]: previousItem, [currentIndex]: currentItem },
@@ -238,9 +214,9 @@ export class ResourceTableComponent<I extends Resource.Item>
 
       const [previousArray, currentArray] = [previousItem, currentItem].map(
         (path) =>
-          this.resourceTable.primaryPaths.includes(path)
-            ? this.resourceTable.primaryPaths
-            : this.resourceTable.secondaryPaths
+          resourceTable.primaryPaths.includes(path)
+            ? resourceTable.primaryPaths
+            : resourceTable.secondaryPaths
       );
 
       const [previousIndexInArray, currentIndexInArray] = zipWith(
@@ -262,30 +238,31 @@ export class ResourceTableComponent<I extends Resource.Item>
             currentIndexInArray
           );
 
-      await this.syncResourceTableColumns();
+      await this.syncResourceTableColumns(resourceTable);
     }
   }
 
-  protected openColumnToggleDialog(): Promise<void> {
+  protected openColumnToggleDialog(
+    resourceTable: Resource.Table<I>
+  ): Promise<void> {
     const dialogRef: ColumnToggleDialog<I>['ref'] = this.dialog.open<
       ColumnToggleDialogComponent<I>,
       ColumnToggleDialog<I>['data']
     >(ColumnToggleDialogComponent<I>, {
-      data: this.resourceTable.columns,
+      data: resourceTable.columns,
     });
 
-    return firstValueFrom(
-      dialogRef.afterClosed().pipe(
-        mergeMap(async (resourceTableColumns) => {
-          if (resourceTableColumns != null) {
-            await this.updateResourceTableColumns(resourceTableColumns);
-          }
-        })
-      )
+    return lastValueFrom(dialogRef.afterClosed()).then(
+      async (resourceTableColumns) => {
+        if (resourceTableColumns != null) {
+          await this.updateResourceTableColumns(resourceTableColumns);
+        }
+      }
     );
   }
 
   protected openResourceItemPatchDialog(
+    resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
   ): Promise<void> {
     const dialogRef: ResourceItemPatchDialog<I>['ref'] = this.dialog.open<
@@ -295,33 +272,28 @@ export class ResourceTableComponent<I extends Resource.Item>
       data: cloneDeep(resourceTableField),
     });
 
-    return firstValueFrom(
-      dialogRef.afterClosed().pipe(
-        mergeMap(async (resourceTableField) => {
-          if (resourceTableField != null) {
-            await this.patchResourceItem(resourceTableField);
-          }
-        })
-      )
+    return lastValueFrom(dialogRef.afterClosed()).then(
+      async (resourceTableField) => {
+        if (resourceTableField != null) {
+          await this.patchResourceItem(resourceTable, resourceTableField);
+        }
+      }
     );
   }
 
   protected patchResourceItem(
+    resourceTable: Resource.Table<I>,
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
-    return firstValueFrom(
-      this.apiService
-        .patchResourceItem(
-          { tableToken: this.resourceTable.token },
-          resourceTableField
-        )
-        .pipe(
-          mergeMap((resourceItem) =>
-            this.setQueryParams(pick(resourceTableField, 'resourceId'), {
-              runResolvers: true,
-            }).then(() => resourceItem)
-          )
-        )
+    return lastValueFrom(
+      this.apiService.patchResourceItem(
+        { tableToken: resourceTable.token },
+        resourceTableField
+      )
+    ).then((resourceItem) =>
+      this.setQueryParams(pick(resourceTableField, 'resourceId'), {
+        runResolvers: true,
+      }).then(() => resourceItem)
     );
   }
 
@@ -345,9 +317,11 @@ export class ResourceTableComponent<I extends Resource.Item>
     });
   }
 
-  protected syncResourceTableColumns(): Promise<void> {
-    this.resourceTable.columns.forEach((column) => {
-      column.sortIndex = this.resourceTable.primaryPaths.indexOf(column.path);
+  protected syncResourceTableColumns(
+    resourceTable: Resource.Table<I>
+  ): Promise<void> {
+    resourceTable.columns.forEach((column) => {
+      column.sortIndex = resourceTable.primaryPaths.indexOf(column.path);
 
       if (column.sortIndex === -1) {
         delete column.sortIndex;
@@ -355,7 +329,7 @@ export class ResourceTableComponent<I extends Resource.Item>
       }
     });
 
-    return this.updateResourceTableColumns();
+    return this.updateResourceTableColumns(resourceTable.columns);
   }
 
   protected async toggleRowIsSelected(
@@ -376,7 +350,7 @@ export class ResourceTableComponent<I extends Resource.Item>
   }
 
   protected updateResourceTableColumns(
-    resourceTableColumns: Resource.TableColumn<I>[] = this.resourceTable.columns
+    resourceTableColumns: Resource.TableColumn<I>[]
   ): Promise<void> {
     return this.setQueryParams(
       {

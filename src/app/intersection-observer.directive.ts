@@ -10,7 +10,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { ReplaySubject, Subject, debounceTime, filter, first } from 'rxjs';
+import { ReplaySubject, Subject, debounceTime, filter, take } from 'rxjs';
 
 interface IntersectionEvent {
   entry: IntersectionObserverEntry;
@@ -48,7 +48,7 @@ export class IntersectionObserverDirective
       .pipe(
         filter((event): event is IntersectionEvent => event != null),
         filter(({ entry }) => entry.isIntersecting),
-        first()
+        take(1)
       )
       .subscribe({
         next: ({ entry, observer }) => {

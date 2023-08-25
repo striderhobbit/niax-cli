@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { WebSocket } from '@shared/schema/ws';
-import { concatMap, firstValueFrom } from 'rxjs';
+import { concatMap, lastValueFrom } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import {
   TextMessageDialog,
@@ -31,7 +31,7 @@ export class WebSocketService {
                   data: message,
                 });
 
-                await firstValueFrom(dialogRef.afterClosed());
+                await lastValueFrom(dialogRef.afterClosed());
               }
           }
         })

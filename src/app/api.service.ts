@@ -3,12 +3,16 @@ import { Injectable } from '@angular/core';
 import { Request } from '@shared/schema/request';
 import { Resource } from '@shared/schema/resource';
 import { Observable, OperatorFunction, catchError } from 'rxjs';
+import { WebSocketService } from './web-socket.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService<I extends Resource.Item> {
-  constructor(private readonly httpClient: HttpClient) {}
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly webSocketService: WebSocketService
+  ) {}
 
   public getResourceTable<T extends Request.GetResourceTable<I>['ResBody']>(
     query: Request.GetResourceTable<I>['ReqQuery']
