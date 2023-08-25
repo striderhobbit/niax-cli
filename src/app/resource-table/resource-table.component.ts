@@ -1,8 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
-  CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem,
+    CdkDragDrop,
+    moveItemInArray,
+    transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -11,24 +11,24 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
-import { cloneDeep, find, keyBy, pick, pull, zipWith } from 'lodash';
+import { cloneDeep, keyBy, pick, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
 import {
-  Subject,
-  Subscription,
-  firstValueFrom,
-  map,
-  mergeMap,
-  tap,
+    Subject,
+    Subscription,
+    firstValueFrom,
+    map,
+    mergeMap,
+    tap,
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import {
-  ColumnToggleDialog,
-  ColumnToggleDialogComponent,
+    ColumnToggleDialog,
+    ColumnToggleDialogComponent,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
-  ResourceItemPatchDialog,
-  ResourceItemPatchDialogComponent,
+    ResourceItemPatchDialog,
+    ResourceItemPatchDialogComponent,
 } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class RowsPlaceholder {
@@ -183,9 +183,9 @@ export class ResourceTableComponent<I extends Resource.Item>
         })
         .pipe(
           map(({ items }) => {
-            const resourceTableRowsPage = find(this.resourceTable.rowsPages, {
-              pageToken,
-            });
+            const resourceTableRowsPage = this.resourceTable.rowsPages.find(
+              (rowsPage) => rowsPage.pageToken === pageToken
+            );
 
             resourceTableRowsPage!.pending = false;
             resourceTableRowsPage!.items = items;
