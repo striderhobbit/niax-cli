@@ -1,8 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
-    CdkDragDrop,
-    moveItemInArray,
-    transferArrayItem,
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { CdkHeaderRowDef } from '@angular/cdk/table';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -14,21 +14,21 @@ import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, find, keyBy, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
 import {
-    Subject,
-    Subscription,
-    firstValueFrom,
-    map,
-    mergeMap,
-    tap,
+  Subject,
+  Subscription,
+  firstValueFrom,
+  map,
+  mergeMap,
+  tap,
 } from 'rxjs';
 import { ApiService } from '../api.service';
 import {
-    ColumnToggleDialog,
-    ColumnToggleDialogComponent,
+  ColumnToggleDialog,
+  ColumnToggleDialogComponent,
 } from '../column-toggle-dialog/column-toggle-dialog.component';
 import {
-    ResourceItemPatchDialog,
-    ResourceItemPatchDialogComponent,
+  ResourceItemPatchDialog,
+  ResourceItemPatchDialogComponent,
 } from '../resource-item-patch-dialog/resource-item-patch-dialog.component';
 
 class RowsPlaceholder {
@@ -222,7 +222,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     );
   }
 
-  protected isPlaceholder(index: number, item: Row<I>): boolean {
+  protected isRowsPlaceholder(index: number, item: Row<I>): boolean {
     return item instanceof RowsPlaceholder;
   }
 

@@ -173,7 +173,7 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="placeholder">
+    <ng-container matColumnDef="rowsPlaceholder">
       <td *matCellDef="let row" [colSpan]="columns.length" mat-cell>
         <ng-container *ngIf="assertIsRowsPlaceholder(row) as rowsPlaceholder">
           <button
@@ -212,7 +212,11 @@
     ></tr>
 
     <tr
-      *matRowDef="let row; columns: ['placeholder']; when: isPlaceholder"
+      *matRowDef="
+        let row;
+        columns: ['rowsPlaceholder'];
+        when: isRowsPlaceholder
+      "
       mat-row
     ></tr>
 
