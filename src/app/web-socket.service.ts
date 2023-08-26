@@ -20,7 +20,7 @@ export class WebSocketService {
       },
     })
       .pipe(
-        retry(),
+        retry({ delay: 1e3 }),
         concatMap(async (message) => {
           switch (message.type) {
             case 'text':
