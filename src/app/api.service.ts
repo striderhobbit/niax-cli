@@ -9,8 +9,6 @@ import { WebSocketService } from './web-socket.service';
   providedIn: 'root',
 })
 export class ApiService<I extends Resource.Item> {
-  private readonly baseUrl = 'https://localhost:3000';
-
   constructor(
     private readonly httpClient: HttpClient,
     private readonly webSocketService: WebSocketService
@@ -20,7 +18,7 @@ export class ApiService<I extends Resource.Item> {
     query: Request.GetResourceTable<I>['ReqQuery']
   ): Observable<T> {
     return this.httpClient
-      .get<T>(`${this.baseUrl}/api/resource/table`, {
+      .get<T>('/api/resource/table', {
         params: query,
       })
       .pipe(this.tapError());
@@ -30,7 +28,7 @@ export class ApiService<I extends Resource.Item> {
     T extends Request.GetResourceTableRowsPage<I>['ResBody']
   >(query: Request.GetResourceTableRowsPage<I>['ReqQuery']): Observable<T> {
     return this.httpClient
-      .get<T>(`${this.baseUrl}/api/resource/table/rows/page`, {
+      .get<T>('/api/resource/table/rows/page', {
         params: query,
       })
       .pipe(this.tapError());
@@ -41,7 +39,7 @@ export class ApiService<I extends Resource.Item> {
     body: Request.PatchResourceItem<I>['ReqBody']
   ): Observable<T> {
     return this.httpClient
-      .patch<T>(`${this.baseUrl}/api/resource/item`, body, {
+      .patch<T>('/api/resource/item', body, {
         params: query,
       })
       .pipe(this.tapError());
