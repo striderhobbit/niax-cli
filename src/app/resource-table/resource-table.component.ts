@@ -13,7 +13,15 @@ import { Resource } from '@shared/schema/resource';
 import { PropertyPath } from '@shared/schema/utility';
 import { cloneDeep, keyBy, pick, pull, zipWith } from 'lodash';
 import { CookieService } from 'ngx-cookie-service';
-import { Subject, Subscription, lastValueFrom, map, mergeMap, tap } from 'rxjs';
+import {
+  Subject,
+  Subscription,
+  identity,
+  lastValueFrom,
+  map,
+  mergeMap,
+  tap,
+} from 'rxjs';
 import { ApiService } from '../api.service';
 import {
   ColumnToggleDialog,
@@ -79,8 +87,20 @@ export class ResourceTableComponent<I extends Resource.Item>
 
     this.routeDataSubscription = this.route.data
       .pipe(
+        map((data) => {
+          const resourceTable = data['resourceTable'] as Resource.Table<I>;
+          const rowsPagesUpdates = this.resourceTable?.rowsPagesUpdates;
+
+          return rowsPagesUpdates != null
+            ? new Promise<Resource.Table<I>>((resolve) =>
+                rowsPagesUpdates.subscribe({
+                  complete: () => resolve(resourceTable),
+                })
+              )
+            : Promise.resolve(resourceTable);
+        }),
         tap(() => this.resourceTable?.rowsPagesUpdates?.complete()),
-        map((data) => data['resourceTable'] as Resource.Table<I>)
+        mergeMap(identity)
       )
       .subscribe({
         next: (resourceTable) => {
