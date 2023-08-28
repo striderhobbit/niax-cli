@@ -159,10 +159,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     pageToken: string
   ): Promise<void> {
     return lastValueFrom(
-      this.apiService.getResourceTableRowsPage({
-        pageToken,
-        tableToken: resourceTable.token,
-      })
+      this.apiService.getResourceTableRowsPage({ pageToken })
     ).then(({ items }) => {
       const rowsPage = resourceTable.rowsPages.find(
         (rowsPage) => rowsPage.pageToken === pageToken
@@ -286,10 +283,7 @@ export class ResourceTableComponent<I extends Resource.Item>
     resourceTableField: Resource.TableField<I>
   ): Promise<I> {
     return lastValueFrom(
-      this.apiService.patchResourceItem(
-        { tableToken: resourceTable.token },
-        resourceTableField
-      )
+      this.apiService.patchResourceItem({}, resourceTableField)
     ).then((resourceItem) =>
       this.setQueryParams(pick(resourceTableField, 'resourceId'), {
         runResolvers: true,
