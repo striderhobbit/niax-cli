@@ -1,3 +1,10 @@
+![toggle cols](https://github.com/striderhobbit/niax-cli/assets/141032232/a3219f46-3b8d-4b63-83b6-7083d17ea7ea)
+![infinite scroll](https://github.com/striderhobbit/niax-cli/assets/141032232/10d1a528-dfdb-4eec-9cdf-4618fef4b509)
+![sort + filter](https://github.com/striderhobbit/niax-cli/assets/141032232/b98eb6f6-cafd-4e06-a808-69698adecb22)
+![edit](https://github.com/striderhobbit/niax-cli/assets/141032232/7bae9c14-c596-48b6-b5f5-00366fcdf17a)
+![swap cols](https://github.com/striderhobbit/niax-cli/assets/141032232/6f29c84d-0b57-4ac0-8305-35b6006a089a)
+
+
 # Cli
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
